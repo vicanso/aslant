@@ -10,23 +10,24 @@ const initState = {
 };
 
 export default function navigation(state = initState, action) {
-  let history;
   switch (action.type) {
-    case LOCATION:
-      history = state.history.slice(0);
+    case LOCATION: {
+      const history = state.history.slice(0);
       history.push(state.location);
       return Object.assign({}, state, {
         location: action.path,
-        history: history,
+        history,
       });
-    case LOCATION_BACK:
-      history = state.history.slice(0);
+    }
+    case LOCATION_BACK: {
+      const history = state.history.slice(0);
       const path = history.pop();
       return Object.assign({}, state, {
         location: path,
-        history: history,
+        history,
       });
+    }
     default:
-      return Object.assign({}, state);
+      return state;
   }
 }

@@ -23,6 +23,7 @@ module.exports = {
       type: Boolean,
       required: true,
     },
+    group: String,
     token: {
       type: String,
       default: () => uuid.v4(),
@@ -37,6 +38,9 @@ module.exports = {
   indexes: [
     {
       owner: 1,
+    },
+    {
+      group: 1,
     },
   ],
 };

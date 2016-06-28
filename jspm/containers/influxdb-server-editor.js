@@ -6,6 +6,7 @@ import Joi from 'joi';
 import Dialog from '../components/dialog';
 import * as influxdbAction from '../actions/influxdb';
 import * as navigationAction from '../actions/navigation';
+import * as util from '../helpers/util';
 
 class InfluxdbServerEditor extends Dialog {
   constructor(props) {
@@ -15,25 +16,31 @@ class InfluxdbServerEditor extends Dialog {
         influxdbServerEditor: true,
       },
       title: 'Add New Server',
-      status: ''
+      status: '',
     };
+  }
+  onClose(e) {
+    e.preventDefault();
+    const { dispatch } = this.props;
+    dispatch(navigationAction.back());   
   }
   getData() {
     const refs = this.refs;
     const user = refs.user.value;
     const password = refs.password.value;
+    const group = refs.group.value;
     const data = {
       name: refs.name.value,
       host: refs.host.value,
       port: refs.port.value,
       ssl: refs.ssl.checked,
     };
-    if (user) {
-      data.user = user;
-    }
-    if (password) {
-      data.password = password;
-    }
+    _.forEach('user password group'.split(' '), k => {
+      const v = refs[k].value;
+      if (v) {
+        data[k] = v;
+      }
+    });
     return data;
   }
   handleChange() {
@@ -46,9 +53,9 @@ class InfluxdbServerEditor extends Dialog {
   }
   handleSubmit(e) {
     e.preventDefault();
-    const { dispatch } = this.props;
+    const { dispatch, server } = this.props;
     const { status } = this.state;
-    if (status === 'submitting') {
+    if (status === 'processing') {
       return;
     }
     const schema = Joi.object().keys({
@@ -56,6 +63,7 @@ class InfluxdbServerEditor extends Dialog {
       host: Joi.string().trim().required(),
       port: Joi.number().integer().required(),
       ssl: Joi.boolean().required(),
+      group: Joi.string().trim(),
       user: Joi.string().trim(),
       password: Joi.string().trim(),
     });
@@ -66,26 +74,52 @@ class InfluxdbServerEditor extends Dialog {
         error: result.error.message,
       });
     }
-    return dispatch(influxdbAction.addServer(result.value)).then(data => {
+    this.setState({
+      status: 'processing',
+    });
+    let fn;
+    if (server) {
+      fn = influxdbAction.editServer(server._id, server.token, result.value);
+    } else {
+      fn = influxdbAction.addServer(result.value);
+    }
+    return dispatch(fn).then(() => {
       dispatch(navigationAction.back());
+    }).catch(err => { 
+      this.setState({
+        status: '',
+        error: util.getError(err),
+      });
     });
   }
+  onKeyUp(e) {
+    switch(e.keyCode) {
+      case 13:
+        return this.handleSubmit(e);
+      case 27:
+        return this.onClose(e);
+    }
+  }
   componentDidMount() {
-    const { servers, dispatch } = this.props;
+    const { server, dispatch } = this.props;
     const refs = this.refs;
     const defaultValue = {
       host: 'localhost',
       port: '8086',
     };
     _.forEach(refs, (ref, k) => {
-      if (!ref.value && defaultValue[k]) {
+      const v = _.get(server, k, defaultValue[k]);
+      if (!_.isUndefined(v)) {
         /* eslint no-param-reassign:0 */
-        ref.value = defaultValue[k];
+        if (k === 'ssl') {
+          ref.checked = v;
+          return;
+        }
+        ref.value = v;
       }
     });
   }
   getError() {
-    const { servers } = this.props;
     const { error } = this.state;
     if (!error) {
       return null;
@@ -99,7 +133,7 @@ class InfluxdbServerEditor extends Dialog {
           }}
         >
           <i className="fa fa-exclamation-triangle" aria-hidden="true"></i>
-          <span>{errorMessage}</span>
+          <span>{error}</span>
         </div>
       </div>
     );
@@ -118,6 +152,7 @@ class InfluxdbServerEditor extends Dialog {
               placeholder="Ex: My Awesome Server"
               ref="name"
               required="true"
+              onKeyUp={e => this.onKeyUp(e)}
               onChange={() => this.handleChange()}
             />
           </div>
@@ -130,6 +165,7 @@ class InfluxdbServerEditor extends Dialog {
               placeholder="Ex: localhost"
               ref="host"
               required="true"
+              onKeyUp={e => this.onKeyUp(e)}
               onChange={() => this.handleChange()}
             />
           </div>
@@ -142,6 +178,7 @@ class InfluxdbServerEditor extends Dialog {
               placeholder="Ex: 8086"
               ref="port"
               required="true"
+              onKeyUp={e => this.onKeyUp(e)}
               onChange={() => this.handleChange()}
             />
           </div>
@@ -169,12 +206,27 @@ class InfluxdbServerEditor extends Dialog {
           </div>
         </div>
         <div className="pure-u-1">
+          <div
+            className="formItem"
+          >
+            <label>Access Group(optional)</label>
+            <input
+              type="text"
+              placeholder="Ex: *"
+              ref="group"
+              onKeyUp={e => this.onKeyUp(e)}
+              onChange={() => this.handleChange()}
+            />
+          </div>
+        </div>
+        <div className="pure-u-1">
           <div className="formItem">
             <label>HTTP basic auth username(optional)</label>
             <input
               type="text"
               placeholder="Ex: vicanso"
               ref="user"
+              onKeyUp={e => this.onKeyUp(e)}
               onChange={() => this.handleChange()}
             />
           </div>
@@ -186,6 +238,7 @@ class InfluxdbServerEditor extends Dialog {
               type="text"
               placeholder="Ex: mypass"
               ref="password"
+              onKeyUp={e => this.onKeyUp(e)}
               onChange={() => this.handleChange()}
             />
           </div>
@@ -196,7 +249,7 @@ class InfluxdbServerEditor extends Dialog {
             className="pure-button pure-button-primary submit"
             onClick={e => this.handleSubmit(e)}
           >Add
-          {status === 'submitting' && <span>...</span>}
+          {status === 'processing' && <span>...</span>}
           </a>
         </div>
         {this.getError()}
@@ -207,6 +260,7 @@ class InfluxdbServerEditor extends Dialog {
 
 InfluxdbServerEditor.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  server: PropTypes.object,
 };
 
 export default InfluxdbServerEditor;

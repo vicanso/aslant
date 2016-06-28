@@ -4,6 +4,8 @@ import React, { PropTypes, Component } from 'react';
 import * as _ from 'lodash';
 import * as userAction from '../actions/user';
 import * as navigationAction from '../actions/navigation';
+import * as influxdbAction from '../actions/influxdb';
+import * as util from '../helpers/util';
 
 class MainHeader extends Component {
   constructor(props) {
@@ -20,10 +22,18 @@ class MainHeader extends Component {
       });
     }).catch(this.onError.bind(this));
   }
+  componentWillReceiveProps(nextProps) {
+    const { dispatch } = this.props;
+    const currentAccount = _.get(nextProps, 'user.account');
+    const account = _.get(this.props, 'user.account');
+    if (currentAccount && currentAccount !== account) {
+      dispatch(influxdbAction.listServer());
+    }
+  }
   onError(err) {
     this.setState({
       status: 'error',
-      message: _.get(err, 'response.body.message', err.message),
+      message: util.getError(err),
     });
   }
   register(e) {
@@ -53,9 +63,15 @@ class MainHeader extends Component {
     const { dispatch } = this.props;
     dispatch(navigationAction.addServer());
   }
+  showServers(e) {
+    e.preventDefault();
+    const { dispatch } = this.props;
+    dispatch(navigationAction.showServers());
+  }
   renderUserInfo() {
     const { status, message } = this.state;
-    const { user, dispatch } = this.props;
+    const { user, dispatch, influxdbServer } = this.props;
+    const hasServer = !!_.get(influxdbServer, 'list.length', 0);
     if (status === 'error') {
       return (
         <li>
@@ -82,6 +98,13 @@ class MainHeader extends Component {
             <i className="fa fa-plus" aria-hidden="true"></i>
             add-server
           </a>
+          {
+            hasServer && 
+            <a href='#' onClick={e => this.showServers(e)}>
+              <i className="fa fa-server" aria-hidden="true"></i>
+              influxdbs
+            </a>
+          }
           <a href="#" onClick={e => this.logout(e)}>
             <i className="fa fa-sign-out" aria-hidden="true"></i>
           logout</a>

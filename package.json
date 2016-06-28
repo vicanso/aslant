@@ -102,6 +102,7 @@
       "react-dom": "npm:react-dom@^15.1.0",
       "react-enroute": "npm:react-enroute@^0.0.1",
       "react-redux": "npm:react-redux@^4.4.5",
+      "react-select": "npm:react-select@^1.0.0-beta13",
       "redux": "npm:redux@^3.5.2",
       "redux-logger": "npm:redux-logger@^2.6.1",
       "redux-thunk": "npm:redux-thunk@^2.1.0",

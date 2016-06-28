@@ -4,6 +4,7 @@ import React, { PropTypes } from 'react';
 import Dialog from '../components/dialog';
 import * as userAction from '../actions/user';
 import * as navigationAction from '../actions/navigation';
+import * as util from '../helpers/util';
 
 class RegisterLogin extends Dialog {
   onClose(e) {
@@ -52,7 +53,7 @@ class RegisterLogin extends Dialog {
       dispatch(navigationAction.back());
     }).catch(err => {
       this.setState({
-        error: err.response.body.message,
+        error: util.getError(err),
       });
     });
   }

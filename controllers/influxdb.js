@@ -10,6 +10,7 @@ exports.addServer = (ctx) => {
     host: Joi.string().trim().required(),
     port: Joi.number().integer().required(),
     ssl: Joi.boolean().required(),
+    group: Joi.string().trim(),
     user: Joi.string().trim(),
     password: Joi.string().trim(),
   });
@@ -23,6 +24,8 @@ exports.addServer = (ctx) => {
 exports.listServer = (ctx) => {
   const account = _.get(ctx, 'session.user.account');
   return influxdbService.listServer(account).then(servers => {
-    ctx.body = servers;
+    ctx.body = {
+      items: servers
+    };
   });
 };

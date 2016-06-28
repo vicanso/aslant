@@ -1,37 +1,36 @@
 'use strict';
+import * as http from '../helpers/http';
 import {
   INFLUXDB_ADD_SERVER,
-  INFLUXDB_ADD_SERVER_FAIL,
-  INFLUXDB_ADD_SERVER_SUCC,
   INFLUXDB_LIST_SERVER,
-  INFLUXDB_LIST_SERVER_FAIL,
-  INFLUXDB_LIST_SERVER_SUCC,
 } from '../constants/action-types';
 
 export function addServer(data) {
-  // return dispatch => {
-  //   dispatch({
-  //     type: INFLUXDB_ADD_SERVER,
-  //   });
-  //   return influxdbService.addServer(data).then(server => {
-  //     dispatch({
-  //       type: INFLUXDB_ADD_SERVER_SUCC,
-  //       server,
-  //     });
-  //   }).catch(fail(dispatch, INFLUXDB_ADD_SERVER_FAIL));
-  // };
+  return dispatch => http.post('/influxdb/servers/add')
+    .send(data)
+    .then(res => {
+      const server = res.body;
+      dispatch({
+        type: INFLUXDB_ADD_SERVER,
+        server,
+      });
+      return server;
+    });
 }
 
 export function listServer() {
-  // return dispatch => {
-  //   dispatch({
-  //     type: INFLUXDB_LIST_SERVER,
-  //   });
-  //   return influxdbService.listServer().then(servers => {
-  //     dispatch({
-  //       type: INFLUXDB_LIST_SERVER_SUCC,
-  //       servers,
-  //     });
-  //   }).catch(fail(dispatch, INFLUXDB_LIST_SERVER_FAIL));
-  // };
+  return dispatch => http.get('/influxdb/servers/list').then(res => dispatch({
+    type: INFLUXDB_LIST_SERVER,
+    servers: res.body.items || [],
+  }));
 }
+
+export function editServer(id, token, data) {
+  return dispatch => http.put(`/influxdb/server/${id}`)
+    .set('X-Token', token)
+    .send(data)
+    .then(res => {
+      console.dir(res);
+    });
+}
+

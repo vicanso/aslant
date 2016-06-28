@@ -31,10 +31,18 @@ export function addServer() {
   return to(urls.ADD_SERVER);
 }
 
+export function showServers() {
+  return to(urls.SHOW_SERVERS);
+}
+
 export function back() {
   return dispatch => {
     dispatch({
       type: LOCATION_BACK,
     });
   };
+}
+
+export function editServer(id) {
+  return to(`${urls.EDIT_SERVER}/${id}`);
 }

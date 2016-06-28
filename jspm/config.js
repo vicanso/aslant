@@ -25,6 +25,7 @@ System.config({
     "react-dom": "npm:react-dom@15.1.0",
     "react-enroute": "npm:react-enroute@0.0.1",
     "react-redux": "npm:react-redux@4.4.5",
+    "react-select": "npm:react-select@1.0.0-beta13",
     "redux": "npm:redux@3.5.2",
     "redux-logger": "npm:redux-logger@2.6.1",
     "redux-thunk": "npm:redux-thunk@2.1.0",
@@ -460,6 +461,9 @@ System.config({
       "invariant": "npm:invariant@2.2.1",
       "react": "npm:react@15.1.0"
     },
+    "npm:react-input-autosize@0.6.13": {
+      "react": "npm:react@15.1.0"
+    },
     "npm:react-redux@4.4.5": {
       "hoist-non-react-statics": "npm:hoist-non-react-statics@1.0.6",
       "invariant": "npm:invariant@2.2.1",
@@ -468,6 +472,12 @@ System.config({
       "process": "github:jspm/nodelibs-process@0.1.2",
       "react": "npm:react@15.1.0",
       "redux": "npm:redux@3.5.2"
+    },
+    "npm:react-select@1.0.0-beta13": {
+      "classnames": "npm:classnames@2.2.5",
+      "react": "npm:react@15.1.0",
+      "react-dom": "npm:react-dom@15.1.0",
+      "react-input-autosize": "npm:react-input-autosize@0.6.13"
     },
     "npm:react@15.1.0": {
       "fbjs": "npm:fbjs@0.8.3",
