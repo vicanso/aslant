@@ -15,7 +15,7 @@ class InfluxdbServerEditor extends Dialog {
       classes: {
         influxdbServerEditor: true,
       },
-      title: 'Add New Server',
+      title: props.server ? 'Update Server' : 'Add New Server',
       status: '',
     };
   }
@@ -140,7 +140,7 @@ class InfluxdbServerEditor extends Dialog {
   }
   getContent() {
     const { status } = this.state;
-    const { dispatch } = this.props;
+    const { dispatch, server } = this.props;
     return (
       <form className="pure-form pure-form-aligned pure-g"><fieldset>
         <div className="pure-u-1-2">
@@ -248,7 +248,8 @@ class InfluxdbServerEditor extends Dialog {
             href="#"
             className="pure-button pure-button-primary submit"
             onClick={e => this.handleSubmit(e)}
-          >Add
+          >
+          {server ? 'Update' : 'Add'}
           {status === 'processing' && <span>...</span>}
           </a>
         </div>

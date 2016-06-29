@@ -114,7 +114,7 @@ const getDebouncePost = (url, ms) => {
 };
 
 const statsAjax = getDebouncePost('/stats/ajax');
-const statsException = getDebouncePost('/stats/exception', 1000);
+const statsException = getDebouncePost('/stats/exception');
 
 // http request stats
 const stats = () => {

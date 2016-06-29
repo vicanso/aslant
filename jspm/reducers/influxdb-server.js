@@ -2,17 +2,19 @@
 import {
   INFLUXDB_ADD_SERVER,
   INFLUXDB_LIST_SERVER,
+  INFLUXDB_EDIT_SERVER,
+  INFLUXDB_REMOVE_SERVER,
 } from '../constants/action-types';
+import * as _ from 'lodash';
 
 const initStates = {
   list: [],
 };
 
 export default function influxdbServer(state = initStates, action) {
-  let list;
+  let list = _.map(state.list, item => Object.assign({}, item));
   switch (action.type) {
     case INFLUXDB_ADD_SERVER:
-      list = state.list.slice(0);
       list.push(action.server);
       return Object.assign({}, state, {
         list,
@@ -22,6 +24,27 @@ export default function influxdbServer(state = initStates, action) {
       return Object.assign({}, state, {
         list,
       });
+    case INFLUXDB_EDIT_SERVER: {
+      const server = action.server;
+      /* eslint no-underscore-dangle:0 */
+      const index = _.findIndex(list, item => item._id === server._id);
+      if (~index) {
+        list[index] = Object.assign({}, server);
+      }
+      return Object.assign({}, state, {
+        list,
+      });
+    }
+    case INFLUXDB_REMOVE_SERVER: {
+      /* eslint no-underscore-dangle:0 */
+      const index = _.findIndex(list, item => item._id === action.id);
+      if (~index) {
+        list.splice(index, 1);
+      }
+      return Object.assign({}, state, {
+        list,
+      });
+    }
     default:
       return state;
   }

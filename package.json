@@ -30,7 +30,7 @@
     "install-all": "npm i && node node_modules/.bin/jspm install",
     "gulp": "node ./node_modules/.bin/gulp",
     "start": "node app",
-    "dev": "MONGO=mongodb://127.0.0.1/aslant nodemon app"
+    "dev": "nodemon app"
   },
   "license": "MIT",
   "dependencies": {
@@ -64,7 +64,8 @@
     "pug": "^2.0.0-beta3",
     "require-tree": "^1.1.1",
     "superagent": "^2.0.0",
-    "url-join": "^1.1.0"
+    "url-join": "^1.1.0",
+    "uuid": "^2.0.2"
   },
   "devDependencies": {
     "buffer-crc32": "^0.2.5",

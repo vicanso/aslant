@@ -3,6 +3,7 @@ const session = require('koa-simple-session');
 const RedisStore = require('koa-simple-redis');
 const _ = require('lodash');
 const config = localRequire('config');
+const errors = localRequire('helpers/errors');
 const sessionMiddleware = session({
   key: config.app,
   prefix: `${config.app}-session:`,

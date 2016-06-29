@@ -8,7 +8,7 @@ module.exports = [
   '[POST] [/sys/restart] [m.auth.admin & c.system.restart]',
 
   // page view
-  '[GET] [/] [v.home & c.home]',
+  '[GET] [/,/login,/register,/servers/*] [v.home & c.home]',
 
   // user
   '[GET] [/users/me] [m.noCache & m.session.read & c.user.me]',
@@ -24,4 +24,6 @@ module.exports = [
   // influxdb
   '[POST] [/influxdb/servers/add] [m.session.login & c.influxdb.addServer]',
   '[GET] [/influxdb/servers/list] [m.session.login & c.influxdb.listServer]',
+  '[PUT] [/influxdb/servers/:id] [m.session.login & m.validateToken & c.influxdb.editServer]',
+  '[DELETE] [/influxdb/servers/:id] [m.session.login & m.validateToken & c.influxdb.removeServer]',
 ];

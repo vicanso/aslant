@@ -1,5 +1,6 @@
 'use strict';
 const _ = require('lodash');
+const Joi = require('joi');
 const errors = localRequire('helpers/errors');
 const influx = localRequire('helpers/influx');
 const url = require('url');
@@ -73,4 +74,17 @@ exports.routeStats = (ctx, next) => {
       spdy: _.sortedIndex([30, 100, 300, 1000, 3000], use),
     });
   });
+};
+
+exports.validateToken = (ctx, next) => {
+  const token = ctx.get('X-Token');
+  if (!token) {
+    throw errors.get('Token can\'t be empty');
+  }
+  Joi.validateThrow({
+    token,
+  }, {
+    token: Joi.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/),
+  });
+  return next();
 };

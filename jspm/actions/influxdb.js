@@ -3,6 +3,8 @@ import * as http from '../helpers/http';
 import {
   INFLUXDB_ADD_SERVER,
   INFLUXDB_LIST_SERVER,
+  INFLUXDB_EDIT_SERVER,
+  INFLUXDB_REMOVE_SERVER,
 } from '../constants/action-types';
 
 export function addServer(data) {
@@ -26,11 +28,21 @@ export function listServer() {
 }
 
 export function editServer(id, token, data) {
-  return dispatch => http.put(`/influxdb/server/${id}`)
+  return dispatch => http.put(`/influxdb/servers/${id}`)
     .set('X-Token', token)
     .send(data)
-    .then(res => {
-      console.dir(res);
-    });
+    .then(res => dispatch({
+      type: INFLUXDB_EDIT_SERVER,
+      server: res.body,
+    }));
+}
+
+export function removeServer(id, token) {
+  return dispatch => http.del(`/influxdb/servers/${id}`)
+    .set('X-Token', token)
+    .then(() => dispatch({
+      type: INFLUXDB_REMOVE_SERVER,
+      id,
+    }));
 }
 
