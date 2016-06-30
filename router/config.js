@@ -8,7 +8,7 @@ module.exports = [
   '[POST] [/sys/restart] [m.auth.admin & c.system.restart]',
 
   // page view
-  '[GET] [/,/login,/register,/servers/*] [v.home & c.home]',
+  '[GET] [/,/login,/register,/servers/*,/visualizations,/visualizations/edit] [v.home & c.home]',
 
   // user
   '[GET] [/users/me] [m.noCache & m.session.read & c.user.me]',

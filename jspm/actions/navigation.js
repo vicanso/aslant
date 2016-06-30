@@ -35,6 +35,14 @@ export function showServers() {
   return to(urls.SHOW_SERVERS);
 }
 
+export function showVisualizations() {
+  return to(urls.SHOW_VISUALIZATIONS);
+}
+
+export function addVisualization() {
+  return to(urls.EDIT_VISUALIZATIONS);
+}
+
 export function back() {
   return dispatch => {
     dispatch({

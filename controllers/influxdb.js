@@ -8,7 +8,7 @@ const validateServerData = data => Joi.validateThrow(data, {
   host: Joi.string().trim().required(),
   port: Joi.number().integer().required(),
   ssl: Joi.boolean().required(),
-  group: Joi.string().trim(),
+  group: Joi.string().trim().required(),
   user: Joi.string().trim(),
   password: Joi.string().trim(),
 });
@@ -26,13 +26,25 @@ exports.addServer = (ctx) => {
 
 exports.listServer = (ctx) => {
   const account = _.get(ctx, 'session.user.account');
-  return influxdbService.listServer(account).then(servers => {
+  return influxdbService.listServer({
+    '$or': [
+      {
+        owner: account,
+      },
+      {
+        group: '*',
+      },
+    ],
+  }).then(servers => {
     /* eslint no-param-reassign:0 */
     ctx.body = {
       items: servers,
     };
   });
 };
+
+
+// { $or: [ { quantity: { $lt: 20 } }, { price: 10 } ] }
 
 exports.editServer = (ctx) => {
   const conditions = {

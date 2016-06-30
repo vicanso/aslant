@@ -26,9 +26,9 @@ exports.addServer = (data) => {
   });
 };
 
-exports.listServer = (owner) => {
+exports.listServer = (conditions) => {
   const InfluxdbServer = Models.get('Influxdb-server');
-  return InfluxdbServer.find({ owner }).then(docs => {
+  return InfluxdbServer.find(conditions).then(docs => {
     return _.map(docs, doc => doc.toJSON());
   });
 };

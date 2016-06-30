@@ -23,7 +23,10 @@ module.exports = {
       type: Boolean,
       required: true,
     },
-    group: String,
+    group: {
+      type: String,
+      required: true,
+    },
     token: {
       type: String,
       default: () => uuid.v4(),

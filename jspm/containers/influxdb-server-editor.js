@@ -63,7 +63,7 @@ class InfluxdbServerEditor extends Dialog {
       host: Joi.string().trim().required(),
       port: Joi.number().integer().required(),
       ssl: Joi.boolean().required(),
-      group: Joi.string().trim(),
+      group: Joi.string().trim().required(),
       user: Joi.string().trim(),
       password: Joi.string().trim(),
     });
@@ -106,6 +106,7 @@ class InfluxdbServerEditor extends Dialog {
     const defaultValue = {
       host: 'localhost',
       port: '8086',
+      group: '*',
     };
     _.forEach(refs, (ref, k) => {
       const v = _.get(server, k, defaultValue[k]);
@@ -209,7 +210,7 @@ class InfluxdbServerEditor extends Dialog {
           <div
             className="formItem"
           >
-            <label>Access Group(optional)</label>
+            <label>Access Group(* for all)</label>
             <input
               type="text"
               placeholder="Ex: *"

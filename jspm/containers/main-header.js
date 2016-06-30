@@ -58,15 +58,15 @@ class MainHeader extends Component {
     const { dispatch } = this.props;
     dispatch(navigationAction.login());
   }
-  addServer(e) {
-    e.preventDefault();
-    const { dispatch } = this.props;
-    dispatch(navigationAction.addServer());
-  }
   showServers(e) {
     e.preventDefault();
     const { dispatch } = this.props;
     dispatch(navigationAction.showServers());
+  }
+  showVisualizations(e) {
+    e.preventDefault();
+    const { dispatch } = this.props;
+    dispatch(navigationAction.showVisualizations());
   }
   renderUserInfo() {
     const { status, message } = this.state;
@@ -94,10 +94,6 @@ class MainHeader extends Component {
       return (
         <li>
           <span>{user.account}</span>
-          <a href='#' onClick={e => this.addServer(e)}>
-            <i className="fa fa-plus" aria-hidden="true"></i>
-            add-server
-          </a>
           {
             hasServer && 
             <a href='#' onClick={e => this.showServers(e)}>
@@ -105,6 +101,10 @@ class MainHeader extends Component {
               influxdbs
             </a>
           }
+          <a href='#' onClick={e => this.showVisualizations(e)}>
+            <i className="fa fa-bar-chart" aria-hidden="true"></i>
+              visualizations
+          </a>
           <a href="#" onClick={e => this.logout(e)}>
             <i className="fa fa-sign-out" aria-hidden="true"></i>
           logout</a>
@@ -128,7 +128,6 @@ class MainHeader extends Component {
       <header className="mainHeader">
         <ul className="pullRight">
           {this.renderUserInfo()}
-          <li className="version">Version 3.x</li>
         </ul>
       </header>
     );

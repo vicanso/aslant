@@ -47,9 +47,10 @@ class ServerItem extends Component {
     });
   }
   render() {
-    const { data, index } = this.props;
+    const { data, index, user } = this.props;
     const { step } = this.state;
     const trClass = {};
+    const owner = user.account;
     if (index % 2 === 0) {
       trClass['pure-table-odd'] = true;
     }
@@ -80,28 +81,33 @@ class ServerItem extends Component {
         <td>{data.group || ''}</td>
         <td>{data.user || ''}</td>
         <td>{data.password || ''}</td>
-        <td>
-          <a href="#" className="op" title="modify" onClick={e => this.onModify(e)}>
-            <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
-          </a>
-          { step !== 'confirm' &&
-            <a href="#" className="op" title="remove" onClick={e => this.onRemove(e)}>
-              <i className={classnames(removeClass)} aria-hidden="true"></i>
+        { owner === data.owner &&
+          <td>
+            <a href="#" className="op" title="modify" onClick={e => this.onModify(e)}>
+              <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
             </a>
-          }
-          { step === 'confirm' &&
-            <a href="#" className="op" title="confrim" onClick={e => this.onConfirm(e)}>
-              <i className="fa fa-check" aria-hidden="true"></i>
-            </a>
-          }
-          {
-            step === 'confirm' &&
-            <a href="#" className="op" title="cancel" onClick={e => this.onCancel(e)}>
-              <i className="fa fa-times" aria-hidden="true"></i>
-            </a>
-          }
-          
-        </td>
+            { step !== 'confirm' &&
+              <a href="#" className="op" title="remove" onClick={e => this.onRemove(e)}>
+                <i className={classnames(removeClass)} aria-hidden="true"></i>
+              </a>
+            }
+            { step === 'confirm' &&
+              <a href="#" className="op" title="confrim" onClick={e => this.onConfirm(e)}>
+                <i className="fa fa-check" aria-hidden="true"></i>
+              </a>
+            }
+            {
+              step === 'confirm' &&
+              <a href="#" className="op" title="cancel" onClick={e => this.onCancel(e)}>
+                <i className="fa fa-times" aria-hidden="true"></i>
+              </a>
+            }
+          </td>
+        }
+        {
+          owner !== data.owner &&
+          <td>{data.owner}</td>
+        }
       </tr>
     );
   }
@@ -111,21 +117,28 @@ ServerItem.propTypes = {
   dispatch: PropTypes.func.isRequired,
   data: PropTypes.object.isRequired,
   index: PropTypes.number.isRequired,
+  user: PropTypes.object.isRequired,
 };
 
 
 class InfluxdbServerList extends Component {
   getServerList() {
-    const { influxdbServer, dispatch } = this.props;
+    const { influxdbServer, dispatch, user } = this.props;
     const arr = _.map(influxdbServer.list, (item, i) => {
       return <ServerItem
         key={item._id}
         data={item}
         index={i + 1}
         dispatch={dispatch}
+        user={user}
       />
     });
     return arr;
+  }
+  addServer(e) {
+    e.preventDefault();
+    const { dispatch } = this.props;
+    dispatch(navigationAction.addServer());
   }
   render() {
     return (
@@ -146,6 +159,17 @@ class InfluxdbServerList extends Component {
             {this.getServerList()}
           </tbody>
         </table>
+        <a
+          href="#" onClick={e => this.addServer(e)}
+          className="pure-button pure-button-primary"
+          style={{
+            display: 'block',
+            marginTop: '15px',
+          }}
+        >
+          <i className="fa fa-plus mright5" aria-hidden="true"></i>
+          Add Server
+        </a>
       </div>
     );
   }
@@ -153,6 +177,7 @@ class InfluxdbServerList extends Component {
 
 InfluxdbServerList.propTypes = {
   dispatch: PropTypes.func.isRequired, 
+  user: PropTypes.object.isRequired,
 };
 
 export default InfluxdbServerList;
