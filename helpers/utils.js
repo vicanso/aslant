@@ -31,3 +31,13 @@ exports.checkToExit = (times, checkInterval = 10 * 1000) => {
   }, checkInterval).unref();
   return timer;
 };
+
+/**
+ * [description]
+ * @param  {[type]} ctx     [description]
+ * @param  {Number} seconds [description]
+ * @return {[type]}         [description]
+ */
+exports.setCache = (ctx, seconds = 0) => {
+  ctx.set('Cache-Control', `public, max-age=${seconds}`);
+};

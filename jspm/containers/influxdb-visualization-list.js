@@ -14,20 +14,11 @@ class InfluxdbVisualizationList extends Component {
       <div className="influxdbVisualizationList">
         <div className="pure-g">
           <div className="pure-u-1-4">
-            <i className="fa fa-plus" aria-hidden="true"></i>
+            <a className="visualization addVisualization" href="#" onClick={e => this.addVisualization(e)}>
+              <i className="fa fa-plus" aria-hidden="true"></i>
+            </a>
           </div>
         </div>
-        <a
-          href="#" onClick={e => this.addVisualization(e)}
-          className="pure-button pure-button-primary"
-          style={{
-            width: '100%',
-            marginTop: '15px',
-          }}
-        >
-          <i className="fa fa-plus mright5" aria-hidden="true"></i>
-          Add Visualization
-        </a>
       </div>
     );
   }

@@ -1,3 +1,15 @@
 @import './constant'
 .influxdbVisualizationList
   margin 10px 0 0 $NAV_WIDTH + 10
+  $visualizationHeight = 200px
+  .visualization
+    height $visualizationHeight
+    margin 15px
+    border 1px solid $GRAY_BORDER_COLOR
+    border-radius 5px
+    background-color #fdfdfd
+  .addVisualization
+    line-height $visualizationHeight
+    text-align center
+    font-size 18px
+    display block

@@ -5,6 +5,7 @@ import {
   INFLUXDB_LIST_SERVER,
   INFLUXDB_EDIT_SERVER,
   INFLUXDB_REMOVE_SERVER,
+  INFLUXDB_LIST_DATABASE,
 } from '../constants/action-types';
 
 export function addServer(data) {
@@ -21,7 +22,7 @@ export function addServer(data) {
 }
 
 export function listServer() {
-  return dispatch => http.get('/influxdb/servers/list').then(res => dispatch({
+  return dispatch => http.get('/influxdb/servers').then(res => dispatch({
     type: INFLUXDB_LIST_SERVER,
     servers: res.body.items || [],
   }));
@@ -46,3 +47,11 @@ export function removeServer(id, token) {
     }));
 }
 
+export function listDatabase(id) {
+  return dispatch => http.get(`/influxdb/${id}/databases`)
+    .then(res => dispatch({
+      type: INFLUXDB_LIST_DATABASE,
+      id,
+      databases: res.body,
+    }));
+}

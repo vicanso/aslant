@@ -6,6 +6,7 @@ const influx = localRequire('helpers/influx');
 const url = require('url');
 const checker = require('koa-query-checker');
 const noCacheQuery = checker('cache=false');
+const utils = localRequire('helpers/utils');
 
 exports.noQuery = () => (ctx, next) => {
   if (_.isEmpty(ctx.query)) {
@@ -52,7 +53,7 @@ exports.version = (v, _t) => {
 };
 
 exports.cacheMaxAge = (maxAge) => (ctx, next) => next().then(() => {
-  ctx.set('Cache-Control', `public, max-age=${maxAge}`);
+  utils.setCache(ctx, maxAge);
 });
 
 

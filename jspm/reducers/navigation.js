@@ -12,6 +12,9 @@ const initState = {
 export default function navigation(state = initState, action) {
   switch (action.type) {
     case LOCATION: {
+      if (state.location === action.path) {
+        return state;
+      }
       const list = state.history.slice(0);
       list.push(state.location);
       history.pushState(null, '', action.path);

@@ -42,7 +42,9 @@ module.exports = (port) => {
     app.use(mount(
       staticOptions.urlPrefix,
       /* eslint global-require:0 */
-      require('koa-stylus-parser')(staticOptions.path)
+      require('koa-stylus-parser')(staticOptions.path, {
+        'include css': true,
+      })
     ));
   }
   const denyQuerystring = config.env !== 'development';

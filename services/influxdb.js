@@ -3,6 +3,7 @@ const _ = require('lodash');
 const Models = localRequire('models');
 const errors = localRequire('helpers/errors');
 const uuid = require('uuid');
+const Influx = require('influxdb-nodejs');
 
 const isExists = (name) => {
   const InfluxdbServer = Models.get('Influxdb-server');
@@ -12,6 +13,19 @@ const isExists = (name) => {
     }
     return true;
   });
+};
+
+const getInfluxdbUrl = (server, db = '_internal') => {
+  let urlStr = '';
+  if (server.ssl) {
+    urlStr += 'https://';
+  } else {
+    urlStr += 'http://';
+  }
+  if (server.user && server.password) {
+    urlStr += `${server.user}:${server.password}@`;
+  }
+  return urlStr + `${server.host}:${server.port}/${db}`;
 };
 
 exports.addServer = (data) => {
@@ -61,5 +75,20 @@ exports.removeServer = (conditions, token) => {
       throw errors.get('update server info fail, may be token is expired');
     }
     return doc.toJSON();
+  });
+};
+
+
+exports.listDatabases = (id) => {
+  const InfluxdbServer = Models.get('Influxdb-server');
+  return InfluxdbServer.findById(id).then(doc => {
+    if (!doc) {
+      throw errors.get('catn\'t get the influxdb server info', 404);
+    }
+    const url = getInfluxdbUrl(doc.toJSON(), '_internal');
+    const client = new Influx(url);
+    return client.showDatabases();
+  }).then(data => {
+    return _.flatten(_.get(data, 'results[0].series[0].values'));
   });
 };

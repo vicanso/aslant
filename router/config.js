@@ -1,7 +1,7 @@
 'use strict';
 module.exports = [
   // system start
-  '[GET] [/sys/version] [m.noQuery & c.system.version]',
+  '[GET] [/sys/version] [m.noQuery & m.cache-600 & c.system.version]',
   '[POST] [/sys/pause] [m.auth.admin & c.system.pause]',
   '[POST] [/sys/resume] [m.auth.admin & c.system.resume]',
   '[GET] [/sys/stats] [m.noQuery & c.system.stats]',
@@ -23,7 +23,8 @@ module.exports = [
 
   // influxdb
   '[POST] [/influxdb/servers/add] [m.session.login & c.influxdb.addServer]',
-  '[GET] [/influxdb/servers/list] [m.session.login & c.influxdb.listServer]',
+  '[GET] [/influxdb/servers] [m.session.login & c.influxdb.listServer]',
   '[PUT] [/influxdb/servers/:id] [m.session.login & m.validateToken & c.influxdb.editServer]',
   '[DELETE] [/influxdb/servers/:id] [m.session.login & m.validateToken & c.influxdb.removeServer]',
+  '[GET] [/influxdb/:id/databases] [m.cache-60 & c.influxdb.listDatabase]',
 ];

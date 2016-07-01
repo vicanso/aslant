@@ -18,7 +18,6 @@ function getVersion() {
 }
 
 exports.version = (ctx) => getVersion().then(data => {
-  ctx.set('Cache-Control', 'public, max-age=600');
   /* eslint no-param-reassign:0 */
   ctx.body = data;
 });

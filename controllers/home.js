@@ -1,4 +1,5 @@
 'use strict';
+const utils = localRequire('helpers/utils');
 module.exports = (ctx) => {
-  ctx.set('Cache-Control', 'public, max-age=600');
+  utils.setCache(ctx, 600);
 };

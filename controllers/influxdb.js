@@ -44,8 +44,6 @@ exports.listServer = (ctx) => {
 };
 
 
-// { $or: [ { quantity: { $lt: 20 } }, { price: 10 } ] }
-
 exports.editServer = (ctx) => {
   const conditions = {
     owner: _.get(ctx, 'session.user.account'),
@@ -66,5 +64,12 @@ exports.removeServer = (ctx) => {
   return influxdbService.removeServer(conditions, ctx.get('X-Token')).then(() => {
     /* eslint no-param-reassign:0 */
     ctx.body = null;
+  });
+};
+
+exports.listDatabase = (ctx) => {
+  return influxdbService.listDatabases(ctx.params.id).then(data => {
+    /* eslint no-param-reassign:0 */
+    ctx.body = data;
   });
 };

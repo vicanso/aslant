@@ -61,9 +61,10 @@ class App extends Component {
     />
   }
   renderVisualizationEditor() {
-    const { dispatch } = this.props;
+    const { dispatch, influxdbServer } = this.props;
     return <InfluxdbVisualizationEditor
       dispatch={dispatch}
+      influxdbServer={influxdbServer}
     />
   }
   render() {
@@ -74,7 +75,9 @@ class App extends Component {
         user={user}
         influxdbServer={influxdbServer}
       />
-      <MainNav />
+      <MainNav
+        dispatch={dispatch}
+      />
       <Router {...navigation}>
         <Route path={urls.REGISTER} component={this.renderRegister.bind(this)} />
         <Route path={urls.LOGIN} component={this.renderLogin.bind(this)} />
@@ -82,6 +85,7 @@ class App extends Component {
         <Route path={urls.SHOW_SERVERS} component={this.renderServerList.bind(this)} />
         <Route path={urls.EDIT_SERVER + '/:id'} component={this.renderEditServer.bind(this)} />
         <Route path={urls.SHOW_VISUALIZATIONS} component={this.renderVisualizations.bind(this)} />
+        <Route path={urls.EDIT_VISUALIZATIONS} component={this.renderVisualizationEditor.bind(this)} />
       </Router>
     </div>
   }

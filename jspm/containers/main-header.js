@@ -71,7 +71,6 @@ class MainHeader extends Component {
   renderUserInfo() {
     const { status, message } = this.state;
     const { user, dispatch, influxdbServer } = this.props;
-    const hasServer = !!_.get(influxdbServer, 'list.length', 0);
     if (status === 'error') {
       return (
         <li>
@@ -94,13 +93,10 @@ class MainHeader extends Component {
       return (
         <li>
           <span>{user.account}</span>
-          {
-            hasServer && 
-            <a href='#' onClick={e => this.showServers(e)}>
-              <i className="fa fa-server" aria-hidden="true"></i>
-              influxdbs
-            </a>
-          }
+          <a href='#' onClick={e => this.showServers(e)}>
+            <i className="fa fa-server" aria-hidden="true"></i>
+            influxdbs
+          </a>
           <a href='#' onClick={e => this.showVisualizations(e)}>
             <i className="fa fa-bar-chart" aria-hidden="true"></i>
               visualizations
