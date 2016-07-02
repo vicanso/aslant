@@ -6,6 +6,7 @@ import {
   INFLUXDB_EDIT_SERVER,
   INFLUXDB_REMOVE_SERVER,
   INFLUXDB_LIST_DATABASE,
+  INFLUXDB_LIST_RP,
 } from '../constants/action-types';
 
 export function addServer(data) {
@@ -55,3 +56,14 @@ export function listDatabase(id) {
       databases: res.body,
     }));
 }
+
+export function listRP(id, db) {
+  return dispatch => http.get(`/influxdb/${id}/${db}/rps`)
+    .then(res => dispatch({
+      type: INFLUXDB_LIST_RP,
+      id,
+      db,
+      rps: res.body,
+    }));
+}
+

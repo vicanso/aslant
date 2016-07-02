@@ -73,3 +73,11 @@ exports.listDatabase = (ctx) => {
     ctx.body = data;
   });
 };
+
+exports.listRP = (ctx) => {
+  const { id, db } = ctx.params;
+  return influxdbService.listRP(id, db).then(data => {
+    /* eslint no-param-reassign:0 */
+    ctx.body = data;
+  });
+};

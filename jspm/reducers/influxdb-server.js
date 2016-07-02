@@ -5,12 +5,14 @@ import {
   INFLUXDB_EDIT_SERVER,
   INFLUXDB_REMOVE_SERVER,
   INFLUXDB_LIST_DATABASE,
+  INFLUXDB_LIST_RP,
 } from '../constants/action-types';
 import * as _ from 'lodash';
 
 const initStates = {
   list: [],
   databases: {},
+  rps: {},
 };
 
 export default function influxdbServer(state = initStates, action) {
@@ -52,6 +54,12 @@ export default function influxdbServer(state = initStates, action) {
       databases[action.id] = action.databases.slice(0);
       return Object.assign({}, state, {
         databases,
+      });
+    case INFLUXDB_LIST_RP:
+      const rps = Object.assign({}, state.rps);
+      rps[action.id + action.db] = action.rps.slice(0);
+      return Object.assign({}, state, {
+        rps,
       });
     default:
       return state;

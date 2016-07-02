@@ -1,16 +1,25 @@
 @import './constant'
 .influxdbVisualizationEditor
   margin 10px 0 0 $NAV_WIDTH + 10
-  line-height 24px
-  $showServerSelectorWidth = 80px
+  $showServerSelectorWidth = 50px
+  position relative
   .pure-button
     background-color #f0f0f0
     border 1px solid $GRAY_BORDER_COLOR
     border-radius 3px
+  
+  .influxdbSelector
+    width 150px
   .showServerSelector
     width $showServerSelectorWidth
   .influxQl
     margin-left $showServerSelectorWidth + 10
-  .influxdbServerSelector
-    width 150px
+    margin-right 10px
+  .selectorContainer
+    position absolute
+    border 1px solid $GRAY_BORDER_COLOR
+    border-radius 3px
+    padding 0 10px
+    .influxdbSelector
+      margin-bottom 10px
     

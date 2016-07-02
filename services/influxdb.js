@@ -28,6 +28,23 @@ const getInfluxdbUrl = (server, db = '_internal') => {
   return urlStr + `${server.host}:${server.port}/${db}`;
 };
 
+const getServerInfoById = (id) => {
+  const InfluxdbServer = Models.get('Influxdb-server');
+  return InfluxdbServer.findById(id).then(doc => {
+    if (!doc) {
+      throw errors.get('catn\'t get the influxdb server info', 404);
+    }
+    return doc.toJSON();
+  });
+};
+
+const getInfluxClient = (id, db) => {
+  return getServerInfoById(id).then(server => {
+    const url = getInfluxdbUrl(server, db);
+    return new Influx(url);
+  });
+};
+
 exports.addServer = (data) => {
   const InfluxdbServer = Models.get('Influxdb-server');
   return isExists(data.name).then(exists => {
@@ -78,17 +95,18 @@ exports.removeServer = (conditions, token) => {
   });
 };
 
-
 exports.listDatabases = (id) => {
-  const InfluxdbServer = Models.get('Influxdb-server');
-  return InfluxdbServer.findById(id).then(doc => {
-    if (!doc) {
-      throw errors.get('catn\'t get the influxdb server info', 404);
-    }
-    const url = getInfluxdbUrl(doc.toJSON(), '_internal');
-    const client = new Influx(url);
+  return getInfluxClient(id, '_internal').then(client => {
     return client.showDatabases();
   }).then(data => {
     return _.flatten(_.get(data, 'results[0].series[0].values'));
+  });
+};
+
+exports.listRP = (id, db) => {
+  return getInfluxClient(id, db).then(client => {
+    return client.showRetentionPolicies();
+  }).then(data => {
+    return _.map(_.get(data, 'results[0].series[0].values'), arr => arr[0]);
   });
 };

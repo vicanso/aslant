@@ -27,4 +27,5 @@ module.exports = [
   '[PUT] [/influxdb/servers/:id] [m.session.login & m.validateToken & c.influxdb.editServer]',
   '[DELETE] [/influxdb/servers/:id] [m.session.login & m.validateToken & c.influxdb.removeServer]',
   '[GET] [/influxdb/:id/databases] [m.cache-60 & c.influxdb.listDatabase]',
+  '[GET] [/influxdb/:id/:db/rps] [m.cache-60 & c.influxdb.listRP]',
 ];
