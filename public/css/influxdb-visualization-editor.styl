@@ -7,19 +7,25 @@
     background-color #f0f0f0
     border 1px solid $GRAY_BORDER_COLOR
     border-radius 3px
-  
-  .influxdbSelector
-    width 150px
   .showServerSelector
     width $showServerSelectorWidth
   .influxQl
     margin-left $showServerSelectorWidth + 10
     margin-right 10px
-  .selectorContainer
+  .basicSelector
     position absolute
     border 1px solid $GRAY_BORDER_COLOR
     border-radius 3px
     padding 0 10px
+    z-index 2
+    width 150px
+    background-color $BG_COLOR
     .influxdbSelector
       margin-bottom 10px
-    
+  .filterSelector
+    margin-right 10px
+    border 1px solid $GRAY_BORDER_COLOR
+    padding 10px
+    border-radius 3px
+    .influxdbSelector
+      margin-bottom 10px

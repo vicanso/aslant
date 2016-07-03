@@ -110,3 +110,58 @@ exports.listRP = (id, db) => {
     return _.map(_.get(data, 'results[0].series[0].values'), arr => arr[0]);
   });
 };
+
+exports.listMeasurement = (id, db) => {
+return getInfluxClient(id, db).then(client => {
+    return client.showMeasurements();
+  }).then(data => {
+    return _.map(_.get(data, 'results[0].series[0].values'), arr => arr[0]);
+  });
+};
+
+exports.listTagInfo = (id, db, measurement) => {
+  return getInfluxClient(id, db).then(client => {
+    return client.showSeries(measurement);
+  }).then(data => {
+    const result = {};
+    _.forEach(_.get(data, 'results[0].series[0].values'), arr => {
+      const list = arr[0].split(',').slice(1);
+      _.forEach(list, item => {
+        const tmpArr = item.split('=');
+        const tag = tmpArr[0];
+        const value = tmpArr[1];
+        if (!result[tag]) {
+          result[tag] = [];
+        }
+        if (!~_.indexOf(result[tag], value)) {
+          result[tag].push(value);
+        }
+      });
+    });
+    const tagInfos = [];
+    _.forEach(result, (v, k) => {
+      tagInfos.push({
+        tag: k,
+        value: v,
+      });
+    });
+    return tagInfos;
+  });
+};
+
+exports.listTagKey = (id, db, measurement) => {
+  return getInfluxClient(id, db).then(client => {
+    return client.showTagKeys(measurement);
+  }).then(data => {
+    return _.map(_.get(data, 'results[0].series[0].values'), arr => arr[0]);
+  });
+};
+
+exports.listSeries = (id, db, measurement) => {
+  return getInfluxClient(id, db).then(client => {
+    return client.showSeries(measurement);
+  }).then(data => {
+    return _.map(_.get(data, 'results[0].series[0].values'), arr => arr[0]);
+  });
+};
+

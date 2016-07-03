@@ -7,6 +7,10 @@ import {
   INFLUXDB_REMOVE_SERVER,
   INFLUXDB_LIST_DATABASE,
   INFLUXDB_LIST_RP,
+  INFLUXDB_LIST_MEASUREMENT,
+  INFLUXDB_LIST_TAG_INFO,
+  INFLUXDB_LIST_TAG_KEY,
+  INFLUXDB_LIST_SERIES,
 } from '../constants/action-types';
 
 export function addServer(data) {
@@ -53,7 +57,7 @@ export function listDatabase(id) {
     .then(res => dispatch({
       type: INFLUXDB_LIST_DATABASE,
       id,
-      databases: res.body,
+      databases: res.body.items || [],
     }));
 }
 
@@ -63,7 +67,49 @@ export function listRP(id, db) {
       type: INFLUXDB_LIST_RP,
       id,
       db,
-      rps: res.body,
+      rps: res.body.items || [],
     }));
 }
 
+export function listMeasurement(id, db) {
+  return dispatch => http.get(`/influxdb/${id}/${db}/measurements`)
+    .then(res => dispatch({
+      type: INFLUXDB_LIST_MEASUREMENT,
+      id,
+      db,
+      measurements: res.body.items || [],
+    }));
+}
+
+export function listTagInfos(id, db, measurement) {
+  return dispatch => http.get(`/influxdb/${id}/${db}/${measurement}/tag-infos`)
+    .then(res => dispatch({
+      type: INFLUXDB_LIST_TAG_INFO,
+      id,
+      db,
+      measurement,
+      tagInfos: res.body.items || [],
+    }));
+}
+
+export function listTagKey(id, db, measurement) {
+  return dispatch => http.get(`/influxdb/${id}/${db}/${measurement}/tag-keys`)
+    .then(res => dispatch({
+      type: INFLUXDB_LIST_TAG_KEY,
+      id,
+      db,
+      measurement,
+      tagKeys: res.body.items || [],
+    }));
+}
+
+export function listSeries(id, db, measurement) {
+  return dispatch => http.get(`/influxdb/${id}/${db}/${measurement}/series`)
+    .then(res => dispatch({
+      type: INFLUXDB_LIST_SERIES,
+      id,
+      db,
+      measurement,
+      series: res.body.items || [],
+    }));
+}

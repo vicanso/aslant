@@ -28,4 +28,8 @@ module.exports = [
   '[DELETE] [/influxdb/servers/:id] [m.session.login & m.validateToken & c.influxdb.removeServer]',
   '[GET] [/influxdb/:id/databases] [m.cache-60 & c.influxdb.listDatabase]',
   '[GET] [/influxdb/:id/:db/rps] [m.cache-60 & c.influxdb.listRP]',
+  '[GET] [/influxdb/:id/:db/measurements] [m.cache-60 & c.influxdb.listMeasurement]',
+  '[GET] [/influxdb/:id/:db/:measurement/tag-infos] [m.cache-60 & c.influxdb.listTagInfo]',
+  '[GET] [/influxdb/:id/:db/:measurement/tag-keys] [m.cache-60 & c.influxdb.listTagKey]',
+  '[GET] [/influxdb/:id/:db/:measurement/series] [m.cache-60 & c.influxdb.listSeries]'
 ];

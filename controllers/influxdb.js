@@ -70,7 +70,9 @@ exports.removeServer = (ctx) => {
 exports.listDatabase = (ctx) => {
   return influxdbService.listDatabases(ctx.params.id).then(data => {
     /* eslint no-param-reassign:0 */
-    ctx.body = data;
+    ctx.body = {
+      items: data,
+    };
   });
 };
 
@@ -78,6 +80,48 @@ exports.listRP = (ctx) => {
   const { id, db } = ctx.params;
   return influxdbService.listRP(id, db).then(data => {
     /* eslint no-param-reassign:0 */
-    ctx.body = data;
+    ctx.body = {
+      items: data,
+    };
+  });
+};
+
+exports.listMeasurement = (ctx) => {
+  const { id, db } = ctx.params;
+  return influxdbService.listMeasurement(id, db).then(data => {
+    /* eslint no-param-reassign:0 */
+    ctx.body = {
+      items: data,
+    };
+  });
+};
+
+exports.listTagInfo = (ctx) => {
+  const { id, db, measurement } = ctx.params;
+  return influxdbService.listTagInfo(id, db, measurement).then(data => {
+    /* eslint no-param-reassign:0 */
+    ctx.body = {
+      items: data,
+    };
+  });
+};
+
+exports.listTagKey = (ctx) => {
+  const { id, db, measurement } = ctx.params;
+  return influxdbService.listTagKey(id, db, measurement).then(data => {
+    /* eslint no-param-reassign:0 */
+    ctx.body = {
+      items: data,
+    };
+  });
+};
+
+exports.listSeries = (ctx) => {
+  const { id, db, measurement } = ctx.params;
+  return influxdbService.listSeries(id, db, measurement).then(data => {
+    /* eslint no-param-reassign:0 */
+    ctx.body = {
+      items: data,
+    };
   });
 };
