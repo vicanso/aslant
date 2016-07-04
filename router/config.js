@@ -31,5 +31,6 @@ module.exports = [
   '[GET] [/influxdb/:id/:db/measurements] [m.cache-60 & c.influxdb.listMeasurement]',
   '[GET] [/influxdb/:id/:db/:measurement/tag-infos] [m.cache-60 & c.influxdb.listTagInfo]',
   '[GET] [/influxdb/:id/:db/:measurement/tag-keys] [m.cache-60 & c.influxdb.listTagKey]',
-  '[GET] [/influxdb/:id/:db/:measurement/series] [m.cache-60 & c.influxdb.listSeries]'
+  '[GET] [/influxdb/:id/:db/:measurement/series] [m.cache-60 & c.influxdb.listSeries]',
+  '[GET] [/influxdb/:id/:db/points] [c.influxdb.listPoint]',
 ];

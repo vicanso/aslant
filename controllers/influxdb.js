@@ -125,3 +125,16 @@ exports.listSeries = (ctx) => {
     };
   });
 };
+
+exports.listPoint = (ctx) => {
+  const { id , db } = ctx.params;
+  const { ql } = ctx.query;
+  return influxdbService.listPoint(id, db, ql).then(data => {
+    /* eslint no-param-reassign:0 */
+    ctx.body = {
+      items: data,
+    };
+  });
+  console.dir(ql);
+};
+

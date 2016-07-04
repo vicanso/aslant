@@ -142,7 +142,7 @@ exports.listTagInfo = (id, db, measurement) => {
     _.forEach(result, (v, k) => {
       tagInfos.push({
         tag: k,
-        value: v,
+        value: v.sort(),
       });
     });
     return tagInfos;
@@ -165,3 +165,10 @@ exports.listSeries = (id, db, measurement) => {
   });
 };
 
+exports.listPoint = (id, db, ql) => {
+  return getInfluxClient(id, db).then(client => {
+    return client.queryRaw(ql, db);
+  }).then(data => {
+    return data;
+  });
+};

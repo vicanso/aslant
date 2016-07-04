@@ -11,7 +11,7 @@
     width $showServerSelectorWidth
   .influxQl
     margin-left $showServerSelectorWidth + 10
-    margin-right 10px
+    margin-right 100px
   .basicSelector
     position absolute
     border 1px solid $GRAY_BORDER_COLOR
@@ -29,3 +29,12 @@
     border-radius 3px
     .influxdbSelector
       margin-bottom 10px
+  .tagSelector
+    $itemWidth = 30px
+    .equal, .toggle
+      width $itemWidth
+      text-align center
+      line-height 36px
+      display block
+    .influxdbSelector
+      margin-right $itemWidth
