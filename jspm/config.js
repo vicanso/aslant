@@ -379,7 +379,7 @@ System.config({
     "classnames": "npm:classnames@2.2.5",
     "core-js": "npm:core-js@1.2.6",
     "debug": "npm:debug@2.2.0",
-    "influx-ql": "npm:influx-ql@0.1.2",
+    "influx-ql": "npm:influx-ql@0.1.3",
     "joi": "github:capaj/joi-browser@5.2.0",
     "lodash": "npm:lodash@4.13.1",
     "react": "npm:react@15.1.0",
@@ -704,7 +704,7 @@ System.config({
       "string_decoder": "github:jspm/nodelibs-string_decoder@0.1.0",
       "systemjs-json": "github:systemjs/plugin-json@0.1.2"
     },
-    "npm:influx-ql@0.1.2": {
+    "npm:influx-ql@0.1.3": {
       "util": "github:jspm/nodelibs-util@0.1.0"
     },
     "npm:inherits@2.0.1": {

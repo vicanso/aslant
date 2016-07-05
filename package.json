@@ -39,7 +39,7 @@
     "bytes": "^2.4.0",
     "debug": "^2.2.0",
     "http-errors": "^1.5.0",
-    "influxdb-nodejs": "^1.0.5",
+    "influxdb-nodejs": "^1.0.8",
     "joi": "^9.0.0-5",
     "jtfileimporter": "^0.4.2",
     "koa": "^2.0.0",
@@ -98,7 +98,7 @@
     "dependencies": {
       "classnames": "npm:classnames@^2.2.5",
       "debug": "npm:debug@^2.2.0",
-      "influx-ql": "npm:influx-ql@^0.1.2",
+      "influx-ql": "npm:influx-ql@^0.1.3",
       "joi": "github:capaj/joi-browser@^5.2.0",
       "lodash": "npm:lodash@^4.12.0",
       "react": "npm:react@^15.1.0",

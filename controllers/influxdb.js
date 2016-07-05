@@ -2,6 +2,7 @@
 const Joi = require('joi');
 const _ = require('lodash');
 const influxdbService = localRequire('services/influxdb');
+const errors = localRequire('helpers/errors');
 
 const validateServerData = data => Joi.validateThrow(data, {
   name: Joi.string().trim().required(),
@@ -129,12 +130,14 @@ exports.listSeries = (ctx) => {
 exports.listPoint = (ctx) => {
   const { id , db } = ctx.params;
   const { ql } = ctx.query;
+  if (!ql) {
+    throw errors.get('ql can\'t be empty', 400);
+  }
   return influxdbService.listPoint(id, db, ql).then(data => {
     /* eslint no-param-reassign:0 */
     ctx.body = {
-      items: data,
+      items: _.get(data, 'results[0].series'),
     };
   });
-  console.dir(ql);
 };
 

@@ -113,3 +113,9 @@ export function listSeries(id, db, measurement) {
       series: res.body.items || [],
     }));
 }
+
+export function getPoints(id, db, ql) {
+  // http://127.0.0.1:5018/influxdb/57728538bf6f17c336129942/mydb/points?ql=select%20*%20from%20http%20where%20(method%20%3D%20%27get%27%20or%20method%20%3D%20%27delete%27)
+  return http.get(`/influxdb/${id}/${db}/points?ql=${encodeURIComponent(ql)}`)
+    .then(res => res.body.items || []);
+}

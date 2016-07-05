@@ -3,10 +3,11 @@
 import React, { PropTypes, Component } from 'react';
 import * as _ from 'lodash';
 import QL from 'influx-ql';
+import classnames from 'classnames';
 import DatePicker from 'react-datepicker';
 import Select from 'react-select';
 import * as influxdbAction from '../actions/influxdb';
-
+import SeriesTable from './series-table';
 
 class ConditionSelector extends Component {
   constructor(props) {
@@ -106,6 +107,7 @@ class InfluxdbVisualizationEditor extends Component {
       rp: '',
       measurement: '',
       conditions: [],
+      doingQuery: false,
     };
   }
   renderServerSelector() {
@@ -209,10 +211,32 @@ class InfluxdbVisualizationEditor extends Component {
     }
     const ql = new QL();
     ql.measurement = state.measurement;
-    _.forEach(state.conditions, item => ql.condition(item.tag, item.value));
+    const conditions = {};
+    _.forEach(state.conditions, item => {
+      const tag = item.tag;
+      if (conditions[tag]) {
+        if (!_.isArray(conditions[tag])) {
+          conditions[tag] = [conditions[tag]];
+        }
+        conditions[tag].push(item.value);
+      } else {
+        conditions[tag] = item.value;
+      }
+    });
+    ql.condition(conditions);
     return ql.toSelect();
   }
   renderQueryBar() {
+    const { doingQuery } = this.state;
+    const queryClass = {
+      fa: true,
+      mright5: true,
+    };
+    if (doingQuery) {
+      queryClass['fa-spinner'] = true;
+    } else {
+      queryClass['fa-search'] = true;
+    }
     return <div
       style={{
         margin: '10px 0',
@@ -230,7 +254,7 @@ class InfluxdbVisualizationEditor extends Component {
         href="#"
         className="pure-button pullRight mrgiht10"
       >
-        <i className="fa fa-search mright5" aria-hidden="true"></i>
+        <i className={classnames(queryClass)} aria-hidden="true"></i>
         Query
       </a>
       <div 
@@ -301,9 +325,40 @@ class InfluxdbVisualizationEditor extends Component {
     e.preventDefault();
     const state = this.state;
     const ql = this.getInfluxQL();
+    if (!ql || state.doingQuery) {
+      return;
+    }
     const data = _.pick(state, ['measurement', 'conditions']);
     data.ql = ql;
-    console.dir(data);
+    this.setState({
+      doingQuery: true,
+    });
+    const complete = () => {
+      this.setState({
+        doingQuery: false,
+      });
+    };
+    influxdbAction.getPoints(state.server, state.db, ql).then(series => {
+      this.setState({
+        series,
+      });
+      complete();
+    }).catch(err => {
+      console.error(err);
+      complete();
+    });
+  }
+  renderSeriesTable() {
+    const { series } = this.state;
+    if (!series || !series.length) {
+      return null;
+    }
+    const arr = series.map(item => {
+      return <SeriesTable
+        data={item}
+      />
+    });
+    return arr;
   }
   render() {
     return <div className="influxdbVisualizationEditor">
@@ -314,6 +369,7 @@ class InfluxdbVisualizationEditor extends Component {
           {this.renderFilterSelector()}
         </div>
       </div>
+      {this.renderSeriesTable()}
     </div>
   }
 }
