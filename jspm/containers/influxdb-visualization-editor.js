@@ -5,110 +5,42 @@ import * as _ from 'lodash';
 import QL from 'influx-ql';
 import classnames from 'classnames';
 import DatePicker from 'react-datepicker';
+import TimePicker from 'rc-time-picker';
+import moment from 'moment';
 import Select from 'react-select';
+import * as util from '../helpers/util';
 import * as influxdbAction from '../actions/influxdb';
 import SeriesTable from './series-table';
-
-class ConditionSelector extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      tag: _.get(props, 'defaultCondition.tag', ''),
-      value: _.get(props, 'defaultCondition.value', ''),
-    };
-  }
-  renderSelector(opts) {
-    const { onSelect, index } = this.props;
-    const { options, key, placeholder } = opts;
-    return <Select
-      className="influxdbSelector"
-      options={options}
-      value={this.state[key]}
-      placeholder={placeholder}
-      onChange={item => {
-        const value = (item && item.value) || '';
-        const data = {};
-        data[key] = value;
-        this.setState(data);
-        if (key === 'value') {
-          const item = {
-            tag: this.state.tag,
-            value: value,
-          };
-          onSelect(item, index);
-        }
-      }}
-    />
-  }
-  onClickToggle(e, type) {
-    e.preventDefault();
-    const { index } = this.props;
-    const { toggleConditionSelector } = this.props;
-    toggleConditionSelector(type, index);
-  }
-  render() {
-    const state = this.state;
-    const { tagInfos, placeholder, index } = this.props;
-    const type = index === 0 ? 'add' : 'remove';
-    const tagOptions = [];
-    const valueOptions = [];
-    const convert = item => {
-      return {
-        label: item,
-        value: item,
-      };
-    };
-    _.forEach(tagInfos, item => {
-      tagOptions.push(convert(item.tag));
-      if (item.tag === state.tag) {
-        _.forEach(item.value, v => {
-          valueOptions.push(convert(v));
-        });
-      }
-    });
-    return (
-      <div className="pure-g">
-        <div className="pure-u-1-2 tagSelector">
-          <span className="pullRight equal">=</span>
-          {
-            this.renderSelector({
-              options: tagOptions,
-              key: 'tag',
-              placeholder: 'Select a tag key',
-            })
-          }
-        </div>
-        <div className="pure-u-1-2 tagSelector">
-          <a className="pullRight toggle" href="#" onClick={e => this.onClickToggle(e, type)}>
-            {index === 0 && <i className="fa fa-plus-square-o" aria-hidden="true"></i>}
-            {index !== 0 && <i className="fa fa-minus-square-o" aria-hidden="true"></i>}
-          </a>
-          {
-            this.renderSelector({
-              options: valueOptions,
-              key: 'value',
-              placeholder: 'Select a tag value',
-            })
-          }
-        </div>
-      </div>
-    );
-  }
-}
+import DateTimePicker from '../components/date-time-picker';
+import TagSelector from '../components/tag-selector';
+import FieldSelector from '../components/field-selector';
 
 class InfluxdbVisualizationEditor extends Component {
   constructor(props) {
     super(props);
     this.state = {
       conditionSelectorCount: 1,
+      extractSelectorCount: 1,
       showBasicSelector: false,
       server: '',
       db: '',
       rp: '',
       measurement: '',
       conditions: [],
+      extracts: [],
       doingQuery: false,
+      date: {
+        start: null,
+        end: null,
+      }
     };
+  }
+  setDate(date, type) {
+    const data = this.state.date;
+    data[type] = date;
+    this.setState({
+      date: data,
+    });
   }
   renderServerSelector() {
     const { dispatch } = this.props;
@@ -151,14 +83,17 @@ class InfluxdbVisualizationEditor extends Component {
       pickKey: `props.influxdbServer.measurements[${server + db}]`,
       key: 'measurement',
       placeholder: 'Select a measurement',
-      onChange: item => dispatch(influxdbAction.listTagInfos(server, db, item.value)),
+      onChange: item => {
+        dispatch(influxdbAction.listTagInfos(server, db, item.value));
+        dispatch(influxdbAction.listField(server, db, item.value));
+      },
     });
   }
   renderTagKeySelector(index) {
     const { server, db, measurement, conditions } = this.state;
     const { dispatch } = this.props;
     const key = `props.influxdbServer.tagInfos[${server + db + measurement}]`;
-    return <ConditionSelector
+    return <TagSelector
       dispatch={dispatch}
       tagInfos={_.get(this, key)}
       defaultCondition={conditions[index]}
@@ -172,6 +107,14 @@ class InfluxdbVisualizationEditor extends Component {
       index={index}
       toggleConditionSelector={this.toggleConditionSelector.bind(this)}
       />
+  }
+  renderFieldKeySelector(index) {
+    const { server, db, measurement, extracts } = this.state;
+    const key = `props.influxdbServer.fields[${server + db + measurement}]`;
+    return <FieldSelector
+      fields={_.get(this, key)}
+      index={index}
+    />
   }
   renderSelecotr(opts) {
     const { pickKey, key } = opts;
@@ -221,6 +164,12 @@ class InfluxdbVisualizationEditor extends Component {
         conditions[tag].push(item.value);
       } else {
         conditions[tag] = item.value;
+      }
+    });
+    _.forEach(['start', 'end'], key => {
+      const date = state.date[key];
+      if (date) {
+        ql[key] = moment(date, 'YYYY-MM-DD HH:mm:ss').toISOString();
       }
     });
     ql.condition(conditions);
@@ -296,13 +245,35 @@ class InfluxdbVisualizationEditor extends Component {
     for (let i = 0; i < conditionSelectorCount; i++) {
       arr.push(this.renderTagKeySelector(i));
     }
-    return (
-      <div className="filterSelector">
-        <label>Filter By</label>
-        {this.renderMeasurementSelector()}
-        {arr}
-      </div>
-    );
+    return <div className="filterSelector">
+      <label>Filter By</label>
+      {this.renderMeasurementSelector()}
+      {arr}
+    </div>
+  }
+  renderDatePickerSelector() {
+    return <div className="datePickerSelector">
+      <label>Date and Time Picker</label>
+      <DateTimePicker
+        placeholder='select a date for start condition'
+        onSelect={value => this.setDate(value, 'start')}
+      />
+      <DateTimePicker
+        placeholder='select a date for end condition'
+        onSelect={value => this.setDate(value, 'end')}
+      />
+    </div>
+  }
+  renderExtractSelecotr() {
+    const { extractSelectorCount } = this.state;
+    const arr = [];
+    for (let i = 0; i < extractSelectorCount; i++) {
+      arr.push(this.renderFieldKeySelector(i));
+    }
+    return <div className="extractSelector">
+      <label>Extract By</label>
+      {arr}
+    </div>
   }
   toggleConditionSelector(type, index) {
     const { conditions, conditionSelectorCount } = this.state;
@@ -351,11 +322,11 @@ class InfluxdbVisualizationEditor extends Component {
   renderSeriesTable() {
     const { series } = this.state;
     if (!series || !series.length) {
-      return null;
+      return <p>无统计数据</p>
     }
     const arr = series.map(item => {
       return <SeriesTable
-        data={item}
+        list={util.convertSeriesData(item)}
       />
     });
     return arr;
@@ -368,8 +339,16 @@ class InfluxdbVisualizationEditor extends Component {
         <div className="pure-u-1-3">
           {this.renderFilterSelector()}
         </div>
+        <div className="pure-u-1-3">
+          {this.renderExtractSelecotr()}
+        </div>
+        <div className="pure-u-1-3">
+          {this.renderDatePickerSelector()}
+        </div>
       </div>
-      {this.renderSeriesTable()}
+      <div className="mtop10">
+        {this.renderSeriesTable()}
+      </div>
     </div>
   }
 }

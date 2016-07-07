@@ -107,19 +107,9 @@ exports.listTagInfo = (ctx) => {
   });
 };
 
-exports.listTagKey = (ctx) => {
+exports.listField = (ctx) => {
   const { id, db, measurement } = ctx.params;
-  return influxdbService.listTagKey(id, db, measurement).then(data => {
-    /* eslint no-param-reassign:0 */
-    ctx.body = {
-      items: data,
-    };
-  });
-};
-
-exports.listSeries = (ctx) => {
-  const { id, db, measurement } = ctx.params;
-  return influxdbService.listSeries(id, db, measurement).then(data => {
+  return influxdbService.listField(id, db, measurement).then(data => {
     /* eslint no-param-reassign:0 */
     ctx.body = {
       items: data,
@@ -140,4 +130,3 @@ exports.listPoint = (ctx) => {
     };
   });
 };
-

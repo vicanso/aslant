@@ -48,6 +48,8 @@ a
   margin-right 10px
 .mtop10
   margin-top 10px
+.invisible
+  visibility hidden
   
 .maskContainer
   background-color rgba(0, 0, 0, 0.8)
@@ -101,3 +103,21 @@ a
       width 200px
     .submit
       width 150px
+
+.dateTimePicker
+  $divideWidth = 25px
+  .react-datepicker__input-container
+    display block
+  .divide
+    float left
+    width $divideWidth
+    text-align center
+    line-height 36px
+    font-size 20px
+  .timePicker
+    display block
+    margin-left $divideWidth
+  input
+    width 100%
+    height auto
+    line-height 23px

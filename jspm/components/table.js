@@ -7,21 +7,51 @@ import classnames from 'classnames';
 class Table extends Component {
   constructor(props) {
     super(props);
-    const list = [];
-    const head = props.data.shift();
-    _.forEach(props.data, arr => list.push(arr.slice(0)));
+    // const list = [];
+    // const head = props.list[0].slice(0);
+    // _.forEach(props.data, arr => list.push(arr.slice(0)));
     this.state = {
-      data: list,
-      head,
+      sortIndex: -1,
+      sortBy: 'desc'
     };
   }
+  onClickHead(index) {
+    const curSortIndex = this.state.sortIndex;
+    const data = {};
+    if (curSortIndex === index) {
+      data.sortBy = this.state.sortBy === 'desc'? 'asc' : 'desc';
+    } else {
+      data.sortIndex = index;
+      data.sortBy = 'desc';
+    }
+    // const arr = _.map(this.state.data, item => item.slice(0));
+    // const result = _.sortBy(arr, item => item[index]);
+    // if (data.sortBy === 'desc') {
+    //   data.data = result.reverse();
+    // } else {
+    //   data.data = result;
+    // }
+    this.setState(data);
+  }
   renderThead() {
-    const { head } = this.state;
+    const head = this.props.list[0].slice(0);
+    const { sortIndex, sortBy } = this.state;
     return <thead><tr>
       <th>#</th>
       {
-        head.map(v => {
-          return <th>{v}</th>
+        head.map((v, i) => {
+          const cls = {
+            fa: true,
+            invisible: true,
+          };
+          if (sortIndex === i) {
+            cls.invisible = false;
+            cls[`fa-sort-${sortBy}`] = true;
+          }
+          return <th onClick={e => this.onClickHead(i)}>
+            {v}
+            <i className={classnames(cls)} aria-hidden="true"></i>
+          </th>
         })
       }
     </tr></thead>
@@ -41,10 +71,16 @@ class Table extends Component {
     </tr>
   }
   renderTbody() {
-    const { data } = this.state;
+    const { sortIndex, sortBy } = this.state;
+    let list = [];
+    _.forEach(this.props.list.slice(1), arr => list.push(arr.slice(0)));
+    list = _.sortBy(list, item => item[sortIndex]);
+    if (sortBy === 'desc') {
+      list = list.reverse();
+    }
     const renderTr = this.renderTr.bind(this);
     return <tbody>
-      {data.map(renderTr)}
+      {list.map(renderTr)}
     </tbody>
   }
   renderTable() {

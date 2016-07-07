@@ -264,8 +264,82 @@ System.config({
       "npm:react-onclickoutside@4.9.0/index.js",
       "npm:moment@2.13.0.js",
       "npm:moment@2.13.0/moment.js",
+      "npm:rc-time-picker@1.1.5.js",
+      "npm:rc-time-picker@1.1.5/lib/index.js",
+      "npm:rc-time-picker@1.1.5/lib/TimePicker.js",
+      "npm:rc-time-picker@1.1.5/lib/util/index.js",
+      "npm:gregorian-calendar-format@4.1.3.js",
+      "npm:gregorian-calendar-format@4.1.3/lib/gregorian-calendar-format.js",
+      "npm:warning@2.1.0.js",
+      "npm:warning@2.1.0/browser.js",
+      "npm:gregorian-calendar-format@4.1.3/lib/locale/en_US.js",
+      "npm:gregorian-calendar@4.1.4.js",
+      "npm:gregorian-calendar@4.1.4/lib/gregorian-calendar.js",
+      "npm:gregorian-calendar@4.1.4/lib/const.js",
+      "npm:gregorian-calendar@4.1.4/lib/locale/en_US.js",
+      "npm:gregorian-calendar@4.1.4/lib/utils.js",
+      "npm:rc-time-picker@1.1.5/lib/mixin/CommonMixin.js",
+      "npm:rc-time-picker@1.1.5/lib/locale/en_US.js",
+      "npm:rc-time-picker@1.1.5/lib/util/placements.js",
+      "npm:rc-time-picker@1.1.5/lib/module/Panel.js",
+      "npm:rc-time-picker@1.1.5/lib/module/Combobox.js",
+      "npm:rc-time-picker@1.1.5/lib/module/Select.js",
+      "npm:rc-time-picker@1.1.5/lib/module/Header.js",
+      "npm:rc-time-picker@1.1.5/lib/util/selection.js",
+      "npm:rc-trigger@1.6.1.js",
+      "npm:rc-trigger@1.6.1/lib/index.js",
+      "npm:rc-trigger@1.6.1/lib/Trigger.js",
+      "npm:rc-trigger@1.6.1/lib/utils.js",
+      "npm:rc-trigger@1.6.1/lib/Popup.js",
+      "npm:rc-trigger@1.6.1/lib/LazyRenderBox.js",
+      "npm:rc-trigger@1.6.1/lib/PopupInner.js",
+      "npm:rc-animate@2.3.0.js",
+      "npm:rc-animate@2.3.0/lib/index.js",
+      "npm:rc-animate@2.3.0/lib/Animate.js",
+      "npm:rc-animate@2.3.0/lib/util.js",
+      "npm:rc-animate@2.3.0/lib/AnimateChild.js",
+      "npm:css-animation@1.2.5.js",
+      "npm:css-animation@1.2.5/lib/index.js",
+      "npm:component-classes@1.2.6.js",
+      "npm:component-classes@1.2.6/index.js",
+      "npm:component-indexof@0.0.3.js",
+      "npm:component-indexof@0.0.3/index.js",
+      "npm:css-animation@1.2.5/lib/Event.js",
+      "npm:rc-animate@2.3.0/lib/ChildrenUtils.js",
+      "npm:rc-align@2.3.1.js",
+      "npm:rc-align@2.3.1/lib/index.js",
+      "npm:rc-align@2.3.1/lib/Align.js",
+      "npm:rc-align@2.3.1/lib/isWindow.js",
+      "npm:rc-util@3.2.1/lib/Dom/addEventListener.js",
+      "npm:add-dom-event-listener@1.0.1.js",
+      "npm:add-dom-event-listener@1.0.1/lib/index.js",
+      "npm:add-dom-event-listener@1.0.1/lib/EventObject.js",
+      "npm:add-dom-event-listener@1.0.1/lib/EventBaseObject.js",
+      "npm:dom-align@1.4.0.js",
+      "npm:dom-align@1.4.0/lib/index.js",
+      "npm:dom-align@1.4.0/lib/getElFuturePos.js",
+      "npm:dom-align@1.4.0/lib/getAlignOffset.js",
+      "npm:dom-align@1.4.0/lib/getRegion.js",
+      "npm:dom-align@1.4.0/lib/utils.js",
+      "npm:dom-align@1.4.0/lib/adjustForViewport.js",
+      "npm:dom-align@1.4.0/lib/getVisibleRectForElement.js",
+      "npm:dom-align@1.4.0/lib/getOffsetParent.js",
+      "npm:rc-util@3.2.1/lib/Dom/contains.js",
+      "npm:rc-util@3.2.1/lib/createChainedFunction.js",
+      "npm:moment@2.14.1.js",
+      "npm:moment@2.14.1/moment.js",
       "npm:lodash@4.13.1.js",
       "npm:lodash@4.13.1/lodash.js",
+      "npm:influx-ql@0.1.4.js",
+      "npm:influx-ql@0.1.4/lib/ql.js",
+      "github:jspm/nodelibs-util@0.1.0.js",
+      "github:jspm/nodelibs-util@0.1.0/index.js",
+      "npm:util@0.10.3.js",
+      "npm:util@0.10.3/util.js",
+      "npm:inherits@2.0.1.js",
+      "npm:inherits@2.0.1/inherits_browser.js",
+      "npm:util@0.10.3/support/isBufferBrowser.js",
+      "npm:influx-ql@0.1.4/lib/internal.js",
       "npm:debug@2.2.0.js",
       "npm:debug@2.2.0/browser.js",
       "npm:debug@2.2.0/debug.js",
@@ -379,9 +453,11 @@ System.config({
     "classnames": "npm:classnames@2.2.5",
     "core-js": "npm:core-js@1.2.6",
     "debug": "npm:debug@2.2.0",
-    "influx-ql": "npm:influx-ql@0.1.3",
+    "influx-ql": "npm:influx-ql@0.1.4",
     "joi": "github:capaj/joi-browser@5.2.0",
     "lodash": "npm:lodash@4.13.1",
+    "moment": "npm:moment@2.14.1",
+    "rc-time-picker": "npm:rc-time-picker@1.1.5",
     "react": "npm:react@15.1.0",
     "react-datepicker": "npm:react-datepicker@0.27.0",
     "react-dom": "npm:react-dom@15.1.0",
@@ -459,6 +535,9 @@ System.config({
     },
     "github:jspm/nodelibs-zlib@0.1.0": {
       "browserify-zlib": "npm:browserify-zlib@0.1.4"
+    },
+    "npm:add-dom-event-listener@1.0.1": {
+      "object-assign": "npm:object-assign@4.1.0"
     },
     "npm:asap@2.0.4": {
       "domain": "github:jspm/nodelibs-domain@0.1.0",
@@ -567,6 +646,9 @@ System.config({
       "stream": "github:jspm/nodelibs-stream@0.1.0",
       "util": "github:jspm/nodelibs-util@0.1.0"
     },
+    "npm:component-classes@1.2.6": {
+      "component-indexof": "npm:component-indexof@0.0.3"
+    },
     "npm:constants-browserify@0.0.1": {
       "systemjs-json": "github:systemjs/plugin-json@0.1.2"
     },
@@ -612,6 +694,9 @@ System.config({
       "pbkdf2": "npm:pbkdf2@3.0.4",
       "public-encrypt": "npm:public-encrypt@4.0.0",
       "randombytes": "npm:randombytes@2.0.3"
+    },
+    "npm:css-animation@1.2.5": {
+      "component-classes": "npm:component-classes@1.2.6"
     },
     "npm:debug@2.2.0": {
       "ms": "npm:ms@0.7.1"
@@ -691,6 +776,10 @@ System.config({
       "string_decoder": "github:jspm/nodelibs-string_decoder@0.1.0",
       "util": "github:jspm/nodelibs-util@0.1.0"
     },
+    "npm:gregorian-calendar-format@4.1.3": {
+      "gregorian-calendar": "npm:gregorian-calendar@4.1.4",
+      "warning": "npm:warning@2.1.0"
+    },
     "npm:hash.js@1.0.3": {
       "inherits": "npm:inherits@2.0.1"
     },
@@ -704,7 +793,7 @@ System.config({
       "string_decoder": "github:jspm/nodelibs-string_decoder@0.1.0",
       "systemjs-json": "github:systemjs/plugin-json@0.1.2"
     },
-    "npm:influx-ql@0.1.3": {
+    "npm:influx-ql@0.1.4": {
       "util": "github:jspm/nodelibs-util@0.1.0"
     },
     "npm:inherits@2.0.1": {
@@ -717,6 +806,11 @@ System.config({
     "npm:isomorphic-fetch@2.2.1": {
       "node-fetch": "npm:node-fetch@1.5.3",
       "whatwg-fetch": "npm:whatwg-fetch@1.0.0"
+    },
+    "npm:lodash.keys@3.1.2": {
+      "lodash._getnative": "npm:lodash._getnative@3.9.1",
+      "lodash.isarguments": "npm:lodash.isarguments@3.0.8",
+      "lodash.isarray": "npm:lodash.isarray@3.0.4"
     },
     "npm:lodash@4.13.1": {
       "buffer": "github:jspm/nodelibs-buffer@0.1.0",
@@ -818,6 +912,30 @@ System.config({
       "crypto": "github:jspm/nodelibs-crypto@0.1.0",
       "process": "github:jspm/nodelibs-process@0.1.2"
     },
+    "npm:rc-align@2.3.1": {
+      "dom-align": "npm:dom-align@1.4.0",
+      "rc-util": "npm:rc-util@3.2.1"
+    },
+    "npm:rc-animate@2.3.0": {
+      "css-animation": "npm:css-animation@1.2.5"
+    },
+    "npm:rc-time-picker@1.1.5": {
+      "classnames": "npm:classnames@2.2.5",
+      "gregorian-calendar": "npm:gregorian-calendar@4.1.4",
+      "gregorian-calendar-format": "npm:gregorian-calendar-format@4.1.3",
+      "rc-trigger": "npm:rc-trigger@1.6.1"
+    },
+    "npm:rc-trigger@1.6.1": {
+      "rc-align": "npm:rc-align@2.3.1",
+      "rc-animate": "npm:rc-animate@2.3.0",
+      "rc-util": "npm:rc-util@3.2.1"
+    },
+    "npm:rc-util@3.2.1": {
+      "add-dom-event-listener": "npm:add-dom-event-listener@1.0.1",
+      "classnames": "npm:classnames@2.2.5",
+      "process": "github:jspm/nodelibs-process@0.1.2",
+      "shallowequal": "npm:shallowequal@0.2.2"
+    },
     "npm:react-datepicker@0.27.0": {
       "classnames": "npm:classnames@2.2.5",
       "moment": "npm:moment@2.13.0",
@@ -911,6 +1029,9 @@ System.config({
       "inherits": "npm:inherits@2.0.1",
       "process": "github:jspm/nodelibs-process@0.1.2"
     },
+    "npm:shallowequal@0.2.2": {
+      "lodash.keys": "npm:lodash.keys@3.1.2"
+    },
     "npm:stream-browserify@1.0.0": {
       "events": "github:jspm/nodelibs-events@0.1.1",
       "inherits": "npm:inherits@2.0.1",
@@ -972,6 +1093,10 @@ System.config({
     },
     "npm:vm-browserify@0.0.4": {
       "indexof": "npm:indexof@0.0.1"
+    },
+    "npm:warning@2.1.0": {
+      "loose-envify": "npm:loose-envify@1.2.0",
+      "process": "github:jspm/nodelibs-process@0.1.2"
     }
   }
 });

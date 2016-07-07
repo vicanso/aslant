@@ -8,8 +8,7 @@ import {
   INFLUXDB_LIST_RP,
   INFLUXDB_LIST_MEASUREMENT,
   INFLUXDB_LIST_TAG_INFO,
-  INFLUXDB_LIST_TAG_KEY,
-  INFLUXDB_LIST_SERIES,
+  INFLUXDB_LIST_FIELDS,
 } from '../constants/action-types';
 import * as _ from 'lodash';
 
@@ -19,8 +18,7 @@ const initStates = {
   rps: {},
   measurements: {},
   tagInfos: {},
-  tagKeys: {},
-  series: {},
+  fields: {},
 };
 
 export default function influxdbServer(state = initStates, action) {
@@ -81,18 +79,11 @@ export default function influxdbServer(state = initStates, action) {
       return Object.assign({}, state, {
         tagInfos,
       });
-      
-    case INFLUXDB_LIST_TAG_KEY:
-      const tagKeys = Object.assign({}, state.tagKeys);
-      tagKeys[action.id + action.db + action.measurement] = action.tagKeys.slice(0);
+    case INFLUXDB_LIST_FIELDS:
+      const fields = Object.assign({}, state.fields);
+      fields[action.id + action.db + action.measurement] = action.fields.slice(0);
       return Object.assign({}, state, {
-        tagKeys,
-      });
-    case INFLUXDB_LIST_SERIES:
-      const series = Object.assign({}, state, series);
-      series[action.id + action.db + action.measurement] = action.series.slice(0);
-      return Object.assign({}, state, {
-        series,
+        fields,
       });
     default:
       return state;

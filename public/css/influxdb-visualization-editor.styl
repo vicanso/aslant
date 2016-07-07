@@ -22,14 +22,18 @@
     background-color $BG_COLOR
     .influxdbSelector
       margin-bottom 10px
-  .filterSelector
+  .filterSelector, .datePickerSelector, .extractSelector
     margin-right 10px
     border 1px solid $GRAY_BORDER_COLOR
     padding 10px
     border-radius 3px
+  .filterSelector
     .influxdbSelector
       margin-bottom 10px
-  .tagSelector
+  .datePickerSelector
+    .dateTimePicker
+      margin-bottom 10px
+  .tagSelector, .fieldSelector
     $itemWidth = 30px
     .equal, .toggle
       width $itemWidth
@@ -38,7 +42,11 @@
       display block
     .influxdbSelector
       margin-right $itemWidth
+      
   .seriesTable
     table
       width 100%
       background-color #fff
+      th .fa
+        width 10px
+        margin-left 3px

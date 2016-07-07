@@ -149,19 +149,11 @@ exports.listTagInfo = (id, db, measurement) => {
   });
 };
 
-exports.listTagKey = (id, db, measurement) => {
+exports.listField = (id, db, measurement) => {
   return getInfluxClient(id, db).then(client => {
-    return client.showTagKeys(measurement);
+    return client.showFieldKeys(measurement);
   }).then(data => {
-    return _.map(_.get(data, 'results[0].series[0].values'), arr => arr[0]);
-  });
-};
-
-exports.listSeries = (id, db, measurement) => {
-  return getInfluxClient(id, db).then(client => {
-    return client.showSeries(measurement);
-  }).then(data => {
-    return _.map(_.get(data, 'results[0].series[0].values'), arr => arr[0]);
+    return _.flatten(_.get(data, 'results[0].series[0].values', []));
   });
 };
 
