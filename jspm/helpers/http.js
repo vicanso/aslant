@@ -1,7 +1,7 @@
 'use strict';
+/* eslint import/no-unresolved:0 */
 import * as request from 'superagent';
 import * as _ from 'lodash';
-/* eslint import/no-unresolved:0 */
 import * as uuid from 'uuid';
 import * as globals from './globals';
 import debug from './debug';

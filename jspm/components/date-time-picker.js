@@ -3,6 +3,7 @@
 import React, { PropTypes, Component } from 'react';
 import DatePicker from 'react-datepicker';
 import TimePicker from 'rc-time-picker';
+import * as _ from 'lodash';
 
 class DateTimePicker extends Component {
   constructor(props) {
@@ -20,7 +21,7 @@ class DateTimePicker extends Component {
     if (!date) {
       return onSelect('');
     }
-    onSelect(`${date.format('YYYY-MM-DD')} ${this.state.time}`);
+    return onSelect(`${date.format('YYYY-MM-DD')} ${this.state.time}`);
   }
   setTime(result) {
     const { onSelect } = this.props;
@@ -43,32 +44,35 @@ class DateTimePicker extends Component {
     if (!date) {
       return onSelect('');
     }
-    onSelect(`${date.format('YYYY-MM-DD')} ${time}`);
+    return onSelect(`${date.format('YYYY-MM-DD')} ${time}`);
   }
   render() {
     const { placeholder } = this.props;
-    return <div className="dateTimePicker pure-g">
-      <div className="pure-u-2-3">
-        <DatePicker
-          selected={this.state.date}
-          placeholderText={placeholder}
-          onChange={date => this.setDate(date)}
-        />
+    return (
+      <div className="dateTimePicker pure-g">
+        <div className="pure-u-2-3">
+          <DatePicker
+            selected={this.state.date}
+            placeholderText={placeholder}
+            onChange={date => this.setDate(date)}
+          />
+        </div>
+        <div className="pure-u-1-3">
+          <div className="divide">-</div>
+          <TimePicker
+            className="timePicker"
+            placeholder="HH:mm:ss"
+            onChange={time => this.setTime(time)}
+          />
+        </div>
       </div>
-      <div className="pure-u-1-3">
-        <div className="divide">-</div>
-        <TimePicker
-          className="timePicker"
-          placeholder="HH:mm:ss"
-          onChange={time => this.setTime(time)}
-        />
-      </div>
-    </div>
+    );
   }
 }
 
 DateTimePicker.propTypes = {
   onSelect: PropTypes.func.isRequired,
+  placeholder: PropTypes.string,
 };
 
 export default DateTimePicker;
