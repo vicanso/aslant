@@ -22,6 +22,7 @@ class InfluxdbVisualizationEditor extends Component {
       extractSelectorCount: 1,
       groupSelectorCount: 1,
       showBasicSelector: false,
+      showGroupSelector: false,
       server: '',
       db: '',
       rp: '',
@@ -234,7 +235,7 @@ class InfluxdbVisualizationEditor extends Component {
       }}
     >
       <a
-        onClick={e => this.onToggleBasicSelector(e)}
+        onClick={e => this.onClickToggle(e, 'basicSelector')}
         href="#"
         className="pure-button pullLeft tac showServerSelector"
       >
@@ -307,14 +308,16 @@ class InfluxdbVisualizationEditor extends Component {
     </div>
   }
   renderExtractSelecotr() {
-    const { extractSelectorCount, groupSelectorCount } = this.state;
+    const { extractSelectorCount, groupSelectorCount, showGroupSelector } = this.state;
     const arr = [];
     for (let i = 0; i < extractSelectorCount; i++) {
       arr.push(this.renderFieldKeySelector(i));
     }
     const groupArr = [];
-    for(let i = 0; i < groupSelectorCount; i++) {
-      groupArr.push(this.renderGroupbySelector(i));
+    if (showGroupSelector) {
+      for(let i = 0; i < groupSelectorCount; i++) {
+        groupArr.push(this.renderGroupbySelector(i));
+      }
     }
     return <div className="extractSelector">
       <label>Extract By</label>
@@ -323,21 +326,33 @@ class InfluxdbVisualizationEditor extends Component {
         <a
           href="#"
           className="pullRight"
+          onClick={e => this.onClickToggle(e, 'groupBySelector')}
         >
           <i className="fa fa-cubes" aria-hidden="true"></i>
           Group By
         </a>
-        <div className="groupBySelector">
-          {groupArr}
-        </div>
+        {
+          showGroupSelector && <div className="groupBySelector">
+            {groupArr}
+          </div>
+        }
       </div>
     </div>
   }
-  onToggleBasicSelector(e) {
+  onClickToggle(e, type) {
     e.preventDefault();
-    this.setState({
-      showBasicSelector: !this.state.showBasicSelector,
-    });
+    const data = {};
+    const state = this.state;
+    const keyDict = {
+      basicSelector: 'showBasicSelector',
+      groupBySelector: 'showGroupSelector',
+    };
+    const key = keyDict[type];
+    if (!key) {
+      return;
+    }
+    data[key] = !state[key];
+    this.setState(data);
   }
   onClickQuery(e) {
     e.preventDefault();
@@ -393,7 +408,7 @@ class InfluxdbVisualizationEditor extends Component {
           {this.renderDatePickerSelector()}
         </div>
       </div>
-      <div className="mtop10">
+      <div className="mtop10 seriesTableContainer">
         {this.renderSeriesTable()}
       </div>
     </div>

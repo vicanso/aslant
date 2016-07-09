@@ -2,7 +2,6 @@
 .influxdbVisualizationEditor
   margin 10px 0 0 $NAV_WIDTH + 10
   $showServerSelectorWidth = 50px
-  position relative
   .pure-button
     background-color #f0f0f0
     border 1px solid $GRAY_BORDER_COLOR
@@ -44,10 +43,12 @@
       background-color $BG_COLOR
       padding-bottom 0
       margin-right 0
-  .seriesTable
-    table
-      width 100%
-      background-color #fff
-      th .fa
-        width 10px
-        margin-left 3px
+  .seriesTableContainer
+    overflow auto
+    .seriesTable
+      table
+        width 100%
+        background-color #fff
+        th .fa
+          width 10px
+          margin-left 3px

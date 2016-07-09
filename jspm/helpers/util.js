@@ -12,7 +12,12 @@ export function convertSeriesData(data) {
   const columns = data.columns.slice(0);
   const timeIndex = _.indexOf(columns, 'time');
   const arr = _.map(data.values, value => {
-    const tmpArr = value.slice(0);
+    const tmpArr = _.map(value, v => {
+      if (_.isNumber(v)) {
+        return _.round(v, 3);
+      }
+      return v;
+    });
     if (~timeIndex) {
       tmpArr[timeIndex] = moment(tmpArr[timeIndex]).format('YYYY-MM-DD HH:mm:ss');
     }
