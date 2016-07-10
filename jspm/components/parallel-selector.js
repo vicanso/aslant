@@ -36,7 +36,7 @@ class ParallelSelector extends Component {
     );
   }
   render() {
-    const { keys, values, toggleType } = this.props;
+    const { keys, values, toggleType, hidden } = this.props;
     const convert = (arr) => _.map(arr, v => {
       if (_.isObject(v)) {
         return Object.assign({}, v);
@@ -46,9 +46,11 @@ class ParallelSelector extends Component {
         value: v,
       };
     });
+    const hiddenKeySelector = _.indexOf(hidden, 'key') !== -1;
+    const hiddenValueSelector = _.indexOf(hidden, 'value') !== -1;
     return (
       <div className="pure-g">
-        <div className="pure-u-1-2 parallelSelector">
+        { !hiddenKeySelector && <div className="pure-u-1-2 parallelSelector">
           <span className="pullRight funcDesc">BY</span>
           {
             this.renderSelector({
@@ -56,8 +58,8 @@ class ParallelSelector extends Component {
               type: 'key',
             })
           }
-        </div>
-        <div className="pure-u-1-2 parallelSelector">
+        </div> }
+        { !hiddenValueSelector && <div className="pure-u-1-2 parallelSelector">
           <a className="pullRight toggle" href="#" onClick={e => this.onClickToggle(e, toggleType)}>
             {toggleType === 'add' && <i className="fa fa-plus-square-o" aria-hidden="true"></i>}
             {toggleType !== 'add' && <i className="fa fa-minus-square-o" aria-hidden="true"></i>}
@@ -68,13 +70,14 @@ class ParallelSelector extends Component {
               type: 'value',
             })
           }
-        </div>
+        </div> }
       </div>
     );
   }
 }
 
 ParallelSelector.propTypes = {
+  hidden: PropTypes.array,
   keys: PropTypes.object.isRequired,
   values: PropTypes.object.isRequired,
   onSelect: PropTypes.func.isRequired,

@@ -129,15 +129,15 @@ class InfluxdbVisualizationEditor extends Component {
     });
   }
   renderGroupbySelector(index) {
-    const values = '10s 30s 1m 5m 10m 15m 30m 1h 6h 12h 1d 7d 30d'.split(' ');
     const { server, db, measurement, groups } = this.state;
     const { dispatch } = this.props;
     const key = `props.influxdbServer.tagInfos[${server + db + measurement}]`;
     const tagInfos = _.get(this, key);
-    const keys = _.map(tagInfos, item => item.tag);
+    const values = _.map(tagInfos, item => item.tag);
+    // values.push('10s 30s 1m 5m 10m 15m 30m 1h 6h 12h 1d 7d 30d'.split(' '));
     return this.renderParallelSelector({
+      hidden: ['key'],
       index,
-      keys,
       values,
       id: _.get(groups, `[${index}].id`),
       defaultKey: _.get(groups, `[${index}].key`),
@@ -147,8 +147,9 @@ class InfluxdbVisualizationEditor extends Component {
     });
   }
   renderParallelSelector(opts) {
-    const { index, keys, id, values, defaultKey, defaultValue, listKey, countKey } = opts;
+    const { index, keys, id, values, defaultKey, defaultValue, listKey, countKey, hidden } = opts;
     return <ParallelSelector
+      hidden={hidden}
       key={id || uuid.v4()}
       keys={keys}
       values={values}
@@ -388,6 +389,7 @@ class InfluxdbVisualizationEditor extends Component {
     }
     const arr = series.map(item => {
       return <SeriesTable
+        tags={item.tags}
         list={util.convertSeriesData(item)}
       />
     });
@@ -408,7 +410,7 @@ class InfluxdbVisualizationEditor extends Component {
           {this.renderDatePickerSelector()}
         </div>
       </div>
-      <div className="mtop10 seriesTableContainer">
+      <div className="seriesTableContainer">
         {this.renderSeriesTable()}
       </div>
     </div>

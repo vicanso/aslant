@@ -50,6 +50,11 @@ export function getInfluxQL(options) {
       conditions[tag] = item.value;
     }
   });
+  _.forEach(options.groups, item => {
+    if (item.value) {
+      ql.addGroup(item.value);
+    }
+  });
   _.forEach(['start', 'end'], key => {
     const date = options.date[key];
     if (date) {
