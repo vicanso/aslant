@@ -49,22 +49,17 @@ class DateTimePicker extends Component {
   render() {
     const { placeholder } = this.props;
     return (
-      <div className="dateTimePicker pure-g">
-        <div className="pure-u-2-3">
-          <DatePicker
-            selected={this.state.date}
-            placeholderText={placeholder}
-            onChange={date => this.setDate(date)}
-          />
-        </div>
-        <div className="pure-u-1-3">
-          <div className="divide">-</div>
-          <TimePicker
-            className="timePicker"
-            placeholder="HH:mm:ss"
-            onChange={time => this.setTime(time)}
-          />
-        </div>
+      <div className="dateTimePicker">
+        <DatePicker
+          inline={true}
+          selected={this.state.date}
+          onChange={date => this.setDate(date)}
+        />
+        <TimePicker
+          className="timePicker"
+          placeholder="HH:mm:ss"
+          onChange={time => this.setTime(time)}
+        />
       </div>
     );
   }

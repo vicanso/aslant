@@ -1,16 +1,21 @@
 @import './constant'
 .influxdbVisualizationEditor
-  margin 10px 0 0 $NAV_WIDTH + 10
+  margin 10px 10px 0 $NAV_WIDTH + 10
   $showServerSelectorWidth = 50px
+  $timeSelectorWidth = 150px
   .pure-button
     background-color #f0f0f0
     border 1px solid $GRAY_BORDER_COLOR
     border-radius 3px
   .showServerSelector
+    line-height 20px
     width $showServerSelectorWidth
+  .timeSelectorContainer
+    width $timeSelectorWidth
   .influxQl
     margin-left $showServerSelectorWidth + 10
-    margin-right 100px
+    margin-right $timeSelectorWidth + 10
+  
   .basicSelector
     position absolute
     border 1px solid $GRAY_BORDER_COLOR
@@ -30,8 +35,9 @@
     .influxdbSelector
       margin-bottom 10px
   .datePickerSelector
+    margin-right 0
     .dateTimePicker
-      margin-bottom 10px
+      margin auto
   .groupByContainer
     position relative
     .groupBySelector

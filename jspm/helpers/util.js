@@ -55,10 +55,17 @@ export function getInfluxQL(options) {
       ql.addGroup(item.value);
     }
   });
+  if (options.groupByTime) {
+    ql.addGroup(`time(${options.groupByTime})`);
+  }
   _.forEach(['start', 'end'], key => {
     const date = options.date[key];
     if (date) {
-      ql[key] = moment(date, 'YYYY-MM-DD HH:mm:ss').toISOString();
+      if (date.charAt(0) === '-') {
+        ql[key] = date;
+      } else {
+        ql[key] = moment(date, 'YYYY-MM-DD HH:mm:ss').toISOString();
+      }
     }
   });
   ql.condition(conditions);
