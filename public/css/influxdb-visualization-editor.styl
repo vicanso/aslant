@@ -1,9 +1,16 @@
+@import 'nib'
+@import 'nib/gradients'
 @import './constant'
 .influxdbVisualizationEditor
-  margin 10px 10px 0 $NAV_WIDTH + 10
   $showServerSelectorWidth = 50px
   $timeSelectorWidth = 150px
-  .pure-button
+  position absolute
+  top $HEADER_HEIGHT
+  left $NAV_WIDTH
+  bottom 0
+  right 0
+  padding 0 10px 10px
+  .showServerSelector
     background-color #f0f0f0
     border 1px solid $GRAY_BORDER_COLOR
     border-radius 3px
@@ -12,10 +19,23 @@
     width $showServerSelectorWidth
   .timeSelectorContainer
     width $timeSelectorWidth
-  .influxQl
-    margin-left $showServerSelectorWidth + 10
-    margin-right $timeSelectorWidth + 10
-  
+  .queryBarContainer
+    margin 10px 0
+    position relative
+    .influxQl
+      margin-left $showServerSelectorWidth + 10
+      margin-right $timeSelectorWidth + 10
+    .datePickerSelector
+      position absolute
+      width 455px
+      top -10px
+      right 0
+      border 1px solid $GRAY_BORDER_COLOR
+      background-color $BG_COLOR
+      border-radius 3px
+      padding-top 10px
+      .apply
+        margin 0 10px 10px
   .basicSelector
     position absolute
     border 1px solid $GRAY_BORDER_COLOR
@@ -26,7 +46,7 @@
     background-color $BG_COLOR
     .influxdbSelector
       margin-bottom 10px
-  .filterSelector, .datePickerSelector, .extractSelector, .groupBySelector
+  .filterSelector, .extractSelector, .groupBySelector, .extraSelector
     margin-right 10px
     border 1px solid $GRAY_BORDER_COLOR
     padding 10px
@@ -51,14 +71,49 @@
       margin-right 0
       .parallelSelector
         width 100%
+  .extraSelector
+    margin-right 0
+    line-height 24px
+    .hideEmptyPoint
+      display block
+      .fa
+        width 18px
+    .fieldShowSelector
+      list-style none
+      margin 0
+      padding 0
+      border-top 1px solid $GRAY_BORDER_COLOR
+      li
+        margin-right 10px
+        display inline-block
+        .fa
+          width 18px
+    .submit
+      display block
   .seriesTableContainer
     margin-top 10px
     overflow auto
     .seriesTable
       margin-bottom 10px
+      .groupsContainer
+        border 1px solid $GRAY_BORDER_COLOR
+        border-bottom none
+        border-radius top 3px
+        display inline-block
+        padding 3px 10px
+        background-color #fff
+        color #265778
       table
         width 100%
         background-color #fff
         th .fa
           width 10px
           margin-left 3px
+  .visualizationSaveDialog .dialog
+    margin-top -130px
+    fieldset
+      padding 0
+    input, textarea
+      width 200px
+    .submit
+      width 200px

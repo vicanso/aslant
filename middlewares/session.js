@@ -40,7 +40,7 @@ exports.readonly = (ctx, next) => normal(ctx, () => {
 exports.login = (ctx, next) => normal(ctx, () => {
   Object.freeze(ctx.session);
   if (!_.get(ctx, 'session.user.account')) {
-    throw errors.get('用户未登录', 403);
+    throw errors.get('User isn\'t login.', 403);
   }
   return next();
 });

@@ -10,9 +10,116 @@ import Select from 'react-select';
 import * as uuid from 'uuid';
 import * as util from '../helpers/util';
 import * as influxdbAction from '../actions/influxdb';
+import * as navigationAction from '../actions/navigation';
 import SeriesTable from './series-table';
+import Dialog from '../components/dialog';
 import DateTimePicker from '../components/date-time-picker';
 import ParallelSelector from '../components/parallel-selector';
+
+class VisualizationSaveDialog extends Dialog {
+  constructor(props) {
+    super(props);
+    this.state = {
+      title: 'Save Visualization',
+      classes: {
+        visualizationSaveDialog: true,
+      },
+      status: '',
+    };
+  }
+  onKeyUp(e) {
+    this.setState({
+      error: '',
+    });
+    switch(e.keyCode) {
+      case 27:
+        return this.onClose(e);
+    }
+  }
+  getData() {
+    const refs = this.refs;
+    return {
+      name: (refs.name.value || '').trim(),
+      desc: (refs.desc.value || '').trim(),
+    };
+  }
+  onClose(e) {
+    const { onClose } = this.props;
+    e.preventDefault();
+    onClose();
+  }
+  submit(e) {
+    e.preventDefault();
+    const { status } = this.state;
+    const { dispatch, data } = this.props;
+    if (status === 'processing') {
+      return;
+    }
+    const inputs = this.getData();
+    if (!inputs.name || !inputs.desc) {
+      return this.setState({
+        error: 'name and description catn\'t be empty',
+      });
+    }
+    inputs.configure = data;
+    this.setState({
+      status: 'processing',
+    });
+    dispatch(influxdbAction.addConfigure(inputs))
+      .then(data => {
+        dispatch(navigationAction.showVisualizations());
+      })
+      .catch(err => {
+        this.setState({
+          status: '',
+          error: util.getError(err),
+        });
+      });
+  }
+  getContent() {
+    const { status, error } = this.state;
+    return (
+      <form className="pure-form pure-form-aligned"><fieldset>
+        <div className="pure-control-group">
+          <label htmlFor="name">Name</label>
+          <input
+            id="name"
+            type="text"
+            autoFocus="true"
+            onKeyUp={e => this.onKeyUp(e)}
+            placeholder="Visualization Name"
+            ref="name"
+          />
+        </div>
+        <div className="pure-control-group">
+          <label htmlFor="desc">Description</label>
+          <textarea
+            id="desc"
+            onKeyUp={e => this.onKeyUp(e)}
+            placeholder="Visualization Description"
+            ref="desc"
+          >
+          </textarea>
+        </div>
+        { error && 
+          <div className="warning">
+            <i className="fa fa-exclamation-triangle" aria-hidden="true"></i>
+            <span>{error}</span>
+          </div>
+        }
+        <div className="pure-controls">
+          <a
+            className="pure-button pure-button-primary submit"
+            href="#"
+            onClick={e => this.submit(e)}
+          >Submit
+            { status === 'processing' && <span>...</span> }
+          </a>
+        </div>
+      </fieldset></form>
+    );
+  }
+}
 
 class InfluxdbVisualizationEditor extends Component {
   constructor(props) {
@@ -22,8 +129,11 @@ class InfluxdbVisualizationEditor extends Component {
       conditionSelectorCount: 1,
       extractSelectorCount: 1,
       groupSelectorCount: 1,
+      showSubmitDialog: false,
       showBasicSelector: false,
       showGroupSelector: false,
+      showDateTimeSelector: false,
+      hideEmptyPoint: false,
       server: '',
       db: '',
       rp: '',
@@ -31,9 +141,15 @@ class InfluxdbVisualizationEditor extends Component {
       conditions: [],
       extracts: [],
       groups: [],
+      fields: [],
       groupByTime: '',
       doingQuery: false,
+      offsetTime: '-15m',
       date: {
+        start: null,
+        end: null,
+      },
+      dateTimePickerValue: {
         start: null,
         end: null,
       },
@@ -50,10 +166,19 @@ class InfluxdbVisualizationEditor extends Component {
       error: util.getError(err),
     });
   }
-  setDate(date, type) {
-    const data = this.state.date;
+  setDateTimeValue(date, type) {
+    const data = this.state.dateTimePickerValue;
     data[type] = date;
     this.setState({
+      dateTimePickerValue: data,
+    });
+  }
+  setDate(e) {
+    e.preventDefault();
+    const data = _.pick(this.state.dateTimePickerValue, ['start', 'end']);
+    this.setState({
+      offsetTime: 'Custom',
+      showDateTimeSelector: false,
       date: data,
     });
   }
@@ -269,7 +394,7 @@ class InfluxdbVisualizationEditor extends Component {
     return util.getInfluxQL(state);
   }
   renderQueryBar() {
-    const { doingQuery } = this.state;
+    const { doingQuery, showDateTimeSelector } = this.state;
     const queryClass = {
       fa: true,
       mright5: true,
@@ -280,9 +405,7 @@ class InfluxdbVisualizationEditor extends Component {
       queryClass['fa-search'] = true;
     }
     return <div
-      style={{
-        margin: '10px 0',
-      }}
+      className="queryBarContainer"
     >
       <a
         onClick={e => this.onClickToggle(e, 'basicSelector')}
@@ -291,8 +414,7 @@ class InfluxdbVisualizationEditor extends Component {
       >
         <i className="fa fa-server" aria-hidden="true"></i>
       </a>
-      <div className="pullRight timeSelectorContainer"
-      >
+      <div className="pullRight timeSelectorContainer">
         {this.renderTimeSelector()}
       </div>
       <div 
@@ -308,6 +430,7 @@ class InfluxdbVisualizationEditor extends Component {
           type="text"
         />
       </div>
+      { showDateTimeSelector && this.renderDatePickerSelector()}
     </div>
   }
   renderBasicSelector() {
@@ -316,6 +439,7 @@ class InfluxdbVisualizationEditor extends Component {
       return null;
     }
     return <div className="basicSelector"
+      onClick={e => e.disableToggle = true}
       style={{
         marginTop: '-6px',
       }}
@@ -341,6 +465,14 @@ class InfluxdbVisualizationEditor extends Component {
     </div>
   }
   renderTimeSelector() {
+    const arr = ['now', 'now'];
+    const { start, end } = this.state.date;
+    if (start) {
+      arr[0] = start;
+    }
+    if (end) {
+      arr[1] = end;
+    }
     const options = [
       {
         label: 'Past 5 minutes',
@@ -391,15 +523,20 @@ class InfluxdbVisualizationEditor extends Component {
         value: 'Custom',
       },
     ];
+    const defaultValue = this.state.offsetTime;
     return (
       <Select
-        value={this.state.date.start}
+        value={defaultValue}
         options={options}
         onChange={item => {
+          const value = (item && item.value) || '';
+          if (value && value.charAt(0) !== '-') {
+            return this.setState({
+              showDateTimeSelector: true,
+            });
+          }
           this.setState({
-            date: {
-              start: (item && item.value) || '',
-            }
+            offsetTime: value,
           });
         }}
       />
@@ -411,7 +548,7 @@ class InfluxdbVisualizationEditor extends Component {
         <div className="pure-u-1-2">
           <DateTimePicker
             onSelect={value => {
-              this.setDate(value, key);
+              this.setDateTimeValue(value, key);
               this.clearError();
             }}
           />
@@ -419,8 +556,18 @@ class InfluxdbVisualizationEditor extends Component {
       );
     });
     return (
-      <div className="datePickerSelector pure-g">
+      <div
+        className="datePickerSelector pure-g"
+        onClick={e => e.disableToggle = true}
+      >
         {arr}
+        <a
+          href="#"
+          className="pure-button pure-u-1 apply"
+          onClick={e => this.setDate(e)}
+        >
+          Apply
+        </a>
       </div>
     );
   }
@@ -450,14 +597,145 @@ class InfluxdbVisualizationEditor extends Component {
           Group By
         </a>
         {
-          showGroupSelector && <div className="groupBySelector">
+          showGroupSelector && <div
+            className="groupBySelector"
+            onClick={e => e.disableToggle = true}
+          >
+
             {groupArr}
           </div>
         }
       </div>
     </div>
   }
+  renderShowFieldSelector() {
+    const { server, db, measurement, conditions } = this.state;
+    const { dispatch } = this.props;
+    const tagInfos = _.get(this, `props.influxdbServer.tagInfos[${server + db + measurement}]`);
+    const fields = _.get(this, `props.influxdbServer.fields[${server + db + measurement}]`);
+    if (!fields) {
+      return null;
+    }
+    const arr = fields.concat(_.map(tagInfos, item => item.tag));
+    const showFields = this.state.fields;
+    const list = _.map(arr, v => {
+      const cls = {
+        fa: true,
+      };
+      if (_.indexOf(showFields, v) === -1) {
+        cls['fa-square-o'] = true;
+      } else {
+        cls['fa-check-square-o'] = true;
+      }
+      const id = `show-filed-${v}`;
+      return (
+        <li
+          key={v}
+        >
+          <a
+            href="#"
+            onClick={e => {
+              e.preventDefault();
+              const arr = this.state.fields.slice(0);
+              const index = _.indexOf(arr, v);
+              if (index !== -1) {
+                arr.splice(index, 1);
+              } else {
+                arr.push(v);
+              }
+              this.setState({
+                fields: arr,
+              });
+            }}
+          >
+            <i className={classnames(cls)} aria-hidden="true"></i>
+            {v}
+          </a>
+        </li>
+      );
+    });
+    return (
+      <ul
+        className="fieldShowSelector"
+      >
+        <li>Fields:</li>
+        {list}
+      </ul>
+    );
+  }
+  renderExtraSelector() {
+    const { hideEmptyPoint } = this.state;
+    const emptyPointCls = {
+      fa: true,
+    };
+    if (!hideEmptyPoint) {
+      emptyPointCls['fa-square-o'] = true;
+    } else {
+      emptyPointCls['fa-check-square-o'] = true;
+    }
+    return (
+      <div className="extraSelector">
+        <label>Extra Setting</label>
+        <a
+          href="#"
+          className='hideEmptyPoint'
+          onClick={e => {
+            e.preventDefault();
+            this.setState({
+              hideEmptyPoint: !this.state.hideEmptyPoint,
+            });
+          }}
+        >
+          <i className={classnames(emptyPointCls)} aria-hidden="true"></i>
+          Hide Empty Point
+        </a>
+        {this.renderShowFieldSelector()}
+        <a
+          className="pure-button pure-button-primary submit"
+          href="#"
+          onClick={e => {
+            e.preventDefault();
+            this.setState({
+              showSubmitDialog: true,
+            });
+          }}
+        >
+          Save
+        </a>
+      </div>
+    )
+  }
+  renderSubmitDialog() {
+    const { dispatch } = this.props;
+    const state = this.state;
+    const data = {};
+    const strKeys = 'server db rp measurement groupByTime offsetTime'.split(' ');
+    _.forEach(strKeys, key => {
+      if (state[key]) {
+        data[key] = state[key];
+      }
+    });
+    const arrKeys = 'conditions extracts groups fields'.split(' ');
+    _.forEach(arrKeys, key => {
+      if (_.get(state, `${key}.length`)) {
+        data[key] = state[key];
+      }
+    });
+    if (state.date.start || state.date.end) {
+      data.date = state.date;
+    }
+    return (
+      <VisualizationSaveDialog
+        onClose={() => this.setState({
+          showSubmitDialog: false,
+        })}
+        dispatch={dispatch}
+        data={data}
+      />
+    );
+  }
   onClickToggle(e, type) {
+    e.disableToggle = true;
     e.preventDefault();
     const data = {};
     const state = this.state;
@@ -490,8 +768,24 @@ class InfluxdbVisualizationEditor extends Component {
       });
     };
     influxdbAction.getPoints(state.server, state.db, ql).then(series => {
+      const extracts = state.extracts;
+      if (extracts.length) {
+        const extractDescList = _.compact(_.map(extracts, extract => {
+          if (!extract.value || !extract.key) {
+            return '';
+          }
+          return `${extract.value}(${extract.key})`;
+        })).sort();
+        _.forEach(series, item => {
+          const columns = item.columns;
+          _.forEach(extractDescList, (desc, i) => {
+            columns[i + 1] = desc;
+          });
+        });
+      }
       this.setState({
         series,
+        error: '',
       });
       complete();
     }).catch(err => {
@@ -503,14 +797,15 @@ class InfluxdbVisualizationEditor extends Component {
     });
   }
   renderSeriesTable() {
-    const { series } = this.state;
+    const { series, hideEmptyPoint } = this.state;
     if (!series) {
       return null;
     }
     if (!series.length) {
       return <p className="tac">There is not stats data, please change influx ql.</p>
     }
-    const arr = series.map(item => {
+    const results = hideEmptyPoint ? util.rejectEmptyPoint(series) : series;
+    const arr = results.map(item => {
       return <SeriesTable
         tags={item.tags}
         list={util.convertSeriesData(item)}
@@ -530,9 +825,30 @@ class InfluxdbVisualizationEditor extends Component {
       </div>
     )
   }
+  hideSelector() {
+    const state = this.state;
+    const data = {};
+    _.forEach(['showBasicSelector', 'showGroupSelector', 'showDateTimeSelector'], key => {
+      if (state[key]) {
+        data[key] = false;
+      }
+    });
+    if (!_.isEmpty(data)) {
+      this.setState(data);
+    }
+  }
   render() {
+    const { showSubmitDialog } = this.state;
     this.doQuery();
-    return <div className="influxdbVisualizationEditor">
+    return <div
+      className="influxdbVisualizationEditor"
+      onClick={e => {
+        if (!e.disableToggle) {
+          this.hideSelector();
+        }
+        delete e.disableToggle;
+      }}
+    >
       {this.renderQueryBar()}
       {this.renderBasicSelector()}
       <div className="pure-g">
@@ -543,7 +859,7 @@ class InfluxdbVisualizationEditor extends Component {
           {this.renderExtractSelecotr()}
         </div>
         <div className="pure-u-1-3">
-          {this.renderDatePickerSelector()}
+          {this.renderExtraSelector()}
         </div>
       </div>
       <div className="seriesTableContainer">
@@ -551,6 +867,9 @@ class InfluxdbVisualizationEditor extends Component {
       </div>
       {
         this.renderErrorTips()
+      }
+      {
+        showSubmitDialog && this.renderSubmitDialog()
       }
     </div>
   }

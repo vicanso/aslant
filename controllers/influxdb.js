@@ -68,6 +68,34 @@ exports.removeServer = (ctx) => {
   });
 };
 
+exports.addConfigure = (ctx) => {
+  const account = _.get(ctx, 'session.user.account');
+  const data = Joi.validateThrow(ctx.request.body, {
+    name: Joi.string().trim().required(),
+    desc: Joi.string().trim().required(),
+    configure: Joi.object().required(),
+  });
+  return influxdbService.addConfigure(_.extend({
+    owner: account
+  }, data)).then(configure => {
+    /* eslint no-param-reassign:0 */
+    ctx.status = 201;
+    ctx.body = configure;
+  });
+};
+
+exports.listConfigure = (ctx) => {
+  const account = _.get(ctx, 'session.user.account');
+  return influxdbService.listConfigure({
+    owner: account,
+  }).then(configures => {
+    /* eslint no-param-reassign:0 */
+    ctx.body = {
+      items: configures,
+    };
+  });
+};
+
 exports.listDatabase = (ctx) => {
   return influxdbService.listDatabases(ctx.params.id).then(data => {
     /* eslint no-param-reassign:0 */
@@ -124,6 +152,10 @@ exports.listPoint = (ctx) => {
     throw errors.get('ql can\'t be empty', 400);
   }
   return influxdbService.listPoint(id, db, ql).then(data => {
+    const err = _.get(data, 'results[0].error');
+    if (err) {
+      throw errors.get(err);
+    }
     /* eslint no-param-reassign:0 */
     ctx.body = {
       items: _.get(data, 'results[0].series'),

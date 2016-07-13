@@ -13,7 +13,7 @@ import {
 } from '../constants/action-types';
 
 export function addServer(data) {
-  return dispatch => http.post('/influxdb/servers/add')
+  return dispatch => http.post('/influxdb/servers')
     .send(data)
     .then(res => {
       const server = res.body;
@@ -105,4 +105,11 @@ export function listField(id, db, measurement) {
 export function getPoints(id, db, ql) {
   return http.get(`/influxdb/${id}/${db}/points?ql=${encodeURIComponent(ql)}`)
     .then(res => res.body.items || []);
+}
+
+export function addConfigure(data) {
+  return dispatch => http.post('/influxdb/configures', data)
+    .then(res => {
+      console.dir(res.body);
+    });
 }

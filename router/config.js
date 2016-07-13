@@ -22,10 +22,14 @@ module.exports = [
   '[POST] [/stats/statistics] [c.stats.statistics]',
 
   // influxdb
-  '[POST] [/influxdb/servers/add] [m.session.login & c.influxdb.addServer]',
+  '[POST] [/influxdb/servers] [m.session.login & c.influxdb.addServer]',
   '[GET] [/influxdb/servers] [m.session.login & c.influxdb.listServer]',
   '[PUT] [/influxdb/servers/:id] [m.session.login & m.validateToken & c.influxdb.editServer]',
   '[DELETE] [/influxdb/servers/:id] [m.session.login & m.validateToken & c.influxdb.removeServer]',
+
+  '[POST] [/influxdb/configures] [m.session.login & c.influxdb.addConfigure]',
+  '[GET] [/influxdb/configures] [m.session.login & c.influxdb.listConfigure]',
+
   '[GET] [/influxdb/:id/databases] [m.cache-60 & c.influxdb.listDatabase]',
   '[GET] [/influxdb/:id/:db/rps] [m.cache-60 & c.influxdb.listRP]',
   '[GET] [/influxdb/:id/:db/measurements] [m.cache-60 & c.influxdb.listMeasurement]',

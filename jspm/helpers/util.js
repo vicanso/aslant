@@ -30,6 +30,9 @@ export function convertSeriesData(data) {
 export function getInfluxQL(options) {
   const ql = new QL();
   ql.measurement = options.measurement;
+  if (options.fields && options.fields.length) {
+    ql.addField(options.fields);
+  }
   _.forEach(options.extracts, item => {
     if (item.key && item.value) {
       ql.addCalculate(item.value, item.key);
@@ -58,16 +61,32 @@ export function getInfluxQL(options) {
   if (options.groupByTime) {
     ql.addGroup(`time(${options.groupByTime})`);
   }
+  if (options.offsetTime && options.offsetTime.charAt(0) === '-') {
+    ql.start = options.offsetTime;
+  }
   _.forEach(['start', 'end'], key => {
     const date = options.date[key];
     if (date) {
-      if (date.charAt(0) === '-') {
-        ql[key] = date;
-      } else {
-        ql[key] = moment(date, 'YYYY-MM-DD HH:mm:ss').toISOString();
-      }
+      ql[key] = moment(date, 'YYYY-MM-DD HH:mm:ss').toISOString();
     }
   });
   ql.condition(conditions);
   return ql.toSelect();
 }
+
+export function rejectEmptyPoint(series) {
+  return _.map(series, item => {
+    const arr = [];
+    _.forEach(item.values, val => {
+      const tmp = val.slice(1);
+      if (_.some(tmp, Boolean)) {
+        arr.push(val.slice(0));
+      }
+    });
+    return Object.assign({}, item, {
+      values: arr,
+    });
+  });
+}
+
+

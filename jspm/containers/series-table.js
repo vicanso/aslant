@@ -7,9 +7,9 @@ class SeriesTable extends Table {
   render() {
     const tags = this.props.tags;
     const tagsDesc = _.map(tags, (v, k) => {
-      return `${k}=${v}`;
+      return `${k}(${v})`;
     }).join(' ');
-    const desc = tagsDesc ? <p className="tac">{tagsDesc}</p> : null;
+    const desc = tagsDesc ? <div className="groupsContainer">Group:{tagsDesc}</div> : null;
     return <div className="seriesTable">
       {desc}
       {this.renderTable()}

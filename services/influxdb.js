@@ -164,3 +164,19 @@ exports.listPoint = (id, db, ql) => {
     return data;
   });
 };
+
+
+exports.addConfigure = (data) => {
+  const InfluxdbConfigure = Models.get('Influxdb-configure');
+  return (new InfluxdbConfigure(data)).save()
+    .then(doc => {
+      return doc.toJSON();
+    });
+};
+
+exports.listConfigure = (conditions) => {
+  const InfluxdbConfigure = Models.get('Influxdb-configure');
+  return InfluxdbConfigure.find(conditions).then(docs => {
+    return _.map(docs, doc => doc.toJSON());
+  });
+};
