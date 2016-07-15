@@ -146,7 +146,7 @@ exports.listField = (ctx) => {
 };
 
 exports.listPoint = (ctx) => {
-  const { id , db } = ctx.params;
+  const { id, db } = ctx.params;
   const { ql } = ctx.query;
   if (!ql) {
     throw errors.get('ql can\'t be empty', 400);
@@ -160,5 +160,17 @@ exports.listPoint = (ctx) => {
     ctx.body = {
       items: _.get(data, 'results[0].series'),
     };
+  });
+};
+
+exports.updateConfigure = (ctx) => {
+  const conditions = {
+    owner: _.get(ctx, 'session.user.account'),
+    _id: ctx.params.id,
+  };
+  const data = ctx.request.body;
+  return influxdbService.updateConfigure(conditions, ctx.get('X-Token'), data).then(configure => {
+    /* eslint no-param-reassign:0 */
+    ctx.body = configure;
   });
 };

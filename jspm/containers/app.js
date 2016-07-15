@@ -55,17 +55,29 @@ class App extends Component {
     />
   }
   renderVisualizations() {
-    const { dispatch } = this.props;
+    const { dispatch, user } = this.props;
     return <InfluxdbVisualizationList
+      configures={user.configures}
       dispatch={dispatch}
     />
   }
-  renderVisualizationEditor() {
+  renderAddVisualization() {
     const { dispatch, influxdbServer } = this.props;
     return <InfluxdbVisualizationEditor
       dispatch={dispatch}
       influxdbServer={influxdbServer}
     />
+  }
+  renderEditVisualization({ params: { id } }) {
+    const { dispatch, user, influxdbServer } = this.props;
+    const configure = _.find(user.configures, item => item._id === id);
+    return (
+      <InfluxdbVisualizationEditor
+        dispatch={dispatch}
+        data={configure}
+        influxdbServer={influxdbServer}
+      />
+    );
   }
   render() {
     const { user, navigation, influxdbServer, dispatch } = this.props;
@@ -85,7 +97,8 @@ class App extends Component {
         <Route path={urls.SHOW_SERVERS} component={this.renderServerList.bind(this)} />
         <Route path={urls.EDIT_SERVER + '/:id'} component={this.renderEditServer.bind(this)} />
         <Route path={urls.SHOW_VISUALIZATIONS} component={this.renderVisualizations.bind(this)} />
-        <Route path={urls.EDIT_VISUALIZATIONS} component={this.renderVisualizationEditor.bind(this)} />
+        <Route path={urls.EDIT_VISUALIZATIONS} component={this.renderAddVisualization.bind(this)} />
+        <Route path={urls.EDIT_VISUALIZATIONS + '/:id'} component={this.renderEditVisualization.bind(this)} />
       </Router>
     </div>
   }

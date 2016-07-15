@@ -43,6 +43,10 @@ export function addVisualization() {
   return to(urls.EDIT_VISUALIZATIONS);
 }
 
+export function editVisualization(id) {
+  return to(`${urls.EDIT_VISUALIZATIONS}/${id}`);
+}
+
 export function back() {
   return dispatch => {
     dispatch({

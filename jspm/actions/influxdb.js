@@ -10,6 +10,7 @@ import {
   INFLUXDB_LIST_MEASUREMENT,
   INFLUXDB_LIST_TAG_INFO,
   INFLUXDB_LIST_FIELDS,
+  INFLUXDB_LIST_CONFIGURE,
 } from '../constants/action-types';
 
 export function addServer(data) {
@@ -112,4 +113,21 @@ export function addConfigure(data) {
     .then(res => {
       console.dir(res.body);
     });
+}
+
+export function listConfigure() {
+  return dispatch => http.get('/influxdb/configures')
+    .then(res => dispatch({
+      type: INFLUXDB_LIST_CONFIGURE,
+      configures: res.body.items || [],
+    }));
+}
+
+export function updateConfigure(id, token, data) {
+  return dispatch => http.put(`/influxdb/configures/${id}`)
+    .set('X-Token', token)
+    .then(res => dispatch({
+      type: INFLUXDB_UPDATE_CONFIGURE,
+      configures: res.body.items || [],
+    }));
 }

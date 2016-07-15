@@ -24,8 +24,8 @@ class MainHeader extends Component {
   }
   componentWillReceiveProps(nextProps) {
     const { dispatch } = this.props;
-    const currentAccount = _.get(nextProps, 'user.account');
-    const account = _.get(this.props, 'user.account');
+    const currentAccount = _.get(nextProps, 'user.basic.account');
+    const account = _.get(this.props, 'user.basic.account');
     if (currentAccount && currentAccount !== account) {
       dispatch(influxdbAction.listServer());
     }
@@ -71,6 +71,7 @@ class MainHeader extends Component {
   renderUserInfo() {
     const { status, message } = this.state;
     const { user, dispatch, influxdbServer } = this.props;
+    const account = _.get(user, 'basic.account');
     if (status === 'error') {
       return (
         <li>
@@ -89,10 +90,10 @@ class MainHeader extends Component {
         </li>
       );
     }
-    if (user.account) {
+    if (account) {
       return (
         <li>
-          <span>{user.account}</span>
+          <span>{account}</span>
           <a href='#' onClick={e => this.showServers(e)}>
             <i className="fa fa-server" aria-hidden="true"></i>
             influxdbs

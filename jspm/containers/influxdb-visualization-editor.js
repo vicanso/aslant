@@ -19,8 +19,9 @@ import ParallelSelector from '../components/parallel-selector';
 class VisualizationSaveDialog extends Dialog {
   constructor(props) {
     super(props);
+    const conf = _.get(props, 'orginalData.configure');
     this.state = {
-      title: 'Save Visualization',
+      title: conf ? 'Update Visualization' : 'Save Visualization',
       classes: {
         visualizationSaveDialog: true,
       },
@@ -36,6 +37,15 @@ class VisualizationSaveDialog extends Dialog {
         return this.onClose(e);
     }
   }
+  componentDidMount() {
+    const props = this.props;
+    _.forEach(this.refs, (ref, k) => {
+      const v = _.get(props, `orginalData.${k}`);
+      if(v) {
+        ref.value = v;
+      }
+    });
+  }
   getData() {
     const refs = this.refs;
     return {
@@ -50,8 +60,9 @@ class VisualizationSaveDialog extends Dialog {
   }
   submit(e) {
     e.preventDefault();
+    const props = this.props;
     const { status } = this.state;
-    const { dispatch, data } = this.props;
+    const { dispatch, data } = props;
     if (status === 'processing') {
       return;
     }
@@ -65,16 +76,23 @@ class VisualizationSaveDialog extends Dialog {
     this.setState({
       status: 'processing',
     });
-    dispatch(influxdbAction.addConfigure(inputs))
-      .then(data => {
-        dispatch(navigationAction.showVisualizations());
-      })
-      .catch(err => {
-        this.setState({
-          status: '',
-          error: util.getError(err),
-        });
+    const id = _.get(props, 'orginalData._id');
+    let fn;
+    if (id) {
+      const token = props.orginalData.token;
+      fn = dispatch(influxdbAction.updateConfigure(id, token, inputs));
+    } else {
+      fn = dispatch(influxdbAction.addConfigure(inputs));
+    }
+    fn.then(data => {
+      dispatch(navigationAction.showVisualizations());
+    })
+    .catch(err => {
+      this.setState({
+        status: '',
+        error: util.getError(err),
       });
+    });
   }
   getContent() {
     const { status, error } = this.state;
@@ -124,7 +142,8 @@ class VisualizationSaveDialog extends Dialog {
 class InfluxdbVisualizationEditor extends Component {
   constructor(props) {
     super(props);
-    this.state = {
+    const conf = _.get(props, 'data.configure');
+    this.state = _.extend({
       originalQL: '',
       conditionSelectorCount: 1,
       extractSelectorCount: 1,
@@ -154,7 +173,30 @@ class InfluxdbVisualizationEditor extends Component {
         end: null,
       },
       error: '',
-    };
+    }, conf);
+    this.restore();
+  }
+  restore() {
+    const { data, dispatch } = this.props;
+    if (!data) {
+      return;
+    }
+    const conf = data.configure;
+    const { server, db, measurement } = conf;
+    if (!server) {
+      return;
+    }
+    dispatch(influxdbAction.listDatabase(server));
+    if (!db) {
+      return;
+    }
+    dispatch(influxdbAction.listRP(server, db));
+    dispatch(influxdbAction.listMeasurement(server, db));
+    if (!measurement) {
+      return;
+    }
+    dispatch(influxdbAction.listTagInfos(server, db, measurement));
+    dispatch(influxdbAction.listField(server, db, measurement));
   }
   clearError() {
     this.setState({
@@ -665,6 +707,7 @@ class InfluxdbVisualizationEditor extends Component {
   }
   renderExtraSelector() {
     const { hideEmptyPoint } = this.state;
+    const conf = _.get(this.props, 'data.configure'); 
     const emptyPointCls = {
       fa: true,
     };
@@ -700,7 +743,7 @@ class InfluxdbVisualizationEditor extends Component {
             });
           }}
         >
-          Save
+          { conf ? 'Update' : 'Save' }
         </a>
       </div>
     )
@@ -708,27 +751,29 @@ class InfluxdbVisualizationEditor extends Component {
   renderSubmitDialog() {
     const { dispatch } = this.props;
     const state = this.state;
-    const data = {};
-    const strKeys = 'server db rp measurement groupByTime offsetTime'.split(' ');
-    _.forEach(strKeys, key => {
-      if (state[key]) {
-        data[key] = state[key];
-      }
-    });
-    const arrKeys = 'conditions extracts groups fields'.split(' ');
-    _.forEach(arrKeys, key => {
-      if (_.get(state, `${key}.length`)) {
-        data[key] = state[key];
-      }
-    });
-    if (state.date.start || state.date.end) {
-      data.date = state.date;
-    }
+    const keys = 'server db rp measurement groupByTime offsetTime conditions extracts groups fields date'.split(' ');
+    const data = _.pick(state, keys);
+    // const strKeys = 'server db rp measurement groupByTime offsetTime'.split(' ');
+    // _.forEach(strKeys, key => {
+    //   if (state[key]) {
+    //     data[key] = state[key];
+    //   }
+    // });
+    // const arrKeys = 'conditions extracts groups fields'.split(' ');
+    // _.forEach(arrKeys, key => {
+    //   if (_.get(state, `${key}.length`)) {
+    //     data[key] = state[key];
+    //   }
+    // });
+    // if (state.date.start || state.date.end) {
+    //   data.date = state.date;
+    // }
     return (
       <VisualizationSaveDialog
         onClose={() => this.setState({
           showSubmitDialog: false,
         })}
+        orginalData={this.props.data}
         dispatch={dispatch}
         data={data}
       />
