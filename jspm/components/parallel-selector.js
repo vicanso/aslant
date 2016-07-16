@@ -50,7 +50,7 @@ class ParallelSelector extends Component {
     const hiddenValueSelector = _.indexOf(hidden, 'value') !== -1;
     return (
       <div className="pure-g">
-        { !hiddenKeySelector && <div className="pure-u-1-2 parallelSelector">
+        {!hiddenKeySelector && <div className="pure-u-1-2 parallelSelector">
           <span className="pullRight funcDesc">BY</span>
           {
             this.renderSelector({
@@ -58,8 +58,8 @@ class ParallelSelector extends Component {
               type: 'key',
             })
           }
-        </div> }
-        { !hiddenValueSelector && <div className="pure-u-1-2 parallelSelector">
+        </div>}
+        {!hiddenValueSelector && <div className="pure-u-1-2 parallelSelector">
           <a className="pullRight toggle" href="#" onClick={e => this.onClickToggle(e, toggleType)}>
             {toggleType === 'add' && <i className="fa fa-plus-square-o" aria-hidden="true"></i>}
             {toggleType !== 'add' && <i className="fa fa-minus-square-o" aria-hidden="true"></i>}
@@ -70,7 +70,7 @@ class ParallelSelector extends Component {
               type: 'value',
             })
           }
-        </div> }
+        </div>}
       </div>
     );
   }

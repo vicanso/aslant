@@ -38,7 +38,7 @@ module.exports = {
     },
   ],
   post: {
-    'validate': [
+    validate: [
       addModifyTime,
     ],
   },

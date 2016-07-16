@@ -66,15 +66,7 @@ exports.listServer = (conditions) => {
 
 exports.updateServer = (conditions, token, data) => {
   const InfluxdbServer = Models.get('Influxdb-server');
-  const query = _.extend({}, conditions, {
-    token,
-  });
-  const updateData = _.extend({}, data, {
-    token: uuid.v4(),
-  });
-  return InfluxdbServer.findOneAndUpdate(query, updateData, {
-    'new': true,
-  }).then(doc => {
+  return InfluxdbServer.findOneAndUpdateByToken(conditions, token, data).then(doc => {
     if (!doc) {
       throw errors.get('update server info fail, may be token is expired');
     }
@@ -84,12 +76,9 @@ exports.updateServer = (conditions, token, data) => {
 
 exports.removeServer = (conditions, token) => {
   const InfluxdbServer = Models.get('Influxdb-server');
-  const query = _.extend({}, conditions, {
-    token,
-  });
-  return InfluxdbServer.findOneAndRemove(query).then(doc => {
+  return InfluxdbServer.findOneAndRemove(conditions).then(doc => {
     if (!doc) {
-      throw errors.get('update server info fail, may be token is expired');
+      return null;
     }
     return doc.toJSON();
   });
@@ -165,7 +154,6 @@ exports.listPoint = (id, db, ql) => {
   });
 };
 
-
 exports.addConfigure = (data) => {
   const InfluxdbConfigure = Models.get('Influxdb-configure');
   return (new InfluxdbConfigure(data)).save()
@@ -178,5 +166,25 @@ exports.listConfigure = (conditions) => {
   const InfluxdbConfigure = Models.get('Influxdb-configure');
   return InfluxdbConfigure.find(conditions).then(docs => {
     return _.map(docs, doc => doc.toJSON());
+  });
+};
+
+exports.updateConfigure = (conditions, token, data) => {
+  const InfluxdbConfigure = Models.get('Influxdb-configure');
+  return InfluxdbConfigure.findOneAndUpdateByToken(conditions, token, data).then(doc => {
+    if (!doc) {
+      throw errors.get('update configure info fail, may be token is expired');
+    }
+    return doc.toJSON();
+  });
+};
+
+exports.removeConfigure = (conditions) => {
+  const InfluxdbConfigure = Models.get('Influxdb-configure');
+  return InfluxdbConfigure.findOneAndRemove(conditions).then(doc => {
+    if (!doc) {
+      return null;
+    }
+    return doc.toJSON();
   });
 };

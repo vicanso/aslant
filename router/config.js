@@ -8,6 +8,7 @@ module.exports = [
   '[POST] [/sys/restart] [m.auth.admin & c.system.restart]',
 
   // page view
+  /* eslint max-len:0 */
   '[GET] [/,/login,/register,/servers/*,/visualizations,/visualizations/*] [v.home & c.home]',
 
   // user
@@ -25,11 +26,12 @@ module.exports = [
   '[POST] [/influxdb/servers] [m.session.login & c.influxdb.addServer]',
   '[GET] [/influxdb/servers] [m.session.login & c.influxdb.listServer]',
   '[PUT] [/influxdb/servers/:id] [m.session.login & m.validateToken & c.influxdb.editServer]',
-  '[DELETE] [/influxdb/servers/:id] [m.session.login & m.validateToken & c.influxdb.removeServer]',
+  '[DELETE] [/influxdb/servers/:id] [m.session.login & c.influxdb.removeServer]',
 
   '[POST] [/influxdb/configures] [m.session.login & c.influxdb.addConfigure]',
   '[GET] [/influxdb/configures] [m.session.login & c.influxdb.listConfigure]',
   '[PUT] [/influxdb/configures/:id] [m.session.login & m.validateToken & c.influxdb.updateConfigure]',
+  '[DELETE] [/influxdb/configures/:id] [m.session.login & c.influxdb.removeConfigure]',
 
   '[GET] [/influxdb/:id/databases] [m.cache-60 & c.influxdb.listDatabase]',
   '[GET] [/influxdb/:id/:db/rps] [m.cache-60 & c.influxdb.listRP]',

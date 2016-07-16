@@ -47,11 +47,10 @@ class DateTimePicker extends Component {
     return onSelect(`${date.format('YYYY-MM-DD')} ${time}`);
   }
   render() {
-    const { placeholder } = this.props;
     return (
       <div className="dateTimePicker">
         <DatePicker
-          inline={true}
+          inline
           selected={this.state.date}
           onChange={date => this.setDate(date)}
         />

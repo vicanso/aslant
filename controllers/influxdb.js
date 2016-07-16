@@ -28,7 +28,7 @@ exports.addServer = (ctx) => {
 exports.listServer = (ctx) => {
   const account = _.get(ctx, 'session.user.account');
   return influxdbService.listServer({
-    '$or': [
+    $or: [
       {
         owner: account,
       },
@@ -62,7 +62,7 @@ exports.removeServer = (ctx) => {
     owner: _.get(ctx, 'session.user.account'),
     _id: ctx.params.id,
   };
-  return influxdbService.removeServer(conditions, ctx.get('X-Token')).then(() => {
+  return influxdbService.removeServer(conditions).then(() => {
     /* eslint no-param-reassign:0 */
     ctx.body = null;
   });
@@ -76,7 +76,7 @@ exports.addConfigure = (ctx) => {
     configure: Joi.object().required(),
   });
   return influxdbService.addConfigure(_.extend({
-    owner: account
+    owner: account,
   }, data)).then(configure => {
     /* eslint no-param-reassign:0 */
     ctx.status = 201;
@@ -96,14 +96,12 @@ exports.listConfigure = (ctx) => {
   });
 };
 
-exports.listDatabase = (ctx) => {
-  return influxdbService.listDatabases(ctx.params.id).then(data => {
-    /* eslint no-param-reassign:0 */
-    ctx.body = {
-      items: data,
-    };
-  });
-};
+exports.listDatabase = (ctx) => influxdbService.listDatabases(ctx.params.id).then(data => {
+  /* eslint no-param-reassign:0 */
+  ctx.body = {
+    items: data,
+  };
+});
 
 exports.listRP = (ctx) => {
   const { id, db } = ctx.params;
@@ -168,9 +166,25 @@ exports.updateConfigure = (ctx) => {
     owner: _.get(ctx, 'session.user.account'),
     _id: ctx.params.id,
   };
-  const data = ctx.request.body;
+  const data = Joi.validateThrow(ctx.request.body, {
+    name: Joi.string().required(),
+    desc: Joi.string().required(),
+    configure: Joi.object().required(),
+  });
   return influxdbService.updateConfigure(conditions, ctx.get('X-Token'), data).then(configure => {
     /* eslint no-param-reassign:0 */
     ctx.body = configure;
   });
 };
+
+exports.removeConfigure = (ctx) => {
+  const conditions = {
+    owner: _.get(ctx, 'session.user.account'),
+    _id: ctx.params.id,
+  };
+  return influxdbService.removeConfigure(conditions).then(() => {
+    /* eslint no-param-reassign:0 */
+    ctx.body = null;
+  });
+};
+

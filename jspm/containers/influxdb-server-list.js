@@ -34,7 +34,7 @@ class ServerItem extends Component {
       step: 'prcessingRemove',
     });
     const { dispatch, data } = this.props;
-    dispatch(influxdbAction.removeServer(data._id, data.token)).catch(err => {
+    dispatch(influxdbAction.removeServer(data._id)).catch(err => {
       this.setState({
         step: '',
       });
@@ -50,7 +50,7 @@ class ServerItem extends Component {
     const { data, index, user } = this.props;
     const { step } = this.state;
     const trClass = {};
-    const owner = user.account;
+    const owner = user.basic.account;
     if (index % 2 === 0) {
       trClass['pure-table-odd'] = true;
     }

@@ -430,7 +430,14 @@ class InfluxdbVisualizationEditor extends Component {
   }
   getInfluxQL() {
     const state = this.state;
-    if (!state.measurement) {
+    if (!state.measurement || state.error) {
+      return '';
+    }
+    const count = Math.abs(util.toSeconds(state.offsetTime)) / util.toSeconds(state.groupByTime);
+    if (count > 300) {
+      this.setState({
+        error: `There are too many points(${count}), please change influx ql group by time`,
+      });
       return '';
     }
     return util.getInfluxQL(state);
@@ -751,23 +758,8 @@ class InfluxdbVisualizationEditor extends Component {
   renderSubmitDialog() {
     const { dispatch } = this.props;
     const state = this.state;
-    const keys = 'server db rp measurement groupByTime offsetTime conditions extracts groups fields date'.split(' ');
+    const keys = 'server db rp measurement groupByTime offsetTime conditions extracts groups fields date hideEmptyPoint'.split(' ');
     const data = _.pick(state, keys);
-    // const strKeys = 'server db rp measurement groupByTime offsetTime'.split(' ');
-    // _.forEach(strKeys, key => {
-    //   if (state[key]) {
-    //     data[key] = state[key];
-    //   }
-    // });
-    // const arrKeys = 'conditions extracts groups fields'.split(' ');
-    // _.forEach(arrKeys, key => {
-    //   if (_.get(state, `${key}.length`)) {
-    //     data[key] = state[key];
-    //   }
-    // });
-    // if (state.date.start || state.date.end) {
-    //   data.date = state.date;
-    // }
     return (
       <VisualizationSaveDialog
         onClose={() => this.setState({

@@ -11,6 +11,9 @@ import {
   INFLUXDB_LIST_TAG_INFO,
   INFLUXDB_LIST_FIELDS,
   INFLUXDB_LIST_CONFIGURE,
+  INFLUXDB_ADD_CONFIGURE,
+  INFLUXDB_UPDATE_CONFIGURE,
+  INFLUXDB_REMOVE_CONFIGURE,
 } from '../constants/action-types';
 
 export function addServer(data) {
@@ -43,9 +46,8 @@ export function editServer(id, token, data) {
     }));
 }
 
-export function removeServer(id, token) {
+export function removeServer(id) {
   return dispatch => http.del(`/influxdb/servers/${id}`)
-    .set('X-Token', token)
     .then(() => dispatch({
       type: INFLUXDB_REMOVE_SERVER,
       id,
@@ -110,9 +112,10 @@ export function getPoints(id, db, ql) {
 
 export function addConfigure(data) {
   return dispatch => http.post('/influxdb/configures', data)
-    .then(res => {
-      console.dir(res.body);
-    });
+    .then(res => dispatch({
+      type: INFLUXDB_ADD_CONFIGURE,
+      configure: res.body,
+    }));
 }
 
 export function listConfigure() {
@@ -126,8 +129,19 @@ export function listConfigure() {
 export function updateConfigure(id, token, data) {
   return dispatch => http.put(`/influxdb/configures/${id}`)
     .set('X-Token', token)
+    .send(data)
     .then(res => dispatch({
       type: INFLUXDB_UPDATE_CONFIGURE,
-      configures: res.body.items || [],
+      configure: res.body,
     }));
+}
+
+export function removeConfigure(id) {
+  return dispatch => http.del(`/influxdb/configures/${id}`)
+    .then(() => {
+      dispatch({
+        type: INFLUXDB_REMOVE_CONFIGURE,
+        id,
+      });
+    });
 }

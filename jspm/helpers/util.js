@@ -89,4 +89,13 @@ export function rejectEmptyPoint(series) {
   });
 }
 
-
+export function toSeconds(str) {
+  const dict = {
+    's': 1,
+    'm': 60,
+    'h': 60 * 60,
+    'd': 24 * 60 * 60,
+  };
+  const unit = str.charAt(str.length - 1);
+  return dict[unit] * parseFloat(str);
+}
