@@ -89,7 +89,7 @@ class InfluxdbVisualizationList extends Component {
                   <i className="fa fa-spinner" aria-hidden="true"></i>
                 </span>
               }
-              <i className="fa fa-bar-chart" aria-hidden="true"></i>
+              <i className="fa fa-bar-chart mright3" aria-hidden="true"></i>
               {configure.name}
 
             </div>

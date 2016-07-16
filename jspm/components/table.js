@@ -68,9 +68,11 @@ class Table extends Component {
     const { sortIndex, sortBy } = this.state;
     let list = [];
     _.forEach(this.props.list.slice(1), arr => list.push(arr.slice(0)));
-    list = _.sortBy(list, item => item[sortIndex]);
-    if (sortBy === 'desc') {
-      list = list.reverse();
+    if (~sortIndex) {
+      list = _.sortBy(list, item => item[sortIndex]);
+      if (sortBy === 'desc') {
+        list = list.reverse();
+      }
     }
     const renderTr = this.renderTr.bind(this);
     return (

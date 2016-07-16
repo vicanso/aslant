@@ -164,6 +164,7 @@ class InfluxdbVisualizationEditor extends Component {
       groupByTime: '',
       doingQuery: false,
       offsetTime: '-15m',
+      orderByTime: 'desc',
       date: {
         start: null,
         end: null,
@@ -713,19 +714,57 @@ class InfluxdbVisualizationEditor extends Component {
     );
   }
   renderExtraSelector() {
-    const { hideEmptyPoint } = this.state;
+    const { hideEmptyPoint, orderByTime } = this.state;
     const conf = _.get(this.props, 'data.configure'); 
     const emptyPointCls = {
       fa: true,
     };
+    const orderDescCls = {
+      fa: true,
+    };
+    const orderAscCls = {
+      fa: true,
+    };
+    if (orderByTime === 'desc') {
+      orderDescCls['fa-check-square-o'] = true;
+      orderAscCls['fa-square-o'] = true;
+    } else {
+      orderAscCls['fa-check-square-o'] = true;
+      orderDescCls['fa-square-o'] = true;
+    }
     if (!hideEmptyPoint) {
       emptyPointCls['fa-square-o'] = true;
     } else {
       emptyPointCls['fa-check-square-o'] = true;
     }
+    const setOrderBy = (e, order) => {
+      e.preventDefault();
+      if (this.state.orderByTime !== order) {
+        this.setState({
+          orderByTime: order,
+        });
+      }
+    };
     return (
       <div className="extraSelector">
         <label>Extra Setting</label>
+        <div className="orderBy">
+          <span>order by time:</span>
+          <a
+            href="#"
+            onClick={e => setOrderBy(e, 'desc')}
+          >
+            <i className={classnames(orderDescCls)}></i>
+            desc
+          </a>
+          <a
+            href="#"
+            onClick={e => setOrderBy(e, 'asc')}
+          >
+            <i className={classnames(orderAscCls)}></i>
+            asc
+          </a>
+        </div>
         <a
           href="#"
           className='hideEmptyPoint'
@@ -758,7 +797,7 @@ class InfluxdbVisualizationEditor extends Component {
   renderSubmitDialog() {
     const { dispatch } = this.props;
     const state = this.state;
-    const keys = 'server db rp measurement groupByTime offsetTime conditions extracts groups fields date hideEmptyPoint'.split(' ');
+    const keys = 'server db rp measurement groupByTime offsetTime conditions extracts groups fields date hideEmptyPoint orderByTime'.split(' ');
     const data = _.pick(state, keys);
     return (
       <VisualizationSaveDialog

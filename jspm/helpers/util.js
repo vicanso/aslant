@@ -64,6 +64,9 @@ export function getInfluxQL(options) {
   if (options.offsetTime && options.offsetTime.charAt(0) === '-') {
     ql.start = options.offsetTime;
   }
+  if (options.orderByTime) {
+    ql.order = options.orderByTime;
+  }
   _.forEach(['start', 'end'], key => {
     const date = options.date[key];
     if (date) {
