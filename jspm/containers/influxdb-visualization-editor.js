@@ -8,6 +8,7 @@ import TimePicker from 'rc-time-picker';
 import moment from 'moment';
 import Select from 'react-select';
 import * as uuid from 'uuid';
+import * as echarts from 'echarts';
 import * as util from '../helpers/util';
 import * as influxdbAction from '../actions/influxdb';
 import * as navigationAction from '../actions/navigation';
@@ -164,7 +165,7 @@ class InfluxdbVisualizationEditor extends Component {
       groupByTime: '',
       doingQuery: false,
       offsetTime: '-15m',
-      orderByTime: 'desc',
+      orderByTime: 'asc',
       date: {
         start: null,
         end: null,
@@ -752,17 +753,17 @@ class InfluxdbVisualizationEditor extends Component {
           <span>order by time:</span>
           <a
             href="#"
-            onClick={e => setOrderBy(e, 'desc')}
-          >
-            <i className={classnames(orderDescCls)}></i>
-            desc
-          </a>
-          <a
-            href="#"
             onClick={e => setOrderBy(e, 'asc')}
           >
             <i className={classnames(orderAscCls)}></i>
             asc
+          </a>
+          <a
+            href="#"
+            onClick={e => setOrderBy(e, 'desc')}
+          >
+            <i className={classnames(orderDescCls)}></i>
+            desc
           </a>
         </div>
         <a
@@ -859,6 +860,11 @@ class InfluxdbVisualizationEditor extends Component {
           });
         });
       }
+      _.forEach(series, item => {
+        const option = util.getEchartLineOption(item);
+        const chart = echarts.init(this.refs.echartsContainer);
+        chart.setOption(option);
+      });
       this.setState({
         series,
         error: '',
@@ -938,8 +944,15 @@ class InfluxdbVisualizationEditor extends Component {
           {this.renderExtraSelector()}
         </div>
       </div>
+      <div>
+        <div
+          className="echartsContainer"
+          ref="echartsContainer"
+        >
+      </div>
       <div className="seriesTableContainer">
         {this.renderSeriesTable()}
+      </div>
       </div>
       {
         this.renderErrorTips()
