@@ -8,11 +8,11 @@ import TimePicker from 'rc-time-picker';
 import moment from 'moment';
 import Select from 'react-select';
 import * as uuid from 'uuid';
-import * as echarts from 'echarts';
 import * as util from '../helpers/util';
 import * as influxdbAction from '../actions/influxdb';
 import * as navigationAction from '../actions/navigation';
 import SeriesTable from './series-table';
+import Chart from './chart';
 import Dialog from '../components/dialog';
 import DateTimePicker from '../components/date-time-picker';
 import ParallelSelector from '../components/parallel-selector';
@@ -87,8 +87,7 @@ class VisualizationSaveDialog extends Dialog {
     }
     fn.then(data => {
       dispatch(navigationAction.showVisualizations());
-    })
-    .catch(err => {
+    }).catch(err => {
       this.setState({
         status: '',
         error: util.getError(err),
@@ -140,6 +139,47 @@ class VisualizationSaveDialog extends Dialog {
   }
 }
 
+class InfluxdbRadioSelector extends Component {
+  select(e, option) {
+    const { onSelect } = this.props;
+    e.preventDefault();
+    onSelect(option);
+  }
+  renderOptions() {
+    const { selected, options } = this.props;
+    const cur = selected || options[0];
+    return _.map(options, option => {
+      const cls = {
+        fa: true,
+      };
+      if (cur === option) {
+        cls['fa-check-square-o'] = true;
+      } else {
+        cls['fa-square-o'] = true;
+      }
+      return (
+        <a
+          key={option}
+          href="#"
+          onClick={e => this.select(e, option)}
+        >
+          <i className={classnames(cls)}></i>
+          {option}
+        </a>
+      );
+    });
+  }
+  render() {
+    const { desc, options } = this.props;
+    return (
+      <div className="radioSelector">
+        <span>{desc}</span>
+        {this.renderOptions()}
+      </div>
+    );
+  }
+}
+
 class InfluxdbVisualizationEditor extends Component {
   constructor(props) {
     super(props);
@@ -166,6 +206,7 @@ class InfluxdbVisualizationEditor extends Component {
       doingQuery: false,
       offsetTime: '-15m',
       orderByTime: 'asc',
+      statsView: 'table',
       date: {
         start: null,
         end: null,
@@ -341,7 +382,7 @@ class InfluxdbVisualizationEditor extends Component {
     if (!_.get(this, 'state.extracts.length')) {
       return null;
     }
-    const options = _.map('10s 30s 1m 5m 10m 15m 30m 1h 6h 12h 1d 7d 30d'.split(' '), v => {
+    const options = _.map('10s 30s 1m 5m 10m 15m 30m 1h 2h 6h 12h 1d 2d 7d 30d'.split(' '), v => {
       return {
         label: v,
         value: v,
@@ -438,6 +479,7 @@ class InfluxdbVisualizationEditor extends Component {
     const count = Math.abs(util.toSeconds(state.offsetTime)) / util.toSeconds(state.groupByTime);
     if (count > 300) {
       this.setState({
+        series: null,
         error: `There are too many points(${count}), please change influx ql group by time`,
       });
       return '';
@@ -720,52 +762,38 @@ class InfluxdbVisualizationEditor extends Component {
     const emptyPointCls = {
       fa: true,
     };
-    const orderDescCls = {
-      fa: true,
-    };
-    const orderAscCls = {
-      fa: true,
-    };
-    if (orderByTime === 'desc') {
-      orderDescCls['fa-check-square-o'] = true;
-      orderAscCls['fa-square-o'] = true;
-    } else {
-      orderAscCls['fa-check-square-o'] = true;
-      orderDescCls['fa-square-o'] = true;
-    }
     if (!hideEmptyPoint) {
       emptyPointCls['fa-square-o'] = true;
     } else {
       emptyPointCls['fa-check-square-o'] = true;
     }
-    const setOrderBy = (e, order) => {
-      e.preventDefault();
-      if (this.state.orderByTime !== order) {
-        this.setState({
-          orderByTime: order,
-        });
-      }
-    };
     return (
       <div className="extraSelector">
         <label>Extra Setting</label>
-        <div className="orderBy">
-          <span>order by time:</span>
-          <a
-            href="#"
-            onClick={e => setOrderBy(e, 'asc')}
-          >
-            <i className={classnames(orderAscCls)}></i>
-            asc
-          </a>
-          <a
-            href="#"
-            onClick={e => setOrderBy(e, 'desc')}
-          >
-            <i className={classnames(orderDescCls)}></i>
-            desc
-          </a>
-        </div>
+        <InfluxdbRadioSelector
+          desc={'stats view:'}
+          options={['table', 'line-chart', 'pie-chart']}
+          selected={this.state.statsView}
+          onSelect={option => {
+            if (this.state.statsView !== option) {
+              this.setState({
+                statsView: option,
+              });
+            }
+          }}
+        />
+        <InfluxdbRadioSelector
+          desc={'order by time:'}
+          options={['asc', 'desc']}
+          selected={this.state.orderByTime}
+          onSelect={option => {
+            if (this.state.orderByTime !== option) {
+              this.setState({
+                orderByTime: option,
+              });
+            }
+          }}
+        />
         <a
           href="#"
           className='hideEmptyPoint'
@@ -860,11 +888,6 @@ class InfluxdbVisualizationEditor extends Component {
           });
         });
       }
-      _.forEach(series, item => {
-        const option = util.getEchartLineOption(item);
-        const chart = echarts.init(this.refs.echartsContainer);
-        chart.setOption(option);
-      });
       this.setState({
         series,
         error: '',
@@ -880,20 +903,23 @@ class InfluxdbVisualizationEditor extends Component {
   }
   renderSeriesTable() {
     const { series, hideEmptyPoint } = this.state;
-    if (!series) {
-      return null;
-    }
-    if (!series.length) {
-      return <p className="tac">There is not stats data, please change influx ql.</p>
-    }
-    const results = hideEmptyPoint ? util.rejectEmptyPoint(series) : series;
-    const arr = results.map(item => {
+    const arr = _.map(series, item => {
       return <SeriesTable
-        tags={item.tags}
-        list={util.convertSeriesData(item)}
+        seriesItem={item}
+        hideEmptyPoint={hideEmptyPoint}
       />
     });
     return arr;
+  }
+  renderCharts(type) {
+    const { series } = this.state;
+    return (
+      <Chart
+        name={this.state.name}
+        series={series}
+        type={type}
+      />
+    );
   }
   renderErrorTips() {
     const { error } = this.state;
@@ -905,7 +931,7 @@ class InfluxdbVisualizationEditor extends Component {
         <i className="fa fa-exclamation-triangle" aria-hidden="true"></i>
         <span>{error}</span>
       </div>
-    )
+    );
   }
   hideSelector() {
     const state = this.state;
@@ -918,6 +944,33 @@ class InfluxdbVisualizationEditor extends Component {
     if (!_.isEmpty(data)) {
       this.setState(data);
     }
+  }
+  renderStatsView() {
+    const { statsView, series } = this.state;
+    if (!series) {
+      return null;
+    }
+    if (!series.length) {
+      return (
+        <p className="tac">There is not stats data, please change influx ql.</p>
+      );
+    }
+    let view;
+    switch (statsView) {
+      case 'table':
+        view = this.renderSeriesTable();
+        break;
+      default:
+        view = this.renderCharts(statsView);
+        break;
+    }
+    return (
+      <div
+        className="statsViewContainer"
+      >
+        {view}
+      </div>
+    );
   }
   render() {
     const { showSubmitDialog } = this.state;
@@ -944,16 +997,9 @@ class InfluxdbVisualizationEditor extends Component {
           {this.renderExtraSelector()}
         </div>
       </div>
-      <div>
-        <div
-          className="echartsContainer"
-          ref="echartsContainer"
-        >
-      </div>
-      <div className="seriesTableContainer">
-        {this.renderSeriesTable()}
-      </div>
-      </div>
+      {
+        this.renderStatsView()
+      }
       {
         this.renderErrorTips()
       }

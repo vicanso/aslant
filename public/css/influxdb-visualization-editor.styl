@@ -73,11 +73,6 @@
   .extraSelector
     margin-right 0
     line-height 24px
-    .orderBy
-      a
-        margin 0 10px 0 5px
-        .fa
-          width 18px
     .hideEmptyPoint
       display block
       .fa
@@ -94,7 +89,13 @@
           width 18px
     .submit
       display block
-  .seriesTableContainer
+  .radioSelector
+    border-bottom 1px solid $GRAY_BORDER_COLOR
+    a
+      margin 0 10px 0 5px
+    .fa
+      width 18px
+  .statsViewContainer
     margin-top 10px
     overflow auto
     .seriesTable
@@ -113,8 +114,10 @@
         th .fa
           width 10px
           margin-left 3px
-  .echartsContainer
-    height 300px
+    .chartContainer
+      height 300px
+      > *
+        height 100%
   .visualizationSaveDialog .dialog
     margin-top -130px
     fieldset

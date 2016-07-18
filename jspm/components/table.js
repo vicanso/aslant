@@ -23,8 +23,8 @@ class Table extends Component {
     }
     this.setState(data);
   }
-  renderThead() {
-    const head = this.props.list[0].slice(0);
+  renderThead(data) {
+    const head = data[0].slice(0);
     const { sortIndex, sortBy } = this.state;
     return (
       <thead><tr>
@@ -64,10 +64,10 @@ class Table extends Component {
       </tr>
     );
   }
-  renderTbody() {
+  renderTbody(data) {
     const { sortIndex, sortBy } = this.state;
     let list = [];
-    _.forEach(this.props.list.slice(1), arr => list.push(arr.slice(0)));
+    _.forEach(data.slice(1), arr => list.push(arr.slice(0)));
     if (~sortIndex) {
       list = _.sortBy(list, item => item[sortIndex]);
       if (sortBy === 'desc') {
@@ -81,11 +81,11 @@ class Table extends Component {
       </tbody>
     );
   }
-  renderTable() {
+  renderTable(data) {
     return (
       <table className="pure-table">
-        {this.renderThead()}
-        {this.renderTbody()}
+        {this.renderThead(data || this.props.list)}
+        {this.renderTbody(data || this.props.list)}
       </table>
     );
   }
