@@ -40,9 +40,7 @@ class InfluxdbVisualizationList extends Component {
     this.setState({
       stepDict,
     });
-    dispatch(influxdbAction.removeConfigure(id)).then(() => {
-
-    });
+    dispatch(influxdbAction.removeConfigure(id));
   }
   renderVisualizations() {
     const { configures, dispatch } = this.props;
@@ -55,7 +53,7 @@ class InfluxdbVisualizationList extends Component {
           className="pure-u-1-4"
           key={id}
         >
-          <div className="visualization" onClick={() => dispatch(navigationAction.editVisualization(id))}>
+          <div className="visualization">
             <div className="title">
               { !step &&
                 <a
@@ -89,15 +87,30 @@ class InfluxdbVisualizationList extends Component {
                   <i className="fa fa-spinner" aria-hidden="true"></i>
                 </span>
               }
+              <a
+                className="pullRight"
+                href="#"
+                onClick={e => {
+                  e.preventDefault();
+                  dispatch(navigationAction.editVisualization(id));
+                }}
+              >
+                <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
+              </a>
               <i className="fa fa-bar-chart mright3" aria-hidden="true"></i>
               {configure.name}
 
             </div>
-            <p>{configure.desc}</p>
-            <span className="author">
-              <i className="fa fa-user mright3" aria-hidden="true"></i>
-              {configure.owner}
-            </span>
+            <div
+              className="content"
+              onClick={() => dispatch(navigationAction.showVisualization(id))}
+            >
+              <p>{configure.desc}</p>
+              <span className="author">
+                <i className="fa fa-user mright3" aria-hidden="true"></i>
+                {configure.owner}
+              </span>
+            </div>
           </div>
         </div>
       );

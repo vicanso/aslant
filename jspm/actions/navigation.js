@@ -39,6 +39,10 @@ export function showVisualizations() {
   return to(urls.SHOW_VISUALIZATIONS);
 }
 
+export function showVisualization(id) {
+  return to(`${urls.SHOW_VISUALIZATIONS}/${id}`);
+}
+
 export function addVisualization() {
   return to(urls.EDIT_VISUALIZATIONS);
 }

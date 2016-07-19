@@ -123,7 +123,12 @@ class MainHeader extends Component {
   render() {
     return (
       <header className="mainHeader">
-        <ul className="pullRight">
+        <ul
+          className="pullRight"
+          style={{
+            marginRight: '10px',
+          }}
+        >
           {this.renderUserInfo()}
         </ul>
       </header>

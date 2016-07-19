@@ -5,3 +5,84 @@
 .is-focused:not(.is-open) > .Select-control
   border-color #aeaeae
   box-shadow inset 0 2px 2px #e9e9e9, 0 0 10px 0 rgba(73, 107, 125, 0.3)
+  
+.dialog
+  position fixed
+  width 500px
+  border 1px solid #c4c4c4
+  left 50%
+  top 50%
+  margin-left -(@width / 2)
+  border-radius 3px
+  box-shadow inset 0 -2px 1px rgba(0,0,0,0.03)
+  z-index 9
+  .title
+    margin 0
+    background-color #f0f0f0
+    border-bottom 1px solid #dadada
+    line-height 2em
+    padding-left 1em
+    .close
+      float right
+      height 100%
+      width 30px
+      color #777
+  .content
+    background-color #f5f5f5
+    padding 30px
+    .submit
+      border-radius 3px
+      line-height 1.7em
+      color #fff
+.registerLoginDialog
+  .content
+    padding-bottom 10px
+    input[type='text'], input[type='password']
+      width 200px
+    .submit
+      width 150px
+
+.dateTimePicker
+  width 208px
+  .timePicker
+    display block
+    margin 10px 0
+  input
+    width 100%
+    height auto
+    line-height 23px
+    
+.parallelSelector
+  $funcItemWidth = 30px
+  margin-bottom 10px
+  .funcDesc, .toggle
+    width $funcItemWidth
+    text-align center
+    line-height 36px
+    display block
+  .selector
+    margin-right $funcItemWidth
+
+.visualizationView
+  margin-top 10px
+  overflow auto
+  .seriesTable
+    margin-bottom 10px
+    .groupsContainer
+      border 1px solid $GRAY_BORDER_COLOR
+      border-bottom none
+      border-radius top 3px
+      display inline-block
+      padding 3px 10px
+      background-color #fff
+      color #265778
+    table
+      width 100%
+      background-color #fff
+      th .fa
+        width 10px
+        margin-left 3px
+  .chartContainer
+    height 300px
+    > *
+      height 100%

@@ -68,7 +68,7 @@ export function getInfluxQL(options) {
   if (options.orderByTime) {
     ql.order = options.orderByTime;
   }
-  _.forEach(['start', 'end'], key => {
+  options.date && _.forEach(['start', 'end'], key => {
     const date = options.date[key];
     if (date) {
       ql[key] = moment(date, 'YYYY-MM-DD HH:mm:ss').toISOString();

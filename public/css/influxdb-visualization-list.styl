@@ -9,17 +9,25 @@
     border 1px solid $GRAY_BORDER_COLOR
     border-radius 5px
     background-color #fdfdfd
-    cursor pointer
     position relative
+    $titleHeight = 25px
     .title
-      line-height 24px
+      line-height $titleHeight - 1
       text-indent 5px
       background-color #f0f0f0
       border-bottom 1px solid $GRAY_BORDER_COLOR
       a
+        text-indent 0
         padding 0 5px
     p
       margin 10px
+    .content
+      position absolute
+      top $titleHeight
+      left 0
+      right 0
+      bottom 0
+      cursor pointer
     .author
       position absolute
       right 0

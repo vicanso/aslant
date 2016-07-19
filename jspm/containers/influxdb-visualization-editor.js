@@ -13,6 +13,7 @@ import * as influxdbAction from '../actions/influxdb';
 import * as navigationAction from '../actions/navigation';
 import SeriesTable from './series-table';
 import Chart from './chart';
+import InfluxdbVisualizationView from './influxdb-visualization-view';
 import Dialog from '../components/dialog';
 import DateTimePicker from '../components/date-time-picker';
 import ParallelSelector from '../components/parallel-selector';
@@ -203,7 +204,6 @@ class InfluxdbVisualizationEditor extends Component {
       groups: [],
       fields: [],
       groupByTime: '',
-      doingQuery: false,
       offsetTime: '-15m',
       orderByTime: 'asc',
       statsView: 'table',
@@ -487,16 +487,7 @@ class InfluxdbVisualizationEditor extends Component {
     return util.getInfluxQL(state);
   }
   renderQueryBar() {
-    const { doingQuery, showDateTimeSelector } = this.state;
-    const queryClass = {
-      fa: true,
-      mright5: true,
-    };
-    if (doingQuery) {
-      queryClass['fa-spinner'] = true;
-    } else {
-      queryClass['fa-search'] = true;
-    }
+    const { showDateTimeSelector } = this.state;
     return <div
       className="queryBarContainer"
     >
@@ -823,11 +814,13 @@ class InfluxdbVisualizationEditor extends Component {
       </div>
     )
   }
+  getConfigure() {
+    const keys = 'server db rp measurement groupByTime offsetTime conditions extracts groups fields date hideEmptyPoint orderByTime'.split(' ');
+    return _.pick(this.state, keys);
+  }
   renderSubmitDialog() {
     const { dispatch } = this.props;
-    const state = this.state;
-    const keys = 'server db rp measurement groupByTime offsetTime conditions extracts groups fields date hideEmptyPoint orderByTime'.split(' ');
-    const data = _.pick(state, keys);
+    const data = this.getConfigure();
     return (
       <VisualizationSaveDialog
         onClose={() => this.setState({
@@ -855,72 +848,6 @@ class InfluxdbVisualizationEditor extends Component {
     data[key] = !state[key];
     this.setState(data);
   }
-  doQuery() {
-    const state = this.state;
-    const ql = this.getInfluxQL();
-    if (!ql || state.doingQuery || ql === state.originalQL) {
-      return;
-    }
-    const data = _.pick(state, ['measurement', 'conditions']);
-    data.ql = ql;
-    this.setState({
-      doingQuery: true,
-      originalQL: ql,
-    });
-    const complete = () => {
-      this.setState({
-        doingQuery: false,
-      });
-    };
-    influxdbAction.getPoints(state.server, state.db, ql).then(series => {
-      const extracts = state.extracts;
-      if (extracts.length) {
-        const extractDescList = _.compact(_.map(extracts, extract => {
-          if (!extract.value || !extract.key) {
-            return '';
-          }
-          return `${extract.value}(${extract.key})`;
-        })).sort();
-        _.forEach(series, item => {
-          const columns = item.columns;
-          _.forEach(extractDescList, (desc, i) => {
-            columns[i + 1] = desc;
-          });
-        });
-      }
-      this.setState({
-        series,
-        error: '',
-      });
-      complete();
-    }).catch(err => {
-      complete();
-      this.setState({
-        series: null,
-      });
-      this.setError(err);
-    });
-  }
-  renderSeriesTable() {
-    const { series, hideEmptyPoint } = this.state;
-    const arr = _.map(series, item => {
-      return <SeriesTable
-        seriesItem={item}
-        hideEmptyPoint={hideEmptyPoint}
-      />
-    });
-    return arr;
-  }
-  renderCharts(type) {
-    const { series } = this.state;
-    return (
-      <Chart
-        name={this.state.name}
-        series={series}
-        type={type}
-      />
-    );
-  }
   renderErrorTips() {
     const { error } = this.state;
     if (!error) {
@@ -946,35 +873,21 @@ class InfluxdbVisualizationEditor extends Component {
     }
   }
   renderStatsView() {
-    const { statsView, series } = this.state;
-    if (!series) {
+    const { dispatch } = this.props;
+    const state = this.state;
+    if (!this.getInfluxQL()) {
       return null;
     }
-    if (!series.length) {
-      return (
-        <p className="tac">There is not stats data, please change influx ql.</p>
-      );
-    }
-    let view;
-    switch (statsView) {
-      case 'table':
-        view = this.renderSeriesTable();
-        break;
-      default:
-        view = this.renderCharts(statsView);
-        break;
-    }
     return (
-      <div
-        className="statsViewContainer"
-      >
-        {view}
-      </div>
+      <InfluxdbVisualizationView
+        dispatch={dispatch}
+        configure={this.getConfigure()}
+        type={state.statsView}
+      />
     );
   }
   render() {
     const { showSubmitDialog } = this.state;
-    this.doQuery();
     return <div
       className="influxdbVisualizationEditor"
       onClick={e => {
