@@ -1,7 +1,7 @@
 'use strict';
 /* eslint  import/no-unresolved:0 */
 import React, { PropTypes } from 'react';
-import Table from '../components/table';
+import Table from './table';
 import * as util from '../helpers/util';
 
 class SeriesTable extends Table {

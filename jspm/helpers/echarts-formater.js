@@ -118,7 +118,7 @@ export function getPieOption(data, name) {
     option.legend.data.push(tagsDesc);
     pieData.data.push({
       name: tagsDesc,
-      value: item.values[0][1],
+      value: _.last(item.values)[1],
     });
   });
   return option;

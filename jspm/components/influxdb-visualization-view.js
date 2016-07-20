@@ -12,21 +12,25 @@ class InfluxdbVisualizationView extends Component {
     this.state = {
       doingQuery: false,
       originalQL: '',
+      timer: null,
     };
   }
-  updateSeries() {
-    const state = this.state;
-    const { configure } = this.props;
-    const ql = util.getInfluxQL(configure);
-    if (!ql || state.doingQuery || ql === state.originalQL) {
-      return;
+  autoRefresh(ql) {
+    const { autoRefresh } = this.props;
+    if (this.state.timer) {
+      clearInterval(this.state.timer);
     }
-    this.setState({
-      doingQuery: true,
-      originalQL: ql,
-      error: '',
-    });
-    influxdbAction.getPoints(configure.server, configure.db, ql).then(series => {
+    this.state.timer = setInterval(() => {
+      this.getPoints(ql).then(series => {
+        this.setState({
+          series,
+        });
+      });
+    }, util.toSeconds(autoRefresh) * 1000);
+  }
+  getPoints(ql) {
+    const { configure } = this.props;
+    return influxdbAction.getPoints(configure.server, configure.db, ql).then(series => {
       const extracts = configure.extracts;
       if (extracts.length) {
         const extractDescList = _.compact(_.map(extracts, extract => {
@@ -42,11 +46,30 @@ class InfluxdbVisualizationView extends Component {
           });
         });
       }
+      return series;
+    });
+  }
+  updateSeries() {
+    const state = this.state;
+    const { configure, autoRefresh } = this.props;
+    const ql = util.getInfluxQL(configure);
+    if (!ql || state.doingQuery || ql === state.originalQL) {
+      return;
+    }
+    this.setState({
+      doingQuery: true,
+      originalQL: ql,
+      error: '',
+    });
+    this.getPoints(ql).then(series => {
       this.setState({
         series,
         error: '',
         doingQuery: false,
       });
+      if (autoRefresh) {
+        this.autoRefresh(ql);
+      }
     }).catch(err => {
       this.setState({
         series: null,

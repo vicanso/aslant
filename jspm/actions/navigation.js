@@ -44,7 +44,7 @@ export function showVisualization(id) {
 }
 
 export function addVisualization() {
-  return to(urls.EDIT_VISUALIZATIONS);
+  return to(urls.ADD_VISUALIZATIONS);
 }
 
 export function editVisualization(id) {

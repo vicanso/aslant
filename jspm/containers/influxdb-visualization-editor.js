@@ -11,9 +11,7 @@ import * as uuid from 'uuid';
 import * as util from '../helpers/util';
 import * as influxdbAction from '../actions/influxdb';
 import * as navigationAction from '../actions/navigation';
-import SeriesTable from './series-table';
-import Chart from './chart';
-import InfluxdbVisualizationView from './influxdb-visualization-view';
+import InfluxdbVisualizationView from '../components/influxdb-visualization-view';
 import Dialog from '../components/dialog';
 import DateTimePicker from '../components/date-time-picker';
 import ParallelSelector from '../components/parallel-selector';
@@ -815,7 +813,7 @@ class InfluxdbVisualizationEditor extends Component {
     )
   }
   getConfigure() {
-    const keys = 'server db rp measurement groupByTime offsetTime conditions extracts groups fields date hideEmptyPoint orderByTime'.split(' ');
+    const keys = 'server db rp measurement groupByTime offsetTime conditions extracts groups fields date hideEmptyPoint orderByTime statsView'.split(' ');
     return _.pick(this.state, keys);
   }
   renderSubmitDialog() {

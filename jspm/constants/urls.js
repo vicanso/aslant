@@ -16,4 +16,6 @@ export const EDIT_SERVER = `${appUrlPrfix}/servers/edit`;
 
 export const SHOW_VISUALIZATIONS = `${appUrlPrfix}/visualizations`;
 
+export const ADD_VISUALIZATIONS = `${appUrlPrfix}/visualizations/add`;
+
 export const EDIT_VISUALIZATIONS = `${appUrlPrfix}/visualizations/edit`;

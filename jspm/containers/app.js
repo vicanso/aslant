@@ -10,7 +10,7 @@ import InfluxdbServerEditor from './influxdb-server-editor';
 import InfluxdbServerList from './influxdb-server-list';
 import InfluxdbVisualizationList from './influxdb-visualization-list';
 import InfluxdbVisualizationEditor from './influxdb-visualization-editor';
-import InfluxdbVisualizationView from './influxdb-visualization-view';
+import InfluxdbVisualizationViewBoard from './influxdb-visualization-view-board';
 import * as urls from '../constants/urls';
 import * as navigationAction from '../actions/navigation';
 
@@ -66,7 +66,7 @@ class App extends Component {
     const { dispatch, user, influxdbServer } = this.props;
     const item = _.find(user.configures, item => item._id === id);
     return (
-      <InfluxdbVisualizationView
+      <InfluxdbVisualizationViewBoard
         dispatch={dispatch}
         configure={item.configure}
       />
@@ -107,10 +107,10 @@ class App extends Component {
         <Route path={urls.ADD_SERVER} component={this.renderAddServer.bind(this)} />
         <Route path={urls.SHOW_SERVERS} component={this.renderServerList.bind(this)} />
         <Route path={urls.EDIT_SERVER + '/:id'} component={this.renderEditServer.bind(this)} />
+        <Route path={urls.ADD_VISUALIZATIONS} component={this.renderAddVisualization.bind(this)} />
+        <Route path={urls.EDIT_VISUALIZATIONS + '/:id'} component={this.renderEditVisualization.bind(this)} />
         <Route path={urls.SHOW_VISUALIZATIONS} component={this.renderVisualizations.bind(this)} />
         <Route path={urls.SHOW_VISUALIZATIONS + '/:id'} component={this.renderVisualization.bind(this)} />
-        <Route path={urls.EDIT_VISUALIZATIONS} component={this.renderAddVisualization.bind(this)} />
-        <Route path={urls.EDIT_VISUALIZATIONS + '/:id'} component={this.renderEditVisualization.bind(this)} />
       </Router>
     </div>
   }
