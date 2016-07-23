@@ -3,13 +3,15 @@
 import React, { PropTypes, Component } from 'react';
 import Select from 'react-select';
 import InfluxdbVisualizationView from '../components/influxdb-visualization-view';
+import RadioSelector from '../components/radio-selector';
+import { STATS_VIEW_TYPES } from '../constants/common';
 
 class InfluxdbVisualizationViewBoard extends Component {
   constructor(props) {
     super(props);
     this.state = {
       autoRefresh: '60s',
-      offsetTime: '-15m',
+      offsetTime: 'Custom',
     };
   }
   renderOffsetTimeSelector() {
@@ -112,7 +114,7 @@ class InfluxdbVisualizationViewBoard extends Component {
     return (
       <div className="visualizationViewContainer">
         <div className="clearfix">
-          <div className="pullRight mtop10">
+          <div className="pullRight mtop10 mright5">
             {this.renderAutoRefreshSelector()}
             {this.renderOffsetTimeSelector()}
           </div>
@@ -121,6 +123,7 @@ class InfluxdbVisualizationViewBoard extends Component {
           dispatch={dispatch}
           configure={configure}
           autoRefresh={this.state.autoRefresh}
+          offsetTime={this.state.offsetTime}
           type={configure.statsView}
         />
       </div>

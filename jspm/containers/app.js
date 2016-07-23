@@ -65,27 +65,36 @@ class App extends Component {
   renderVisualization({ params: { id } }) {
     const { dispatch, user, influxdbServer } = this.props;
     const item = _.find(user.configures, item => item._id === id);
+    if (!item) {
+      return null;
+    }
     return (
       <InfluxdbVisualizationViewBoard
         dispatch={dispatch}
         configure={item.configure}
+        data={item}
       />
     );
   }
   renderAddVisualization() {
     const { dispatch, influxdbServer } = this.props;
-    return <InfluxdbVisualizationEditor
-      dispatch={dispatch}
-      influxdbServer={influxdbServer}
-    />
-  }
-  renderEditVisualization({ params: { id } }) {
-    const { dispatch, user, influxdbServer } = this.props;
-    const configure = _.find(user.configures, item => item._id === id);
     return (
       <InfluxdbVisualizationEditor
         dispatch={dispatch}
-        data={configure}
+        influxdbServer={influxdbServer}
+      />
+    );
+  }
+  renderEditVisualization({ params: { id } }) {
+    const { dispatch, user, influxdbServer } = this.props;
+    const item = _.find(user.configures, item => item._id === id);
+    if (!item) {
+      return null;
+    }
+    return (
+      <InfluxdbVisualizationEditor
+        dispatch={dispatch}
+        data={item}
         influxdbServer={influxdbServer}
       />
     );

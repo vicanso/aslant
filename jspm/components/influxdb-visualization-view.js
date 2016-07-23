@@ -5,6 +5,8 @@ import * as util from '../helpers/util';
 import * as influxdbAction from '../actions/influxdb';
 import SeriesTable from './series-table';
 import Chart from './chart';
+import { STATS_VIEW_TYPES } from '../constants/common';
+import RadioSelector from './radio-selector';
 
 class InfluxdbVisualizationView extends Component {
   constructor(props) {
@@ -13,6 +15,7 @@ class InfluxdbVisualizationView extends Component {
       doingQuery: false,
       originalQL: '',
       timer: null,
+      type: props.type || STATS_VIEW_TYPES[0]
     };
   }
   autoRefresh(ql) {
@@ -51,8 +54,14 @@ class InfluxdbVisualizationView extends Component {
   }
   updateSeries() {
     const state = this.state;
-    const { configure, autoRefresh } = this.props;
-    const ql = util.getInfluxQL(configure);
+    const { configure, autoRefresh, offsetTime } = this.props;
+    let tmp = configure;
+    if (offsetTime && offsetTime !== 'Custom') {
+      tmp = Object.assign({}, configure, {
+        offsetTime,
+      });
+    }
+    const ql = util.getInfluxQL(tmp);
     if (!ql || state.doingQuery || ql === state.originalQL) {
       return;
     }
@@ -99,11 +108,28 @@ class InfluxdbVisualizationView extends Component {
       />
     );
   }
+  renderStatsViewSelector() {
+    const { configure } = this.props;
+    return (
+      <RadioSelector
+        className="statsViewSelector"
+        desc={'stats view:'}
+        options={STATS_VIEW_TYPES}
+        selected={this.state.type}
+        onSelect={option => {
+          if (this.state.type !== option) {
+            this.setState({
+              type: option,
+            });
+          }
+        }}
+      />
+    );
+  }
 
   render() {
     this.updateSeries();
-    const { type } = this.props;
-    const { series, doingQuery } = this.state;
+    const { series, doingQuery, type } = this.state;
     if (!series || doingQuery) {
       return null;
     }
@@ -125,6 +151,7 @@ class InfluxdbVisualizationView extends Component {
       <div
         className="visualizationView"
       >
+        {this.renderStatsViewSelector()}
         {
           doingQuery && 
           <p className="tac">

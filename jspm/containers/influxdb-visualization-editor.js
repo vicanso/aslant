@@ -12,9 +12,11 @@ import * as util from '../helpers/util';
 import * as influxdbAction from '../actions/influxdb';
 import * as navigationAction from '../actions/navigation';
 import InfluxdbVisualizationView from '../components/influxdb-visualization-view';
+import RadioSelector from '../components/radio-selector';
 import Dialog from '../components/dialog';
 import DateTimePicker from '../components/date-time-picker';
 import ParallelSelector from '../components/parallel-selector';
+import { STATS_VIEW_TYPES } from '../constants/common';
 
 class VisualizationSaveDialog extends Dialog {
   constructor(props) {
@@ -138,47 +140,6 @@ class VisualizationSaveDialog extends Dialog {
   }
 }
 
-class InfluxdbRadioSelector extends Component {
-  select(e, option) {
-    const { onSelect } = this.props;
-    e.preventDefault();
-    onSelect(option);
-  }
-  renderOptions() {
-    const { selected, options } = this.props;
-    const cur = selected || options[0];
-    return _.map(options, option => {
-      const cls = {
-        fa: true,
-      };
-      if (cur === option) {
-        cls['fa-check-square-o'] = true;
-      } else {
-        cls['fa-square-o'] = true;
-      }
-      return (
-        <a
-          key={option}
-          href="#"
-          onClick={e => this.select(e, option)}
-        >
-          <i className={classnames(cls)}></i>
-          {option}
-        </a>
-      );
-    });
-  }
-  render() {
-    const { desc, options } = this.props;
-    return (
-      <div className="radioSelector">
-        <span>{desc}</span>
-        {this.renderOptions()}
-      </div>
-    );
-  }
-}
-
 class InfluxdbVisualizationEditor extends Component {
   constructor(props) {
     super(props);
@@ -204,7 +165,7 @@ class InfluxdbVisualizationEditor extends Component {
       groupByTime: '',
       offsetTime: '-15m',
       orderByTime: 'asc',
-      statsView: 'table',
+      statsView: STATS_VIEW_TYPES[0],
       date: {
         start: null,
         end: null,
@@ -759,9 +720,9 @@ class InfluxdbVisualizationEditor extends Component {
     return (
       <div className="extraSelector">
         <label>Extra Setting</label>
-        <InfluxdbRadioSelector
+        <RadioSelector
           desc={'stats view:'}
-          options={['table', 'line-chart', 'pie-chart']}
+          options={STATS_VIEW_TYPES}
           selected={this.state.statsView}
           onSelect={option => {
             if (this.state.statsView !== option) {
@@ -771,7 +732,7 @@ class InfluxdbVisualizationEditor extends Component {
             }
           }}
         />
-        <InfluxdbRadioSelector
+        <RadioSelector
           desc={'order by time:'}
           options={['asc', 'desc']}
           selected={this.state.orderByTime}
