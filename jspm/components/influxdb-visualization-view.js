@@ -15,7 +15,7 @@ class InfluxdbVisualizationView extends Component {
       doingQuery: false,
       originalQL: '',
       timer: null,
-      type: props.type || STATS_VIEW_TYPES[0]
+      type: STATS_VIEW_TYPES[0],
     };
   }
   autoRefresh(ql) {
@@ -31,11 +31,14 @@ class InfluxdbVisualizationView extends Component {
       });
     }, util.toSeconds(autoRefresh) * 1000);
   }
+  componentWillUnmount() {
+    clearInterval(this.state.timer);
+  }
   getPoints(ql) {
     const { configure } = this.props;
-    return influxdbAction.getPoints(configure.server, configure.db, ql).then(series => {
+    return influxdbAction.getPoints(configure.server, configure.database, ql).then(series => {
       const extracts = configure.extracts;
-      if (extracts.length) {
+      if (extracts && extracts.length) {
         const extractDescList = _.compact(_.map(extracts, extract => {
           if (!extract.value || !extract.key) {
             return '';
@@ -129,7 +132,9 @@ class InfluxdbVisualizationView extends Component {
 
   render() {
     this.updateSeries();
-    const { series, doingQuery, type } = this.state;
+    const { disableViewSelector } = this.props;
+    const { series, doingQuery } = this.state;
+    const type = this.props.type || this.state.type;
     if (!series || doingQuery) {
       return null;
     }
@@ -151,7 +156,7 @@ class InfluxdbVisualizationView extends Component {
       <div
         className="visualizationView"
       >
-        {this.renderStatsViewSelector()}
+        {!disableViewSelector && this.renderStatsViewSelector()}
         {
           doingQuery && 
           <p className="tac">

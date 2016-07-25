@@ -74,7 +74,7 @@ class VisualizationSaveDialog extends Dialog {
         error: 'name and description catn\'t be empty',
       });
     }
-    inputs.configure = data;
+    const postData = _.extend({}, data, inputs);
     this.setState({
       status: 'processing',
     });
@@ -82,9 +82,9 @@ class VisualizationSaveDialog extends Dialog {
     let fn;
     if (id) {
       const token = props.orginalData.token;
-      fn = dispatch(influxdbAction.updateConfigure(id, token, inputs));
+      fn = dispatch(influxdbAction.updateConfigure(id, token, postData));
     } else {
-      fn = dispatch(influxdbAction.addConfigure(inputs));
+      fn = dispatch(influxdbAction.addConfigure(postData));
     }
     fn.then(data => {
       dispatch(navigationAction.showVisualizations());
@@ -143,7 +143,6 @@ class VisualizationSaveDialog extends Dialog {
 class InfluxdbVisualizationEditor extends Component {
   constructor(props) {
     super(props);
-    const conf = _.get(props, 'data.configure');
     this.state = _.extend({
       originalQL: '',
       conditionSelectorCount: 1,
@@ -155,7 +154,7 @@ class InfluxdbVisualizationEditor extends Component {
       showDateTimeSelector: false,
       hideEmptyPoint: false,
       server: '',
-      db: '',
+      database: '',
       rp: '',
       measurement: '',
       conditions: [],
@@ -175,7 +174,7 @@ class InfluxdbVisualizationEditor extends Component {
         end: null,
       },
       error: '',
-    }, conf);
+    }, props.data);
     this.restore();
   }
   restore() {
@@ -183,22 +182,22 @@ class InfluxdbVisualizationEditor extends Component {
     if (!data) {
       return;
     }
-    const conf = data.configure;
-    const { server, db, measurement } = conf;
+    const conf = data;
+    const { server, database, measurement } = conf;
     if (!server) {
       return;
     }
     dispatch(influxdbAction.listDatabase(server));
-    if (!db) {
+    if (!database) {
       return;
     }
-    dispatch(influxdbAction.listRP(server, db));
-    dispatch(influxdbAction.listMeasurement(server, db));
+    dispatch(influxdbAction.listRP(server, database));
+    dispatch(influxdbAction.listMeasurement(server, database));
     if (!measurement) {
       return;
     }
-    dispatch(influxdbAction.listTagInfos(server, db, measurement));
-    dispatch(influxdbAction.listField(server, db, measurement));
+    dispatch(influxdbAction.listTagInfos(server, database, measurement));
+    dispatch(influxdbAction.listField(server, database, measurement));
   }
   clearError() {
     this.setState({
@@ -250,7 +249,7 @@ class InfluxdbVisualizationEditor extends Component {
     const { dispatch } = this.props;
     return this.renderSelecotr({
       pickKey: `props.influxdbServer.databases[${server}]`,
-      key: 'db',
+      key: 'database',
       onChange: item => {
         dispatch(influxdbAction.listRP(server, item.value))
           .catch(this.setError.bind(this));
@@ -261,32 +260,32 @@ class InfluxdbVisualizationEditor extends Component {
     });
   }
   renderRPSelector() {
-    const { server, db } = this.state;
+    const { server, database } = this.state;
     return this.renderSelecotr({
-      pickKey: `props.influxdbServer.rps[${server + db}]`,
+      pickKey: `props.influxdbServer.rps[${server + database}]`,
       key: 'rp'
     });
   }
   renderMeasurementSelector() {
-    const { server, db } = this.state;
+    const { server, database } = this.state;
     const { dispatch } = this.props;
     return this.renderSelecotr({
-      pickKey: `props.influxdbServer.measurements[${server + db}]`,
+      pickKey: `props.influxdbServer.measurements[${server + database}]`,
       key: 'measurement',
       placeholder: 'Select a measurement',
       onChange: item => {
-        dispatch(influxdbAction.listTagInfos(server, db, item.value))
+        dispatch(influxdbAction.listTagInfos(server, database, item.value))
           .catch(this.setError.bind(this));
-        dispatch(influxdbAction.listField(server, db, item.value))
+        dispatch(influxdbAction.listField(server, database, item.value))
           .catch(this.setError.bind(this));
         this.clearError();
       },
     });
   }
   renderTagKeySelector(index) {
-    const { server, db, measurement, conditions } = this.state;
+    const { server, database, measurement, conditions } = this.state;
     const { dispatch } = this.props;
-    const key = `props.influxdbServer.tagInfos[${server + db + measurement}]`;
+    const key = `props.influxdbServer.tagInfos[${server + database + measurement}]`;
     const tagInfos = _.get(this, key);
     const keys = _.map(tagInfos, item => item.tag);
     const condition = conditions[index];
@@ -307,8 +306,8 @@ class InfluxdbVisualizationEditor extends Component {
   }
   renderFieldKeySelector(index) {
     const values = 'clear count sum mean median min max spread stddev first last'.split(' ');
-    const { server, db, measurement, extracts } = this.state;
-    const key = `props.influxdbServer.fields[${server + db + measurement}]`;
+    const { server, database, measurement, extracts } = this.state;
+    const key = `props.influxdbServer.fields[${server + database + measurement}]`;
     return this.renderParallelSelector({
       index,
       keys: _.get(this, key),
@@ -321,9 +320,9 @@ class InfluxdbVisualizationEditor extends Component {
     });
   }
   renderGroupbySelector(index) {
-    const { server, db, measurement, groups } = this.state;
+    const { server, database, measurement, groups } = this.state;
     const { dispatch } = this.props;
-    const key = `props.influxdbServer.tagInfos[${server + db + measurement}]`;
+    const key = `props.influxdbServer.tagInfos[${server + database + measurement}]`;
     const tagInfos = _.get(this, key);
     const values = _.map(tagInfos, item => item.tag);
     return this.renderParallelSelector({
@@ -652,10 +651,10 @@ class InfluxdbVisualizationEditor extends Component {
     </div>
   }
   renderShowFieldSelector() {
-    const { server, db, measurement, conditions } = this.state;
+    const { server, database, measurement, conditions } = this.state;
     const { dispatch } = this.props;
-    const tagInfos = _.get(this, `props.influxdbServer.tagInfos[${server + db + measurement}]`);
-    const fields = _.get(this, `props.influxdbServer.fields[${server + db + measurement}]`);
+    const tagInfos = _.get(this, `props.influxdbServer.tagInfos[${server + database + measurement}]`);
+    const fields = _.get(this, `props.influxdbServer.fields[${server + database + measurement}]`);
     if (!fields) {
       return null;
     }
@@ -744,19 +743,23 @@ class InfluxdbVisualizationEditor extends Component {
             }
           }}
         />
-        <a
-          href="#"
+        <span
           className='hideEmptyPoint'
-          onClick={e => {
-            e.preventDefault();
-            this.setState({
-              hideEmptyPoint: !this.state.hideEmptyPoint,
-            });
-          }}
-        >
+        >table view:
+          <a
+            href="#"
+            className="mleft5"
+            onClick={e => {
+              e.preventDefault();
+              this.setState({
+                hideEmptyPoint: !this.state.hideEmptyPoint,
+              });
+            }}
+          >
           <i className={classnames(emptyPointCls)} aria-hidden="true"></i>
-          Hide Empty Point
-        </a>
+            Hide Empty Point
+          </a>
+        </span>
         {this.renderShowFieldSelector()}
         <a
           className="pure-button pure-button-primary submit"
@@ -774,7 +777,7 @@ class InfluxdbVisualizationEditor extends Component {
     )
   }
   getConfigure() {
-    const keys = 'server db rp measurement groupByTime offsetTime conditions extracts groups fields date hideEmptyPoint orderByTime statsView'.split(' ');
+    const keys = 'server database rp measurement groupByTime offsetTime conditions extracts groups fields date hideEmptyPoint orderByTime statsView'.split(' ');
     return _.pick(this.state, keys);
   }
   renderSubmitDialog() {
@@ -839,6 +842,7 @@ class InfluxdbVisualizationEditor extends Component {
     }
     return (
       <InfluxdbVisualizationView
+        disableViewSelector
         dispatch={dispatch}
         configure={this.getConfigure()}
         type={state.statsView}

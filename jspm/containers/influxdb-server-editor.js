@@ -100,7 +100,7 @@ class InfluxdbServerEditor extends Dialog {
         return this.onClose(e);
     }
   }
-  componentDidMount() {
+  setDefaultValue() {
     const { server, dispatch } = this.props;
     const refs = this.refs;
     const defaultValue = {
@@ -141,7 +141,11 @@ class InfluxdbServerEditor extends Dialog {
   }
   getContent() {
     const { status } = this.state;
-    const { dispatch, server } = this.props;
+    const { dispatch, server, type } = this.props;
+    if (type === 'update' && !server) {
+      return null;
+    }
+    this.setDefaultValue();
     return (
       <form className="pure-form pure-form-aligned pure-g"><fieldset>
         <div className="pure-u-1-2">
@@ -250,7 +254,7 @@ class InfluxdbServerEditor extends Dialog {
             className="pure-button pure-button-primary submit"
             onClick={e => this.handleSubmit(e)}
           >
-          {server ? 'Update' : 'Add'}
+          {type === 'update' ? 'Update' : 'Add'}
           {status === 'processing' && <span>...</span>}
           </a>
         </div>

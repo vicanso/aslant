@@ -73,7 +73,8 @@ exports.addConfigure = (ctx) => {
   const data = Joi.validateThrow(ctx.request.body, {
     name: Joi.string().trim().required(),
     desc: Joi.string().trim().required(),
-    configure: Joi.object().required(),
+  }, {
+    allowUnknown: true,
   });
   return influxdbService.addConfigure(_.extend({
     owner: account,

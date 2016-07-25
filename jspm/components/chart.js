@@ -12,6 +12,9 @@ class Chart extends Component {
       case 'pie-chart':
         fn = formater.getPieOption;
         break;
+      case 'bar-chart':
+        fn = formater.getBarOption;
+        break;
       default:
         fn = formater.getLineOption;
         break;

@@ -64,28 +64,28 @@ export default function influxdbServer(state = initStates, action) {
     }
     case INFLUXDB_LIST_RP: {
       const rps = Object.assign({}, state.rps);
-      rps[action.id + action.db] = action.rps.slice(0);
+      rps[action.id + action.database] = action.rps.slice(0);
       return Object.assign({}, state, {
         rps,
       });
     }
     case INFLUXDB_LIST_MEASUREMENT: {
       const measurements = Object.assign({}, state.measurements);
-      measurements[action.id + action.db] = action.measurements.slice(0);
+      measurements[action.id + action.database] = action.measurements.slice(0);
       return Object.assign({}, state, {
         measurements,
       });
     }
     case INFLUXDB_LIST_TAG_INFO: {
       const tagInfos = Object.assign({}, state.tagInfos);
-      tagInfos[action.id + action.db + action.measurement] = action.tagInfos.slice(0);
+      tagInfos[action.id + action.database + action.measurement] = action.tagInfos.slice(0);
       return Object.assign({}, state, {
         tagInfos,
       });
     }
     case INFLUXDB_LIST_FIELDS: {
       const fields = Object.assign({}, state.fields);
-      fields[action.id + action.db + action.measurement] = action.fields.slice(0);
+      fields[action.id + action.database + action.measurement] = action.fields.slice(0);
       return Object.assign({}, state, {
         fields,
       });

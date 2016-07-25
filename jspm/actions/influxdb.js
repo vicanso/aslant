@@ -63,50 +63,50 @@ export function listDatabase(id) {
     }));
 }
 
-export function listRP(id, db) {
-  return dispatch => http.get(`/influxdb/${id}/${db}/rps`)
+export function listRP(id, database) {
+  return dispatch => http.get(`/influxdb/${id}/${database}/rps`)
     .then(res => dispatch({
       type: INFLUXDB_LIST_RP,
       id,
-      db,
+      database,
       rps: res.body.items || [],
     }));
 }
 
-export function listMeasurement(id, db) {
-  return dispatch => http.get(`/influxdb/${id}/${db}/measurements`)
+export function listMeasurement(id, database) {
+  return dispatch => http.get(`/influxdb/${id}/${database}/measurements`)
     .then(res => dispatch({
       type: INFLUXDB_LIST_MEASUREMENT,
       id,
-      db,
+      database,
       measurements: res.body.items || [],
     }));
 }
 
-export function listTagInfos(id, db, measurement) {
-  return dispatch => http.get(`/influxdb/${id}/${db}/${measurement}/tag-infos`)
+export function listTagInfos(id, database, measurement) {
+  return dispatch => http.get(`/influxdb/${id}/${database}/${measurement}/tag-infos`)
     .then(res => dispatch({
       type: INFLUXDB_LIST_TAG_INFO,
       id,
-      db,
+      database,
       measurement,
       tagInfos: res.body.items || [],
     }));
 }
 
-export function listField(id, db, measurement) {
-  return dispatch => http.get(`/influxdb/${id}/${db}/${measurement}/fields`)
+export function listField(id, database, measurement) {
+  return dispatch => http.get(`/influxdb/${id}/${database}/${measurement}/fields`)
     .then(res => dispatch({
       type: INFLUXDB_LIST_FIELDS,
       id,
-      db,
+      database,
       measurement,
       fields: res.body.items || [],
     }));
 }
 
-export function getPoints(id, db, ql) {
-  return http.get(`/influxdb/${id}/${db}/points?ql=${encodeURIComponent(ql)}`)
+export function getPoints(id, database, ql) {
+  return http.get(`/influxdb/${id}/${database}/points?ql=${encodeURIComponent(ql)}`)
     .then(res => res.body.items || []);
 }
 

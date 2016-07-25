@@ -38,7 +38,7 @@ export function getLineOption(data, name) {
       series[index].data.push(value.pop());
     });
   });
-  const end = Math.ceil(Math.min(50 / dateList.length, 1) * 100);
+  const onePageSize = Math.ceil(Math.min(50 / dateList.length, 1) * 100);
   return {
     tooltip: {
       trigger: 'axis',
@@ -62,11 +62,11 @@ export function getLineOption(data, name) {
     },
     dataZoom: [{
       type: 'inside',
-      start: 0,
-      end: end,
+      start: 100 - onePageSize,
+      end: 100,
     }, {
-      start: 0,
-      end: end,
+      start: 100 - onePageSize,
+      end: 100,
       handleIcon: 'M10.7,11.9v-1.3H9.3v1.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4v1.3h1.3v-1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7V23h6.6V24.4z M13.3,19.6H6.7v-1.4h6.6V19.6z',
       handleSize: '80%',
       handleStyle: {
@@ -121,5 +121,62 @@ export function getPieOption(data, name) {
       value: _.last(item.values)[1],
     });
   });
+  return option;
+}
+
+export function getBarOption(data, name) {
+  const result = _.map(data, util.convertSeriesData);
+  const series = _.map(data, item => {
+    const tagsDesc = _.map(item.tags, (v, k) => {
+      return `${k}(${v})`;
+    }).join(' ');
+    return {
+      name: tagsDesc,
+      type: 'bar',
+      data: [],
+    };
+  });
+
+  const dateList = [];
+  _.forEach(result, (arr, index) => {
+    const values = arr.slice(1);
+    _.forEach(values, value => {
+      const time = value.shift();
+      if (index === 0) {
+        dateList.push(time);
+      }
+      series[index].data.push(value.pop());
+    });
+  });
+
+  const option = {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow',
+      },
+    },
+    legend: {
+      data: [],
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true,
+    },
+    xAxis: [
+      {
+        type: 'category',
+        data: dateList,
+      },
+    ],
+    yAxis: [
+      {
+        type: 'value',
+      },
+    ],
+    series: series,
+  };
   return option;
 }

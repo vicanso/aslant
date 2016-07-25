@@ -4,7 +4,6 @@ import React, { PropTypes, Component } from 'react';
 import * as _ from 'lodash';
 import * as userAction from '../actions/user';
 import * as navigationAction from '../actions/navigation';
-import * as influxdbAction from '../actions/influxdb';
 import * as util from '../helpers/util';
 
 class MainHeader extends Component {
@@ -21,14 +20,6 @@ class MainHeader extends Component {
         status: '',
       });
     }).catch(this.onError.bind(this));
-  }
-  componentWillReceiveProps(nextProps) {
-    const { dispatch } = this.props;
-    const currentAccount = _.get(nextProps, 'user.basic.account');
-    const account = _.get(this.props, 'user.basic.account');
-    if (currentAccount && currentAccount !== account) {
-      dispatch(influxdbAction.listServer());
-    }
   }
   onError(err) {
     this.setState({
@@ -68,6 +59,9 @@ class MainHeader extends Component {
     const { dispatch } = this.props;
     dispatch(navigationAction.showVisualizations());
   }
+  showDashboards(e) {
+    e.preventDefault();
+  }
   renderUserInfo() {
     const { status, message } = this.state;
     const { user, dispatch, influxdbServer } = this.props;
@@ -101,6 +95,10 @@ class MainHeader extends Component {
           <a href='#' onClick={e => this.showVisualizations(e)}>
             <i className="fa fa-bar-chart" aria-hidden="true"></i>
               visualizations
+          </a>
+          <a href='#' onClick={e => this.showDashboards(e)}>
+            <i className="fa fa-tachometer" aria-hidden="true"></i>
+              dashboards
           </a>
           <a href="#" onClick={e => this.logout(e)}>
             <i className="fa fa-sign-out" aria-hidden="true"></i>

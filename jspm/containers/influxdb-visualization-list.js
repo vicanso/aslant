@@ -7,8 +7,6 @@ import * as influxdbAction from '../actions/influxdb';
 class InfluxdbVisualizationList extends Component {
   constructor(props) {
     super(props);
-    const dispatch = props.dispatch;
-    dispatch(influxdbAction.listConfigure());
     this.state = {
       stepDict: {},
     };

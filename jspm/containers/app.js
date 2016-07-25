@@ -13,6 +13,7 @@ import InfluxdbVisualizationEditor from './influxdb-visualization-editor';
 import InfluxdbVisualizationViewBoard from './influxdb-visualization-view-board';
 import * as urls from '../constants/urls';
 import * as navigationAction from '../actions/navigation';
+import * as influxdbAction from '../actions/influxdb';
 
 class App extends Component {
   constructor(props) {
@@ -53,6 +54,7 @@ class App extends Component {
     return <InfluxdbServerEditor
       dispatch={dispatch}
       server={server}
+      type={'update'}
     />
   }
   renderVisualizations() {
@@ -71,8 +73,7 @@ class App extends Component {
     return (
       <InfluxdbVisualizationViewBoard
         dispatch={dispatch}
-        configure={item.configure}
-        data={item}
+        configure={item}
       />
     );
   }
@@ -98,6 +99,15 @@ class App extends Component {
         influxdbServer={influxdbServer}
       />
     );
+  }
+  componentWillReceiveProps(nextProps, props) {
+    const { dispatch } = this.props;
+    const currentAccount = _.get(nextProps, 'user.basic.account');
+    const account = _.get(this.props, 'user.basic.account');
+    if (currentAccount && currentAccount !== account) {
+      dispatch(influxdbAction.listServer());
+      dispatch(influxdbAction.listConfigure());
+    }
   }
   render() {
     const { user, navigation, influxdbServer, dispatch } = this.props;
