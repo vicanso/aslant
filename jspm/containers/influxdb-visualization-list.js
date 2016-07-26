@@ -51,7 +51,7 @@ class InfluxdbVisualizationList extends Component {
           className="pure-u-1-4"
           key={id}
         >
-          <div className="visualization">
+          <div className="item">
             <div className="title">
               { !step &&
                 <a
@@ -116,10 +116,10 @@ class InfluxdbVisualizationList extends Component {
   }
   render() {
     return (
-      <div className="influxdbVisualizationList">
+      <div className="influxdbVisualizationList puzzleList">
         <div className="pure-g">
           <div className="pure-u-1-4">
-            <a className="visualization addVisualization" href="#" onClick={e => this.addVisualization(e)}>
+            <a className="item fullLineHeight" href="#" onClick={e => this.addVisualization(e)}>
               <i className="fa fa-plus" aria-hidden="true"></i>
             </a>
           </div>

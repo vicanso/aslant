@@ -15,7 +15,7 @@ class InfluxdbVisualizationView extends Component {
       doingQuery: false,
       originalQL: '',
       timer: null,
-      type: STATS_VIEW_TYPES[0],
+      type: '',
     };
   }
   autoRefresh(ql) {
@@ -134,7 +134,7 @@ class InfluxdbVisualizationView extends Component {
     this.updateSeries();
     const { disableViewSelector } = this.props;
     const { series, doingQuery } = this.state;
-    const type = this.props.type || this.state.type;
+    const type = this.state.type || this.props.type || STATS_VIEW_TYPES[0];
     if (!series || doingQuery) {
       return null;
     }

@@ -51,6 +51,14 @@ export function editVisualization(id) {
   return to(`${urls.EDIT_VISUALIZATIONS}/${id}`);
 }
 
+export function showDashboards() {
+  return to(urls.SHOW_DASHBOARDS);
+}
+
+export function addDashboard() {
+  return to(urls.ADD_DASHBOARD);
+}
+
 export function back() {
   return dispatch => {
     dispatch({

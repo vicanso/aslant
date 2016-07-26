@@ -9,7 +9,7 @@ module.exports = [
 
   // page view
   /* eslint max-len:0 */
-  '[GET] [/,/login,/register,/servers/*,/visualizations,/visualizations/*] [v.home & c.home]',
+  '[GET] [/,/login,/register,/servers/*,/visualizations,/visualizations/*,/dashboards,/dashboards/*] [v.home & c.home]',
 
   // user
   '[GET] [/users/me] [m.noCache & m.session.read & c.user.me]',

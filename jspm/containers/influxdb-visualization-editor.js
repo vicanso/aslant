@@ -707,7 +707,7 @@ class InfluxdbVisualizationEditor extends Component {
   }
   renderExtraSelector() {
     const { hideEmptyPoint, orderByTime } = this.state;
-    const conf = _.get(this.props, 'data.configure'); 
+    const conf = this.props.data; 
     const emptyPointCls = {
       fa: true,
     };

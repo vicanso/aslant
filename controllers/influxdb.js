@@ -14,6 +14,11 @@ const validateServerData = data => Joi.validateThrow(data, {
   password: Joi.string().trim(),
 });
 
+const validateInfluxdbConfigure = (data, opts) => Joi.validateThrow(data, {
+  name: Joi.string().trim().required(),
+  desc: Joi.string().trim().required(),
+}, opts);
+
 exports.addServer = (ctx) => {
   const account = _.get(ctx, 'session.user.account');
   const data = validateServerData(ctx.request.body);
@@ -70,10 +75,7 @@ exports.removeServer = (ctx) => {
 
 exports.addConfigure = (ctx) => {
   const account = _.get(ctx, 'session.user.account');
-  const data = Joi.validateThrow(ctx.request.body, {
-    name: Joi.string().trim().required(),
-    desc: Joi.string().trim().required(),
-  }, {
+  const data = validateInfluxdbConfigure(ctx.request.body, {
     allowUnknown: true,
   });
   return influxdbService.addConfigure(_.extend({
@@ -167,10 +169,8 @@ exports.updateConfigure = (ctx) => {
     owner: _.get(ctx, 'session.user.account'),
     _id: ctx.params.id,
   };
-  const data = Joi.validateThrow(ctx.request.body, {
-    name: Joi.string().required(),
-    desc: Joi.string().required(),
-    configure: Joi.object().required(),
+  const data = validateInfluxdbConfigure(ctx.request.body, {
+    allowUnknown: true,
   });
   return influxdbService.updateConfigure(conditions, ctx.get('X-Token'), data).then(configure => {
     /* eslint no-param-reassign:0 */

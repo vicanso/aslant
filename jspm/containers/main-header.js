@@ -49,18 +49,13 @@ class MainHeader extends Component {
     const { dispatch } = this.props;
     dispatch(navigationAction.login());
   }
-  showServers(e) {
+  to(e, fn) {
     e.preventDefault();
     const { dispatch } = this.props;
-    dispatch(navigationAction.showServers());
-  }
-  showVisualizations(e) {
-    e.preventDefault();
-    const { dispatch } = this.props;
-    dispatch(navigationAction.showVisualizations());
-  }
-  showDashboards(e) {
-    e.preventDefault();
+    const handler = navigationAction[fn];
+    if (_.isFunction(handler)) {
+      dispatch(handler());
+    }
   }
   renderUserInfo() {
     const { status, message } = this.state;
@@ -88,15 +83,15 @@ class MainHeader extends Component {
       return (
         <li>
           <span>{account}</span>
-          <a href='#' onClick={e => this.showServers(e)}>
+          <a href='#' onClick={e => this.to(e, 'showServers')}>
             <i className="fa fa-server" aria-hidden="true"></i>
             influxdbs
           </a>
-          <a href='#' onClick={e => this.showVisualizations(e)}>
+          <a href='#' onClick={e => this.to(e, 'showVisualizations')}>
             <i className="fa fa-bar-chart" aria-hidden="true"></i>
               visualizations
           </a>
-          <a href='#' onClick={e => this.showDashboards(e)}>
+          <a href='#' onClick={e => this.to(e, 'showDashboards')}>
             <i className="fa fa-tachometer" aria-hidden="true"></i>
               dashboards
           </a>
