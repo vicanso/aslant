@@ -33,6 +33,8 @@ module.exports = [
   '[PUT] [/influxdb/configures/:id] [m.session.login & m.validateToken & c.influxdb.updateConfigure]',
   '[DELETE] [/influxdb/configures/:id] [m.session.login & c.influxdb.removeConfigure]',
 
+  '[POST] [/influxdb/dashboards] [m.session.login & c.influxdb.addDashboard]',
+
   '[GET] [/influxdb/:id/databases] [m.cache-60 & c.influxdb.listDatabase]',
   '[GET] [/influxdb/:id/:db/rps] [m.cache-60 & c.influxdb.listRP]',
   '[GET] [/influxdb/:id/:db/measurements] [m.cache-60 & c.influxdb.listMeasurement]',

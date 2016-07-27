@@ -14,6 +14,7 @@ import {
   INFLUXDB_ADD_CONFIGURE,
   INFLUXDB_UPDATE_CONFIGURE,
   INFLUXDB_REMOVE_CONFIGURE,
+  INFLUXDB_ADD_DASHBOARD,
 } from '../constants/action-types';
 
 export function addServer(data) {
@@ -144,4 +145,12 @@ export function removeConfigure(id) {
         id,
       });
     });
+}
+
+export function addDashboard(data) {
+  return dispatch => http.post('/influxdb/dashboards', data)
+    .then(res => dispatch({
+      type: INFLUXDB_ADD_DASHBOARD,
+      dashboard: res.body,
+    }));
 }

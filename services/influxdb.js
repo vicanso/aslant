@@ -188,3 +188,11 @@ exports.removeConfigure = (conditions) => {
     return doc.toJSON();
   });
 };
+
+exports.addDashboard = (data) => {
+  const InfluxdbDashboard = Models.get('Influxdb-dashboard');
+  return (new InfluxdbDashboard(data)).save()
+    .then(doc => {
+      return doc.toJSON();
+    }); 
+};

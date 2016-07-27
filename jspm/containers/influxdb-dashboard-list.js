@@ -1,6 +1,7 @@
 'use strict';
 /* eslint import/no-unresolved:0 */
 import React, { PropTypes, Component } from 'react';
+import PuzzleList from '../components/puzzle-list';
 import * as navigationAction from '../actions/navigation';
 
 class InfluxdbDashboardList extends Component {

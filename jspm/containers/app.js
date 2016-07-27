@@ -11,6 +11,7 @@ import InfluxdbServerList from './influxdb-server-list';
 import InfluxdbVisualizationList from './influxdb-visualization-list';
 import InfluxdbVisualizationEditor from './influxdb-visualization-editor';
 import InfluxdbVisualizationViewBoard from './influxdb-visualization-view-board';
+import InfluxdbDashboardEditor from './influxdb-dashboard-editor';
 import InfluxdbDashboardList from './influxdb-dashboard-list';
 import * as urls from '../constants/urls';
 import * as navigationAction from '../actions/navigation';
@@ -104,10 +105,19 @@ class App extends Component {
     );
   }
   renderDashboards() {
-    const { dispatch, user } = this.props;
+    const { dispatch } = this.props;
     return (
       <InfluxdbDashboardList
         dispatch={dispatch}
+      />
+    );
+  }
+  renderAddDashboard() {
+    const { dispatch, user } = this.props;
+    return (
+      <InfluxdbDashboardEditor
+        dispatch={dispatch}
+        configures={user.configures}
       />
     );
   }
@@ -141,6 +151,7 @@ class App extends Component {
         <Route path={urls.EDIT_VISUALIZATIONS + '/:id'} component={this.renderEditVisualization.bind(this)} />
         <Route path={urls.SHOW_VISUALIZATIONS} component={this.renderVisualizations.bind(this)} />
         <Route path={urls.SHOW_VISUALIZATIONS + '/:id'} component={this.renderVisualization.bind(this)} />
+        <Route path={urls.ADD_DASHBOARD} component={this.renderAddDashboard.bind(this)} />
         <Route path={urls.SHOW_DASHBOARDS} component={this.renderDashboards.bind(this)} />
       </Router>
     </div>

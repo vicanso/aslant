@@ -189,3 +189,18 @@ exports.removeConfigure = (ctx) => {
   });
 };
 
+exports.addDashboard = (ctx) => {
+  const data = Joi.validateThrow(ctx.request.body, {
+    name: Joi.string().trim().required(),
+    desc: Joi.string().trim().required(),
+    configures: Joi.array().required(),
+  });
+  const account = _.get(ctx, 'session.user.account');
+  return influxdbService.addDashboard(_.extend({
+    owner: account,
+  }, data)).then(dashboard => {
+    /* eslint no-param-reassign:0 */
+    ctx.status = 201;
+    ctx.body = dashboard;
+  });
+};
