@@ -10,6 +10,7 @@ import Select from 'react-select';
 import * as uuid from 'uuid';
 import * as util from '../helpers/util';
 import * as influxdbAction from '../actions/influxdb';
+import * as configureAction from '../actions/configure';
 import * as navigationAction from '../actions/navigation';
 import InfluxdbVisualizationView from '../components/influxdb-visualization-view';
 import RadioSelector from '../components/radio-selector';
@@ -82,9 +83,9 @@ class VisualizationSaveDialog extends Dialog {
     let fn;
     if (id) {
       const token = props.orginalData.token;
-      fn = dispatch(influxdbAction.updateConfigure(id, token, postData));
+      fn = dispatch(configureAction.update(id, token, postData));
     } else {
-      fn = dispatch(influxdbAction.addConfigure(postData));
+      fn = dispatch(configureAction.add(postData));
     }
     fn.then(data => {
       dispatch(navigationAction.showVisualizations());

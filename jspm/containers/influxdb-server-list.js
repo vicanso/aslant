@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 import classnames from 'classnames';
 import Dialog from '../components/dialog';
 import * as navigationAction from '../actions/navigation';
-import * as influxdbAction from '../actions/influxdb';
+import * as serverAction from '../actions/server';
 
 class ServerItem extends Component {
   constructor(props) {
@@ -34,7 +34,7 @@ class ServerItem extends Component {
       step: 'prcessingRemove',
     });
     const { dispatch, data } = this.props;
-    dispatch(influxdbAction.removeServer(data._id)).catch(err => {
+    dispatch(serverAction.remove(data._id)).catch(err => {
       this.setState({
         step: '',
       });

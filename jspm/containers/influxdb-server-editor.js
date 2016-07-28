@@ -4,8 +4,8 @@ import React, { PropTypes } from 'react';
 import * as _ from 'lodash';
 import Joi from 'joi';
 import Dialog from '../components/dialog';
-import * as influxdbAction from '../actions/influxdb';
 import * as navigationAction from '../actions/navigation';
+import * as serverAction from '../actions/server';
 import * as util from '../helpers/util';
 
 class InfluxdbServerEditor extends Dialog {
@@ -79,9 +79,9 @@ class InfluxdbServerEditor extends Dialog {
     });
     let fn;
     if (server) {
-      fn = influxdbAction.editServer(server._id, server.token, result.value);
+      fn = serverAction.edit(server._id, server.token, result.value);
     } else {
-      fn = influxdbAction.addServer(result.value);
+      fn = serverAction.add(result.value);
     }
     return dispatch(fn).then(() => {
       dispatch(navigationAction.back());

@@ -23,17 +23,19 @@ module.exports = [
   '[POST] [/stats/statistics] [c.stats.statistics]',
 
   // influxdb
-  '[POST] [/influxdb/servers] [m.session.login & c.influxdb.addServer]',
-  '[GET] [/influxdb/servers] [m.session.login & c.influxdb.listServer]',
-  '[PUT] [/influxdb/servers/:id] [m.session.login & m.validateToken & c.influxdb.editServer]',
-  '[DELETE] [/influxdb/servers/:id] [m.session.login & c.influxdb.removeServer]',
+  '[POST] [/api/servers] [m.session.login & c.server.add]',
+  '[GET] [/api/servers] [m.session.login & c.server.list]',
+  '[PUT] [/api/servers/:id] [m.session.login & m.validateToken & c.server.edit]',
+  '[DELETE] [/api/servers/:id] [m.session.login & c.server.remove]',
 
-  '[POST] [/influxdb/configures] [m.session.login & c.influxdb.addConfigure]',
-  '[GET] [/influxdb/configures] [m.session.login & c.influxdb.listConfigure]',
-  '[PUT] [/influxdb/configures/:id] [m.session.login & m.validateToken & c.influxdb.updateConfigure]',
-  '[DELETE] [/influxdb/configures/:id] [m.session.login & c.influxdb.removeConfigure]',
+  '[POST] [/api/configures] [m.session.login & c.configure.add]',
+  '[GET] [/api/configures] [m.session.login & c.configure.list]',
+  '[PUT] [/api/configures/:id] [m.session.login & m.validateToken & c.configure.update]',
+  '[DELETE] [/api/configures/:id] [m.session.login & c.configure.remove]',
 
-  '[POST] [/influxdb/dashboards] [m.session.login & c.influxdb.addDashboard]',
+  '[POST] [/api/dashboards] [m.session.login & c.dashboard.add]',
+  '[GET] [/api/dashboards] [m.session.login & c.dashboard.list]',
+  '[DELETE] [/api/dashboards/:id] [m.session.login & c.dashboard.remove]',
 
   '[GET] [/influxdb/:id/databases] [m.cache-60 & c.influxdb.listDatabase]',
   '[GET] [/influxdb/:id/:db/rps] [m.cache-60 & c.influxdb.listRP]',

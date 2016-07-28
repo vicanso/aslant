@@ -1,9 +1,9 @@
 'use strict';
 import {
-  INFLUXDB_ADD_SERVER,
-  INFLUXDB_LIST_SERVER,
-  INFLUXDB_EDIT_SERVER,
-  INFLUXDB_REMOVE_SERVER,
+  SERVER_ADD,
+  SERVER_LIST,
+  SERVER_EDIT,
+  SERVER_REMOVE,
   INFLUXDB_LIST_DATABASE,
   INFLUXDB_LIST_RP,
   INFLUXDB_LIST_MEASUREMENT,
@@ -24,17 +24,17 @@ const initStates = {
 export default function influxdbServer(state = initStates, action) {
   let list = _.map(state.list, item => Object.assign({}, item));
   switch (action.type) {
-    case INFLUXDB_ADD_SERVER:
+    case SERVER_ADD:
       list.push(action.server);
       return Object.assign({}, state, {
         list,
       });
-    case INFLUXDB_LIST_SERVER:
+    case SERVER_LIST:
       list = action.servers.slice(0);
       return Object.assign({}, state, {
         list,
       });
-    case INFLUXDB_EDIT_SERVER: {
+    case SERVER_EDIT: {
       const server = action.server;
       /* eslint no-underscore-dangle:0 */
       const index = _.findIndex(list, item => item._id === server._id);
@@ -45,7 +45,7 @@ export default function influxdbServer(state = initStates, action) {
         list,
       });
     }
-    case INFLUXDB_REMOVE_SERVER: {
+    case SERVER_REMOVE: {
       /* eslint no-underscore-dangle:0 */
       const index = _.findIndex(list, item => item._id === action.id);
       if (~index) {

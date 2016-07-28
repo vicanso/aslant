@@ -5,6 +5,7 @@ import * as _ from 'lodash';
 import classnames from 'classnames';
 import * as influxdbAction from '../actions/influxdb';
 import * as navigationAction from '../actions/navigation';
+import * as dashboardAction from '../actions/dashboard';
 import * as util from '../helpers/util';
 
 class InfluxdbDashboardEditor extends Component {
@@ -55,7 +56,7 @@ class InfluxdbDashboardEditor extends Component {
     this.setState({
       status: 'processing',
     });
-    dispatch(influxdbAction.addDashboard({
+    dispatch(dashboardAction.add({
       name,
       desc,
       configures: selectedList,
@@ -72,7 +73,7 @@ class InfluxdbDashboardEditor extends Component {
     const { configures } = this.props;
     const { selectedList } = this.state;
     return _.map(configures, (item, index) => {
-      const id = item.id;
+      const id = item._id;
       const cls = {
         fa: true,
       };

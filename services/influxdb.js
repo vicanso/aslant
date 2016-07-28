@@ -4,16 +4,8 @@ const Models = localRequire('models');
 const errors = localRequire('helpers/errors');
 const uuid = require('uuid');
 const Influx = require('influxdb-nodejs');
+const serverService = localRequire('services/server');
 
-const isExists = (name) => {
-  const InfluxdbServer = Models.get('Influxdb-server');
-  return InfluxdbServer.findOne({ name }).exec().then(doc => {
-    if (!doc) {
-      return false;
-    }
-    return true;
-  });
-};
 
 const getInfluxdbUrl = (server, db = '_internal') => {
   let urlStr = '';
@@ -28,59 +20,10 @@ const getInfluxdbUrl = (server, db = '_internal') => {
   return urlStr + `${server.host}:${server.port}/${db}`;
 };
 
-const getServerInfoById = (id) => {
-  const InfluxdbServer = Models.get('Influxdb-server');
-  return InfluxdbServer.findById(id).then(doc => {
-    if (!doc) {
-      throw errors.get('catn\'t get the influxdb server info', 404);
-    }
-    return doc.toJSON();
-  });
-};
-
 const getInfluxClient = (id, db) => {
-  return getServerInfoById(id).then(server => {
+  return serverService.findById(id).then(server => {
     const url = getInfluxdbUrl(server, db);
     return new Influx(url);
-  });
-};
-
-exports.addServer = (data) => {
-  const InfluxdbServer = Models.get('Influxdb-server');
-  return isExists(data.name).then(exists => {
-    if (exists) {
-      throw errors.get('The name has been used', 400);
-    }
-    return (new InfluxdbServer(data)).save();
-  }).then(doc => {
-    return doc.toJSON();
-  });
-};
-
-exports.listServer = (conditions) => {
-  const InfluxdbServer = Models.get('Influxdb-server');
-  return InfluxdbServer.find(conditions).then(docs => {
-    return _.map(docs, doc => doc.toJSON());
-  });
-};
-
-exports.updateServer = (conditions, token, data) => {
-  const InfluxdbServer = Models.get('Influxdb-server');
-  return InfluxdbServer.findOneAndUpdateByToken(conditions, token, data).then(doc => {
-    if (!doc) {
-      throw errors.get('update server info fail, may be token is expired');
-    }
-    return doc.toJSON();
-  });
-};
-
-exports.removeServer = (conditions, token) => {
-  const InfluxdbServer = Models.get('Influxdb-server');
-  return InfluxdbServer.findOneAndRemove(conditions).then(doc => {
-    if (!doc) {
-      return null;
-    }
-    return doc.toJSON();
   });
 };
 
@@ -187,12 +130,4 @@ exports.removeConfigure = (conditions) => {
     }
     return doc.toJSON();
   });
-};
-
-exports.addDashboard = (data) => {
-  const InfluxdbDashboard = Models.get('Influxdb-dashboard');
-  return (new InfluxdbDashboard(data)).save()
-    .then(doc => {
-      return doc.toJSON();
-    }); 
 };

@@ -16,6 +16,9 @@ import InfluxdbDashboardList from './influxdb-dashboard-list';
 import * as urls from '../constants/urls';
 import * as navigationAction from '../actions/navigation';
 import * as influxdbAction from '../actions/influxdb';
+import * as dashboardAction from '../actions/dashboard';
+import * as configureAction from '../actions/configure';
+import * as serverAction from '../actions/server';
 
 class App extends Component {
   constructor(props) {
@@ -105,10 +108,11 @@ class App extends Component {
     );
   }
   renderDashboards() {
-    const { dispatch } = this.props;
+    const { dispatch, user } = this.props;
     return (
       <InfluxdbDashboardList
         dispatch={dispatch}
+        dashboards={user.dashboards}
       />
     );
   }
@@ -126,8 +130,9 @@ class App extends Component {
     const currentAccount = _.get(nextProps, 'user.basic.account');
     const account = _.get(this.props, 'user.basic.account');
     if (currentAccount && currentAccount !== account) {
-      dispatch(influxdbAction.listServer());
-      dispatch(influxdbAction.listConfigure());
+      dispatch(serverAction.list());
+      dispatch(configureAction.list());
+      dispatch(dashboardAction.list());
     }
   }
   render() {
