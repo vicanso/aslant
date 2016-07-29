@@ -51,6 +51,64 @@ class InfluxdbVisualizationEditor extends Component {
     }, props.data);
     this.restore();
   }
+  onClickToggle(e, type) {
+    /* eslint no-param-reassign:0 */
+    e.disableToggle = true;
+    e.preventDefault();
+    const data = {};
+    const state = this.state;
+    const keyDict = {
+      basicSelector: 'showBasicSelector',
+      groupBySelector: 'showGroupSelector',
+    };
+    const key = keyDict[type];
+    if (!key) {
+      return;
+    }
+    data[key] = !state[key];
+    this.setState(data);
+  }
+  setDateTimeValue(date, type) {
+    const data = this.state.dateTimePickerValue;
+    data[type] = date;
+    this.setState({
+      dateTimePickerValue: data,
+    });
+  }
+  setDate(e) {
+    e.preventDefault();
+    const data = _.pick(this.state.dateTimePickerValue, ['start', 'end']);
+    this.setState({
+      offsetTime: 'Custom',
+      showDateTimeSelector: false,
+      date: data,
+    });
+  }
+  getInfluxQL() {
+    const state = this.state;
+    if (!state.measurement || state.error) {
+      return '';
+    }
+    const count = Math.abs(util.toSeconds(state.offsetTime)) / util.toSeconds(state.groupByTime);
+    if (count > 300) {
+      this.setState({
+        series: null,
+        error: `There are too many points(${count}), please change influx ql group by time`,
+      });
+      return '';
+    }
+    return util.getInfluxQL(state);
+  }
+  getConfigure() {
+    /* eslint max-len:0 */
+    const keys = 'server database rp measurement groupByTime offsetTime conditions extracts groups fields date hideEmptyPoint orderByTime statsView'.split(' ');
+    return _.pick(this.state, keys);
+  }
+  setError(err) {
+    this.setState({
+      error: util.getError(err),
+    });
+  }
   restore() {
     const { data, dispatch } = this.props;
     if (!data) {
@@ -78,94 +136,381 @@ class InfluxdbVisualizationEditor extends Component {
       error: '',
     });
   }
-  setError(err) {
-    this.setState({
-      error: util.getError(err),
+  hideSelector() {
+    const state = this.state;
+    const data = {};
+    _.forEach(['showBasicSelector', 'showGroupSelector', 'showDateTimeSelector'], key => {
+      if (state[key]) {
+        data[key] = false;
+      }
     });
+    if (!_.isEmpty(data)) {
+      this.setState(data);
+    }
   }
-  setDateTimeValue(date, type) {
-    const data = this.state.dateTimePickerValue;
-    data[type] = date;
-    this.setState({
-      dateTimePickerValue: data,
-    });
+  renderErrorTips() {
+    const { error } = this.state;
+    if (!error) {
+      return null;
+    }
+    return (
+      <div className="warning">
+        <i className="fa fa-exclamation-triangle" aria-hidden="true"></i>
+        <span>{error}</span>
+      </div>
+    );
   }
-  setDate(e) {
-    e.preventDefault();
-    const data = _.pick(this.state.dateTimePickerValue, ['start', 'end']);
-    this.setState({
-      offsetTime: 'Custom',
-      showDateTimeSelector: false,
-      date: data,
-    });
-  }
-  renderServerSelector() {
+  renderSubmitDialog() {
     const { dispatch } = this.props;
-    const convert = item => {
-      return {
-        label: item.name,
-        value: item._id,
-      };
+    const data = this.getConfigure();
+    return (
+      <VisualizationSaveDialog
+        onClose={() => this.setState({
+          showSubmitDialog: false,
+        })}
+        orginalData={this.props.data}
+        dispatch={dispatch}
+        data={data}
+      />
+    );
+  }
+  renderExtraSelector() {
+    const { hideEmptyPoint, orderByTime } = this.state;
+    const conf = this.props.data;
+    const emptyPointCls = {
+      fa: true,
     };
-    return this.renderSelecotr({
-      pickKey: 'props.influxdbServer.list',
-      key: 'server',
-      convert,
-      onChange: item => {
-        dispatch(influxdbAction.listDatabase(item.value))
-          .catch(this.setError.bind(this));
-        this.clearError();
-      },
-    });
+    if (!hideEmptyPoint) {
+      emptyPointCls['fa-square-o'] = true;
+    } else {
+      emptyPointCls['fa-check-square-o'] = true;
+    }
+    return (
+      <div className="extraSelector">
+        <label>Extra Setting</label>
+        <RadioSelector
+          desc={'stats view:'}
+          options={STATS_VIEW_TYPES}
+          selected={this.state.statsView}
+          onSelect={option => {
+            if (this.state.statsView !== option) {
+              this.setState({
+                statsView: option,
+              });
+            }
+          }}
+        />
+        <RadioSelector
+          desc={'order by time:'}
+          options={['asc', 'desc']}
+          selected={orderByTime}
+          onSelect={option => {
+            if (this.state.orderByTime !== option) {
+              this.setState({
+                orderByTime: option,
+              });
+            }
+          }}
+        />
+        <span
+          className="hideEmptyPoint"
+        >table view:
+          <a
+            href="#"
+            className="mleft5"
+            onClick={e => {
+              e.preventDefault();
+              this.setState({
+                hideEmptyPoint: !this.state.hideEmptyPoint,
+              });
+            }}
+          >
+            <i className={classnames(emptyPointCls)} aria-hidden="true"></i>
+            Hide Empty Point
+          </a>
+        </span>
+        {this.renderShowFieldSelector()}
+        <a
+          className="pure-button pure-button-primary submit"
+          href="#"
+          onClick={e => {
+            e.preventDefault();
+            this.setState({
+              showSubmitDialog: true,
+            });
+          }}
+        >
+          {conf ? 'Update' : 'Save'}
+        </a>
+      </div>
+    );
   }
-  renderDatabaseSelector() {
-    const { server } = this.state;
-    const { dispatch } = this.props;
-    return this.renderSelecotr({
-      pickKey: `props.influxdbServer.databases[${server}]`,
-      key: 'database',
-      onChange: item => {
-        dispatch(influxdbAction.listRP(server, item.value))
-          .catch(this.setError.bind(this));
-        dispatch(influxdbAction.listMeasurement(server, item.value))
-          .catch(this.setError.bind(this));
-        this.clearError();
-      },
+  renderShowFieldSelector() {
+    const { server, database, measurement } = this.state;
+    const tagInfos = _.get(this, `props.influxdbServer.tagInfos[${server + database + measurement}]`);
+    const fields = _.get(this, `props.influxdbServer.fields[${server + database + measurement}]`);
+    if (!fields) {
+      return null;
+    }
+    const arr = fields.concat(_.map(tagInfos, item => item.tag));
+    const showFields = this.state.fields;
+    const list = _.map(arr, v => {
+      const cls = {
+        fa: true,
+      };
+      if (_.indexOf(showFields, v) === -1) {
+        cls['fa-square-o'] = true;
+      } else {
+        cls['fa-check-square-o'] = true;
+      }
+      return (
+        <li
+          key={v}
+        >
+          <a
+            href="#"
+            onClick={e => {
+              e.preventDefault();
+              const cloneFields = this.state.fields.slice(0);
+              const index = _.indexOf(cloneFields, v);
+              if (index !== -1) {
+                cloneFields.splice(index, 1);
+              } else {
+                cloneFields.push(v);
+              }
+              this.setState({
+                fields: cloneFields,
+              });
+            }}
+          >
+            <i className={classnames(cls)} aria-hidden="true"></i>
+            {v}
+          </a>
+        </li>
+      );
     });
+    return (
+      <ul
+        className="fieldShowSelector"
+      >
+        <li>Fields:</li>
+        {list}
+      </ul>
+    );
   }
-  renderRPSelector() {
-    const { server, database } = this.state;
-    return this.renderSelecotr({
-      pickKey: `props.influxdbServer.rps[${server + database}]`,
-      key: 'rp'
-    });
+  renderGroupSeelctor() {
+    const { groupSelectorCount, showGroupSelector } = this.state;
+    if (!showGroupSelector) {
+      return null;
+    }
+    const groupArr = [];
+    for (let i = 0; i < groupSelectorCount; i++) {
+      groupArr.push(this.renderGroupbySelector(i));
+    }
+    groupArr.push(this.renderGroupbyTimeSelector());
+    return (
+      <div
+        className="groupBySelector"
+        onClick={e => {
+          e.disableToggle = true;
+          e.preventDefault();
+        }}
+      >
+        {groupArr}
+      </div>
+    );
   }
-  renderMeasurementSelector() {
-    const { server, database } = this.state;
-    const { dispatch } = this.props;
-    return this.renderSelecotr({
-      pickKey: `props.influxdbServer.measurements[${server + database}]`,
-      key: 'measurement',
-      placeholder: 'Select a measurement',
-      onChange: item => {
-        dispatch(influxdbAction.listTagInfos(server, database, item.value))
-          .catch(this.setError.bind(this));
-        dispatch(influxdbAction.listField(server, database, item.value))
-          .catch(this.setError.bind(this));
-        this.clearError();
-      },
+  renderExtractSelecotr() {
+    const { extractSelectorCount } = this.state;
+    const arr = [];
+    for (let i = 0; i < extractSelectorCount; i++) {
+      arr.push(this.renderFieldKeySelector(i));
+    }
+    return (
+      <div className="extractSelector">
+        <label>Extract By</label>
+        {arr}
+        <div className="groupByContainer clearfix">
+          <a
+            href="#"
+            className="pullRight"
+            onClick={e => this.onClickToggle(e, 'groupBySelector')}
+          >
+            <i className="fa fa-cubes" aria-hidden="true"></i>
+            Group By
+          </a>
+          {this.renderGroupSeelctor()}
+        </div>
+      </div>
+    );
+  }
+  renderDatePickerSelector() {
+    const arr = _.map(['start', 'end'], key => (
+      <div className="pure-u-1-2">
+        <DateTimePicker
+          onSelect={value => {
+            this.setDateTimeValue(value, key);
+            this.clearError();
+          }}
+        />
+      </div>
+    ));
+    return (
+      <div
+        className="datePickerSelector pure-g"
+        onClick={e => {
+          e.disableToggle = true;
+          e.preventDefault();
+        }}
+      >
+        {arr}
+        <a
+          href="#"
+          className="pure-button pure-u-1 apply"
+          onClick={e => this.setDate(e)}
+        >
+          Apply
+        </a>
+      </div>
+    );
+  }
+  renderTimeSelector() {
+    const arr = ['now', 'now'];
+    const { start, end } = this.state.date;
+    if (start) {
+      arr[0] = start;
+    }
+    if (end) {
+      arr[1] = end;
+    }
+    const defaultValue = this.state.offsetTime;
+    return (
+      <Select
+        value={defaultValue}
+        options={OFFSET_TIME_LIST}
+        onChange={item => {
+          const value = (item && item.value) || '';
+          const data = {};
+          if (value && value.charAt(0) !== '-') {
+            data.showDateTimeSelector = true;
+          } else {
+            data.offsetTime = value;
+          }
+          this.setState(data);
+        }}
+      />
+    );
+  }
+  renderFilterSelector() {
+    const { conditionSelectorCount } = this.state;
+    const arr = [];
+    for (let i = 0; i < conditionSelectorCount; i++) {
+      arr.push(this.renderTagKeySelector(i));
+    }
+    return (
+      <div className="filterSelector">
+        <label>Filter By</label>
+        {this.renderMeasurementSelector()}
+        {arr}
+      </div>
+    );
+  }
+  renderBasicSelector() {
+    const { showBasicSelector } = this.state;
+    if (!showBasicSelector) {
+      return null;
+    }
+    return (
+      <div
+        className="basicSelector"
+        onClick={e => {
+          e.disableToggle = true;
+          e.preventDefault();
+        }}
+        style={{
+          marginTop: '-6px',
+        }}
+      >
+        <label className="mtop10">Servers</label>
+        {this.renderServerSelector()}
+        <label className="mtop10">Databases</label>
+        {this.renderDatabaseSelector()}
+        <label className="mtop10">Retention Policies</label>
+        {this.renderRPSelector()}
+      </div>
+    );
+  }
+  renderQueryBar() {
+    const { showDateTimeSelector } = this.state;
+    return (
+      <div
+        className="queryBarContainer"
+      >
+        <a
+          onClick={e => this.onClickToggle(e, 'basicSelector')}
+          href="#"
+          className="pure-button pullLeft tac showServerSelector"
+        >
+          <i className="fa fa-server" aria-hidden="true"></i>
+        </a>
+        <div className="pullRight timeSelectorContainer">
+          {this.renderTimeSelector()}
+        </div>
+        <div
+          className="influxQl"
+        >
+          <input
+            style={{
+              width: '100%',
+              padding: '9px',
+            }}
+            value={this.getInfluxQL()}
+            placeholder="it will create influx ql auto"
+            type="text"
+          />
+        </div>
+        {showDateTimeSelector && this.renderDatePickerSelector()}
+      </div>
+    );
+  }
+  renderSelecotr(opts) {
+    const { pickKey, key } = opts;
+    const defaultConvert = item => ({
+      label: item,
+      value: item,
     });
+    const convert = opts.convert || defaultConvert;
+    const onChange = opts.onChange || _.noop;
+
+    const data = _.get(this, pickKey, []);
+    const options = _.map(data, convert);
+    return (
+      <Select
+        className="influxdbSelector"
+        options={options}
+        value={this.state[key]}
+        placeholder={opts.placeholder}
+        onChange={item => {
+          const tmp = {};
+          if (!item) {
+            tmp[key] = '';
+            this.setState(tmp);
+            return;
+          }
+          tmp[key] = item.value;
+          this.setState(tmp);
+          onChange(item);
+        }}
+      />
+    );
   }
   renderTagKeySelector(index) {
     const { server, database, measurement, conditions } = this.state;
-    const { dispatch } = this.props;
     const key = `props.influxdbServer.tagInfos[${server + database + measurement}]`;
     const tagInfos = _.get(this, key);
     const keys = _.map(tagInfos, item => item.tag);
     const condition = conditions[index];
-    const found = _.find(tagInfos, item => {
-      return item.tag === (condition && condition.key);
-    });
+    const found = _.find(tagInfos, item => item.tag === (condition && condition.key));
     const values = found && found.value;
     return this.renderParallelSelector({
       index,
@@ -195,7 +540,6 @@ class InfluxdbVisualizationEditor extends Component {
   }
   renderGroupbySelector(index) {
     const { server, database, measurement, groups } = this.state;
-    const { dispatch } = this.props;
     const key = `props.influxdbServer.tagInfos[${server + database + measurement}]`;
     const tagInfos = _.get(this, key);
     const values = _.map(tagInfos, item => item.tag);
@@ -214,12 +558,10 @@ class InfluxdbVisualizationEditor extends Component {
     if (!_.get(this, 'state.extracts.length')) {
       return null;
     }
-    const options = _.map('10s 30s 1m 5m 10m 15m 30m 1h 2h 6h 12h 1d 2d 7d 30d'.split(' '), v => {
-      return {
-        label: v,
-        value: v,
-      };
-    });
+    const options = _.map('10s 30s 1m 5m 10m 15m 30m 1h 2h 6h 12h 1d 2d 7d 30d'.split(' '), v => ({
+      label: v,
+      value: v,
+    }));
     return (
       <Select
         value={this.state.groupByTime}
@@ -237,426 +579,97 @@ class InfluxdbVisualizationEditor extends Component {
   }
   renderParallelSelector(opts) {
     const { index, keys, id, values, defaultKey, defaultValue, listKey, countKey, hidden } = opts;
-    return <ParallelSelector
-      hidden={hidden}
-      key={id || uuid.v4()}
-      keys={keys}
-      values={values}
-      defaultKey={defaultKey}
-      defaultValue={defaultValue}
-      onSelect={item => {
-
-        const arr = this.state[listKey].slice(0);
-        arr[index] = Object.assign({
-          id: uuid.v4(),
-        }, item);
-        const data = {};
-        data[listKey] = arr;
-        this.setState(data);
-        this.clearError();
-      }}
-      toggleType={index === 0 ? "add" : "remove"}
-      onToggle={type => {
-        const list = this.state[listKey];
-        const count = this.state[countKey];
-        const data = {};
-        data[countKey] = count + 1;
-        if (type === 'remove') {
-          data[countKey] = count - 1;
-          let clone = list.slice(0);
-          clone.splice(index, 1);
-          data[listKey] = clone;
-        }
-        this.setState(data);
-        this.clearError();
-      }}
-    />
-  }
-  renderSelecotr(opts) {
-    const { pickKey, key } = opts;
-    const defaultConvert = item => {
-      return {
-        label: item,
-        value: item,
-      };
-    };
-    const convert = opts.convert || defaultConvert;
-    const onChange = opts.onChange || _.noop;
-
-    const data = _.get(this, pickKey, []);
-    const options = _.map(data, convert);
-    return <Select
-      className="influxdbSelector"
-      options={options}
-      value={this.state[key]}
-      placeholder={opts.placeholder}
-      onChange={item => {
-        const data = {};
-        if (!item) {
-          data[key] = '';
-          this.setState(data);
-          return;
-        }
-        data[key] = item.value;
-        this.setState(data);
-        onChange(item);
-      }}
-    />
-  }
-  getInfluxQL() {
-    const state = this.state;
-    if (!state.measurement || state.error) {
-      return '';
-    }
-    const count = Math.abs(util.toSeconds(state.offsetTime)) / util.toSeconds(state.groupByTime);
-    if (count > 300) {
-      this.setState({
-        series: null,
-        error: `There are too many points(${count}), please change influx ql group by time`,
-      });
-      return '';
-    }
-    return util.getInfluxQL(state);
-  }
-  renderQueryBar() {
-    const { showDateTimeSelector } = this.state;
-    return <div
-      className="queryBarContainer"
-    >
-      <a
-        onClick={e => this.onClickToggle(e, 'basicSelector')}
-        href="#"
-        className="pure-button pullLeft tac showServerSelector"
-      >
-        <i className="fa fa-server" aria-hidden="true"></i>
-      </a>
-      <div className="pullRight timeSelectorContainer">
-        {this.renderTimeSelector()}
-      </div>
-      <div 
-        className="influxQl"
-      >
-        <input
-          style={{
-            width: '100%',
-            padding: '9px',
-          }}
-          value={this.getInfluxQL()}
-          placeholder="it will create influx ql auto"
-          type="text"
-        />
-      </div>
-      { showDateTimeSelector && this.renderDatePickerSelector()}
-    </div>
-  }
-  renderBasicSelector() {
-    const { showBasicSelector } = this.state;
-    if (!showBasicSelector) {
-      return null;
-    }
-    return <div className="basicSelector"
-      onClick={e => e.disableToggle = true}
-      style={{
-        marginTop: '-6px',
-      }}
-    >
-      <label className="mtop10">Servers</label>
-      {this.renderServerSelector()}
-      <label className="mtop10">Databases</label>
-      {this.renderDatabaseSelector()}
-      <label className="mtop10">Retention Policies</label>
-      {this.renderRPSelector()}
-    </div>
-  }
-  renderFilterSelector() {
-    const { conditionSelectorCount } = this.state;
-    const arr = [];
-    for (let i = 0; i < conditionSelectorCount; i++) {
-      arr.push(this.renderTagKeySelector(i));
-    }
-    return <div className="filterSelector">
-      <label>Filter By</label>
-      {this.renderMeasurementSelector()}
-      {arr}
-    </div>
-  }
-  renderTimeSelector() {
-    const arr = ['now', 'now'];
-    const { start, end } = this.state.date;
-    if (start) {
-      arr[0] = start;
-    }
-    if (end) {
-      arr[1] = end;
-    }
-    const defaultValue = this.state.offsetTime;
     return (
-      <Select
-        value={defaultValue}
-        options={OFFSET_TIME_LIST}
-        onChange={item => {
-          const value = (item && item.value) || '';
-          if (value && value.charAt(0) !== '-') {
-            return this.setState({
-              showDateTimeSelector: true,
-            });
+      <ParallelSelector
+        hidden={hidden}
+        key={id || uuid.v4()}
+        keys={keys}
+        values={values}
+        defaultKey={defaultKey}
+        defaultValue={defaultValue}
+        onSelect={item => {
+          const arr = this.state[listKey].slice(0);
+          arr[index] = Object.assign({
+            id: uuid.v4(),
+          }, item);
+          const data = {};
+          data[listKey] = arr;
+          this.setState(data);
+          this.clearError();
+        }}
+        toggleType={index === 0 ? 'add' : 'remove'}
+        onToggle={type => {
+          const list = this.state[listKey];
+          const count = this.state[countKey];
+          const data = {};
+          data[countKey] = count + 1;
+          if (type === 'remove') {
+            data[countKey] = count - 1;
+            const clone = list.slice(0);
+            clone.splice(index, 1);
+            data[listKey] = clone;
           }
-          this.setState({
-            offsetTime: value,
-          });
+          this.setState(data);
+          this.clearError();
         }}
       />
     );
   }
-  renderDatePickerSelector() {
-    const arr = _.map(['start', 'end'], key => {
-      return (
-        <div className="pure-u-1-2">
-          <DateTimePicker
-            onSelect={value => {
-              this.setDateTimeValue(value, key);
-              this.clearError();
-            }}
-          />
-        </div>
-      );
-    });
-    return (
-      <div
-        className="datePickerSelector pure-g"
-        onClick={e => e.disableToggle = true}
-      >
-        {arr}
-        <a
-          href="#"
-          className="pure-button pure-u-1 apply"
-          onClick={e => this.setDate(e)}
-        >
-          Apply
-        </a>
-      </div>
-    );
-  }
-  renderExtractSelecotr() {
-    const { extractSelectorCount, groupSelectorCount, showGroupSelector } = this.state;
-    const arr = [];
-    for (let i = 0; i < extractSelectorCount; i++) {
-      arr.push(this.renderFieldKeySelector(i));
-    }
-    const groupArr = [];
-    if (showGroupSelector) {
-      for(let i = 0; i < groupSelectorCount; i++) {
-        groupArr.push(this.renderGroupbySelector(i));
-      }
-      groupArr.push(this.renderGroupbyTimeSelector());
-    }
-    return <div className="extractSelector">
-      <label>Extract By</label>
-      {arr}
-      <div className="groupByContainer clearfix">
-        <a
-          href="#"
-          className="pullRight"
-          onClick={e => this.onClickToggle(e, 'groupBySelector')}
-        >
-          <i className="fa fa-cubes" aria-hidden="true"></i>
-          Group By
-        </a>
-        {
-          showGroupSelector && <div
-            className="groupBySelector"
-            onClick={e => e.disableToggle = true}
-          >
-
-            {groupArr}
-          </div>
-        }
-      </div>
-    </div>
-  }
-  renderShowFieldSelector() {
-    const { server, database, measurement, conditions } = this.state;
+  renderMeasurementSelector() {
+    const { server, database } = this.state;
     const { dispatch } = this.props;
-    const tagInfos = _.get(this, `props.influxdbServer.tagInfos[${server + database + measurement}]`);
-    const fields = _.get(this, `props.influxdbServer.fields[${server + database + measurement}]`);
-    if (!fields) {
-      return null;
-    }
-    const arr = fields.concat(_.map(tagInfos, item => item.tag));
-    const showFields = this.state.fields;
-    const list = _.map(arr, v => {
-      const cls = {
-        fa: true,
-      };
-      if (_.indexOf(showFields, v) === -1) {
-        cls['fa-square-o'] = true;
-      } else {
-        cls['fa-check-square-o'] = true;
-      }
-      const id = `show-filed-${v}`;
-      return (
-        <li
-          key={v}
-        >
-          <a
-            href="#"
-            onClick={e => {
-              e.preventDefault();
-              const arr = this.state.fields.slice(0);
-              const index = _.indexOf(arr, v);
-              if (index !== -1) {
-                arr.splice(index, 1);
-              } else {
-                arr.push(v);
-              }
-              this.setState({
-                fields: arr,
-              });
-            }}
-          >
-            <i className={classnames(cls)} aria-hidden="true"></i>
-            {v}
-          </a>
-        </li>
-      );
+    return this.renderSelecotr({
+      pickKey: `props.influxdbServer.measurements[${server + database}]`,
+      key: 'measurement',
+      placeholder: 'Select a measurement',
+      onChange: item => {
+        dispatch(influxdbAction.listTagInfos(server, database, item.value))
+          .catch(this.setError.bind(this));
+        dispatch(influxdbAction.listField(server, database, item.value))
+          .catch(this.setError.bind(this));
+        this.clearError();
+      },
     });
-    return (
-      <ul
-        className="fieldShowSelector"
-      >
-        <li>Fields:</li>
-        {list}
-      </ul>
-    );
   }
-  renderExtraSelector() {
-    const { hideEmptyPoint, orderByTime } = this.state;
-    const conf = this.props.data; 
-    const emptyPointCls = {
-      fa: true,
-    };
-    if (!hideEmptyPoint) {
-      emptyPointCls['fa-square-o'] = true;
-    } else {
-      emptyPointCls['fa-check-square-o'] = true;
-    }
-    return (
-      <div className="extraSelector">
-        <label>Extra Setting</label>
-        <RadioSelector
-          desc={'stats view:'}
-          options={STATS_VIEW_TYPES}
-          selected={this.state.statsView}
-          onSelect={option => {
-            if (this.state.statsView !== option) {
-              this.setState({
-                statsView: option,
-              });
-            }
-          }}
-        />
-        <RadioSelector
-          desc={'order by time:'}
-          options={['asc', 'desc']}
-          selected={this.state.orderByTime}
-          onSelect={option => {
-            if (this.state.orderByTime !== option) {
-              this.setState({
-                orderByTime: option,
-              });
-            }
-          }}
-        />
-        <span
-          className='hideEmptyPoint'
-        >table view:
-          <a
-            href="#"
-            className="mleft5"
-            onClick={e => {
-              e.preventDefault();
-              this.setState({
-                hideEmptyPoint: !this.state.hideEmptyPoint,
-              });
-            }}
-          >
-          <i className={classnames(emptyPointCls)} aria-hidden="true"></i>
-            Hide Empty Point
-          </a>
-        </span>
-        {this.renderShowFieldSelector()}
-        <a
-          className="pure-button pure-button-primary submit"
-          href="#"
-          onClick={e => {
-            e.preventDefault();
-            this.setState({
-              showSubmitDialog: true,
-            });
-          }}
-        >
-          { conf ? 'Update' : 'Save' }
-        </a>
-      </div>
-    )
+  renderRPSelector() {
+    const { server, database } = this.state;
+    return this.renderSelecotr({
+      pickKey: `props.influxdbServer.rps[${server + database}]`,
+      key: 'rp',
+    });
   }
-  getConfigure() {
-    const keys = 'server database rp measurement groupByTime offsetTime conditions extracts groups fields date hideEmptyPoint orderByTime statsView'.split(' ');
-    return _.pick(this.state, keys);
-  }
-  renderSubmitDialog() {
+  renderDatabaseSelector() {
+    const { server } = this.state;
     const { dispatch } = this.props;
-    const data = this.getConfigure();
-    return (
-      <VisualizationSaveDialog
-        onClose={() => this.setState({
-          showSubmitDialog: false,
-        })}
-        orginalData={this.props.data}
-        dispatch={dispatch}
-        data={data}
-      />
-    );
-  }
-  onClickToggle(e, type) {
-    e.disableToggle = true;
-    e.preventDefault();
-    const data = {};
-    const state = this.state;
-    const keyDict = {
-      basicSelector: 'showBasicSelector',
-      groupBySelector: 'showGroupSelector',
-    };
-    const key = keyDict[type];
-    if (!key) {
-      return;
-    }
-    data[key] = !state[key];
-    this.setState(data);
-  }
-  renderErrorTips() {
-    const { error } = this.state;
-    if (!error) {
-      return null;
-    }
-    return (
-      <div className="warning">
-        <i className="fa fa-exclamation-triangle" aria-hidden="true"></i>
-        <span>{error}</span>
-      </div>
-    );
-  }
-  hideSelector() {
-    const state = this.state;
-    const data = {};
-    _.forEach(['showBasicSelector', 'showGroupSelector', 'showDateTimeSelector'], key => {
-      if (state[key]) {
-        data[key] = false;
-      }
+    return this.renderSelecotr({
+      pickKey: `props.influxdbServer.databases[${server}]`,
+      key: 'database',
+      onChange: item => {
+        dispatch(influxdbAction.listRP(server, item.value))
+          .catch(this.setError.bind(this));
+        dispatch(influxdbAction.listMeasurement(server, item.value))
+          .catch(this.setError.bind(this));
+        this.clearError();
+      },
     });
-    if (!_.isEmpty(data)) {
-      this.setState(data);
-    }
+  }
+  renderServerSelector() {
+    const { dispatch } = this.props;
+    const convert = item => ({
+      label: item.name,
+      /* eslint no-underscore-dangle:0 */
+      value: item._id,
+    });
+    return this.renderSelecotr({
+      pickKey: 'props.influxdbServer.list',
+      key: 'server',
+      convert,
+      onChange: item => {
+        dispatch(influxdbAction.listDatabase(item.value))
+          .catch(this.setError.bind(this));
+        this.clearError();
+      },
+    });
   }
   renderStatsView() {
     const { dispatch } = this.props;
@@ -675,38 +688,34 @@ class InfluxdbVisualizationEditor extends Component {
   }
   render() {
     const { showSubmitDialog } = this.state;
-    return <div
-      className="influxdbVisualizationEditor"
-      onClick={e => {
-        if (!e.disableToggle) {
-          this.hideSelector();
-        }
-        delete e.disableToggle;
-      }}
-    >
-      {this.renderQueryBar()}
-      {this.renderBasicSelector()}
-      <div className="pure-g">
-        <div className="pure-u-1-3">
-          {this.renderFilterSelector()}
+    return (
+      <div
+        className="influxdbVisualizationEditor"
+        onClick={e => {
+          if (!e.disableToggle) {
+            this.hideSelector();
+          }
+          delete e.disableToggle;
+        }}
+      >
+        {this.renderQueryBar()}
+        {this.renderBasicSelector()}
+        <div className="pure-g">
+          <div className="pure-u-1-3">
+            {this.renderFilterSelector()}
+          </div>
+          <div className="pure-u-1-3">
+            {this.renderExtractSelecotr()}
+          </div>
+          <div className="pure-u-1-3">
+            {this.renderExtraSelector()}
+          </div>
         </div>
-        <div className="pure-u-1-3">
-          {this.renderExtractSelecotr()}
-        </div>
-        <div className="pure-u-1-3">
-          {this.renderExtraSelector()}
-        </div>
+        {this.renderStatsView()}
+        {this.renderErrorTips()}
+        {showSubmitDialog && this.renderSubmitDialog()}
       </div>
-      {
-        this.renderStatsView()
-      }
-      {
-        this.renderErrorTips()
-      }
-      {
-        showSubmitDialog && this.renderSubmitDialog()
-      }
-    </div>
+    );
   }
 }
 

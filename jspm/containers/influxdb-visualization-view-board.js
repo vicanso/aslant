@@ -4,8 +4,7 @@ import React, { PropTypes, Component } from 'react';
 import * as _ from 'lodash';
 import Select from 'react-select';
 import InfluxdbVisualizationView from '../components/influxdb-visualization-view';
-import RadioSelector from '../components/radio-selector';
-import { STATS_VIEW_TYPES, OFFSET_TIME_LIST } from '../constants/common';
+import { OFFSET_TIME_LIST } from '../constants/common';
 
 class InfluxdbVisualizationViewBoard extends Component {
   constructor(props) {
@@ -81,5 +80,10 @@ class InfluxdbVisualizationViewBoard extends Component {
     );
   }
 }
+
+InfluxdbVisualizationViewBoard.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  configure: PropTypes.object.isRequired,
+};
 
 export default InfluxdbVisualizationViewBoard;

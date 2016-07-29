@@ -59,7 +59,7 @@ class MainHeader extends Component {
   }
   renderUserInfo() {
     const { status, message } = this.state;
-    const { user, dispatch, influxdbServer } = this.props;
+    const { user } = this.props;
     const account = _.get(user, 'basic.account');
     if (status === 'error') {
       return (
@@ -83,15 +83,15 @@ class MainHeader extends Component {
       return (
         <li>
           <span>{account}</span>
-          <a href='#' onClick={e => this.to(e, 'showServers')}>
+          <a href="#" onClick={e => this.to(e, 'showServers')}>
             <i className="fa fa-server" aria-hidden="true"></i>
             influxdbs
           </a>
-          <a href='#' onClick={e => this.to(e, 'showVisualizations')}>
+          <a href="#" onClick={e => this.to(e, 'showVisualizations')}>
             <i className="fa fa-bar-chart" aria-hidden="true"></i>
               visualizations
           </a>
-          <a href='#' onClick={e => this.to(e, 'showDashboards')}>
+          <a href="#" onClick={e => this.to(e, 'showDashboards')}>
             <i className="fa fa-tachometer" aria-hidden="true"></i>
               dashboards
           </a>

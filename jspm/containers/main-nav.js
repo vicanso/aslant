@@ -10,7 +10,7 @@ class MainNav extends Component {
     dispatch(navigationAction.home());
   }
   render() {
-    return  (
+    return (
       <nav className="mainNav">
         <a className="logo" href="#" onClick={e => this.goToHome(e)}>aslant</a>
         <ul>

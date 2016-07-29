@@ -3,7 +3,9 @@
 import React, { PropTypes } from 'react';
 import * as _ from 'lodash';
 import Dialog from '../components/dialog';
+import * as util from '../helpers/util';
 import * as configureAction from '../actions/configure';
+import * as navigationAction from '../actions/navigation';
 
 class VisualizationSaveDialog extends Dialog {
   constructor(props) {

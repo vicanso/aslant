@@ -49,7 +49,7 @@ class RegisterLogin extends Dialog {
     } else {
       action = userAction.login(account, password);
     }
-    dispatch(action).then(user => {
+    dispatch(action).then(() => {
       dispatch(navigationAction.back());
     }).catch(err => {
       this.setState({
@@ -58,11 +58,13 @@ class RegisterLogin extends Dialog {
     });
   }
   onKeyUp(e) {
-    switch(e.keyCode) {
+    switch (e.keyCode) {
       case 13:
         return this.handleSubmit(e);
       case 27:
         return this.onClose(e);
+      default:
+        return null;
     }
   }
   getError() {
