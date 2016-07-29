@@ -7,7 +7,8 @@ exports.add = (ctx) => {
   const data = Joi.validateThrow(ctx.request.body, {
     name: Joi.string().trim().required(),
     desc: Joi.string().trim().required(),
-    configures: Joi.array().min(1).items(Joi.string().length(24)).required(),
+    configures: Joi.array().min(1).items(Joi.string().length(24))
+      .required(),
   });
   const account = _.get(ctx, 'session.user.account');
   return dashboardService.add(_.extend({

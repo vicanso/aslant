@@ -5,6 +5,21 @@ import * as echarts from 'echarts';
 import * as formater from '../helpers/echarts-formater';
 
 class Chart extends Component {
+  componentDidMount() {
+    const chart = echarts.init(this.refs.chart);
+    this.chart = chart;
+    chart.setOption(this.getOption());
+  }
+  componentWillReceiveProps(nextProps) {
+    const chart = this.chart;
+    if (nextProps.type !== this.props.type && chart) {
+      chart.clear();
+    }
+  }
+  componentDidUpdate() {
+    const chart = this.chart;
+    chart.setOption(this.getOption());
+  }
   getOption() {
     const { type, series } = this.props;
     let fn;
@@ -21,29 +36,25 @@ class Chart extends Component {
     }
     return fn(series, this.props.name);
   }
-  componentWillReceiveProps(nextProps) {
-    const chart = this.chart;
-    if (nextProps.type !== this.props.type && chart) {
-      chart.clear();
-    }
-  }
-  componentDidMount() {
-    const chart = echarts.init(this.refs.chart);
-    this.chart = chart;
-    chart.setOption(this.getOption());
-  }
-  componentDidUpdate() {
-    const chart = this.chart;
-    chart.setOption(this.getOption());
-  }
   render() {
     return (
       <div className="chartContainer">
-        <div ref="chart" style={{"height":"100%"}}>
+        <div
+          ref="chart"
+          style={{
+            height: '100%',
+          }}
+        >
         </div>
       </div>
     );
   }
 }
+
+Chart.propTypes = {
+  name: PropTypes.string.isRequired,
+  type: PropTypes.string,
+  series: PropTypes.object.isRequired,
+};
 
 export default Chart;

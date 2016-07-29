@@ -35,8 +35,8 @@ class RadioSelector extends Component {
     });
   }
   render() {
-    const { desc, options, className } = this.props;
-    const cls = `radioSelector ${className || ""}`.trim();
+    const { desc, className } = this.props;
+    const cls = `radioSelector ${className || ''}`.trim();
     return (
       <div className={cls}>
         <span>{desc}</span>
@@ -45,5 +45,13 @@ class RadioSelector extends Component {
     );
   }
 }
+
+RadioSelector.propTypes = {
+  onSelect: PropTypes.func.isRequired,
+  desc: PropTypes.string.isRequired,
+  options: PropTypes.array.isRequired,
+  className: PropTypes.string,
+  selected: PropTypes.string,
+};
 
 export default RadioSelector;

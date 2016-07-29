@@ -1,6 +1,7 @@
 'use strict';
 /* eslint import/no-unresolved:0 */
 import React, { PropTypes, Component } from 'react';
+import * as _ from 'lodash';
 import * as util from '../helpers/util';
 import * as influxdbAction from '../actions/influxdb';
 import SeriesTable from './series-table';
@@ -17,19 +18,6 @@ class InfluxdbVisualizationView extends Component {
       timer: null,
       type: '',
     };
-  }
-  autoRefresh(ql) {
-    const { autoRefresh } = this.props;
-    if (this.state.timer) {
-      clearInterval(this.state.timer);
-    }
-    this.state.timer = setInterval(() => {
-      this.getPoints(ql).then(series => {
-        this.setState({
-          series,
-        });
-      });
-    }, util.toSeconds(autoRefresh) * 1000);
   }
   componentWillUnmount() {
     clearInterval(this.state.timer);
@@ -54,6 +42,19 @@ class InfluxdbVisualizationView extends Component {
       }
       return series;
     });
+  }
+  autoRefresh(ql) {
+    const { autoRefresh } = this.props;
+    if (this.state.timer) {
+      clearInterval(this.state.timer);
+    }
+    this.state.timer = setInterval(() => {
+      this.getPoints(ql).then(series => {
+        this.setState({
+          series,
+        });
+      });
+    }, util.toSeconds(autoRefresh) * 1000);
   }
   updateSeries() {
     const state = this.state;
@@ -93,14 +94,10 @@ class InfluxdbVisualizationView extends Component {
   renderSeriesTable() {
     const { series } = this.state;
     const { hideEmptyPoint } = this.props.configure;
-    return _.map(series, item => {
-      return (
-        <SeriesTable
-          seriesItem={item}
-          hideEmptyPoint={hideEmptyPoint}
-        />
-      );
-    });
+    return _.map(series, item => <SeriesTable
+      seriesItem={item}
+      hideEmptyPoint={hideEmptyPoint}
+    />);
   }
   renderCharts(type) {
     const { series } = this.state;
@@ -112,7 +109,6 @@ class InfluxdbVisualizationView extends Component {
     );
   }
   renderStatsViewSelector() {
-    const { configure } = this.props;
     return (
       <RadioSelector
         className="statsViewSelector"
@@ -158,8 +154,7 @@ class InfluxdbVisualizationView extends Component {
       >
         {!disableViewSelector && this.renderStatsViewSelector()}
         {
-          doingQuery && 
-          <p className="tac">
+          doingQuery && <p className="tac">
             <i className="fa fa-spinner" aria-hidden="true"></i>
             Loading...
           </p>
@@ -169,5 +164,13 @@ class InfluxdbVisualizationView extends Component {
     );
   }
 }
+
+InfluxdbVisualizationView.propTypes = {
+  disableViewSelector: PropTypes.bool,
+  autoRefresh: PropTypes.bool,
+  offsetTime: PropTypes.string,
+  type: PropTypes.string,
+  configure: PropTypes.object.isRequired,
+};
 
 export default InfluxdbVisualizationView;

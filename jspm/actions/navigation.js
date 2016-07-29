@@ -48,7 +48,7 @@ export function addVisualization() {
 }
 
 export function editVisualization(id) {
-  return to(`${urls.EDIT_VISUALIZATIONS}/${id}`);
+  return to(`${urls.EDIT_VISUALIZATION}/${id}`);
 }
 
 export function showDashboards() {
@@ -57,6 +57,10 @@ export function showDashboards() {
 
 export function addDashboard() {
   return to(urls.ADD_DASHBOARD);
+}
+
+export function editDashboard(id) {
+  return to(`${urls.EDIT_DASHBOARD}/${id}`);
 }
 
 export function back() {

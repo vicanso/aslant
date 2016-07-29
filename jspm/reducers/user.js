@@ -66,7 +66,7 @@ export default function user(state = defaultStates, action) {
         dashboards,
       });
     }
-    case DASHBOARD_LIST: 
+    case DASHBOARD_LIST:
       return Object.assign({}, state, {
         dashboards: action.dashboards,
       });

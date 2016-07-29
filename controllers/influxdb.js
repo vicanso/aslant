@@ -1,5 +1,4 @@
 'use strict';
-const Joi = require('joi');
 const _ = require('lodash');
 const influxdbService = localRequire('services/influxdb');
 const errors = localRequire('helpers/errors');

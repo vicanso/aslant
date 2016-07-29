@@ -22,13 +22,10 @@ class InfluxdbServerEditor extends Dialog {
   onClose(e) {
     e.preventDefault();
     const { dispatch } = this.props;
-    dispatch(navigationAction.back());   
+    dispatch(navigationAction.back());
   }
   getData() {
     const refs = this.refs;
-    const user = refs.user.value;
-    const password = refs.password.value;
-    const group = refs.group.value;
     const data = {
       name: refs.name.value,
       host: refs.host.value,
@@ -56,14 +53,14 @@ class InfluxdbServerEditor extends Dialog {
     const { dispatch, server } = this.props;
     const { status } = this.state;
     if (status === 'processing') {
-      return;
+      return null;
     }
     const schema = Joi.object().keys({
       name: Joi.string().trim().required(),
       host: Joi.string().trim().required(),
       port: Joi.number().integer().required(),
       ssl: Joi.boolean().required(),
-      group: Joi.string().trim().required(),
+      group: Joi.string().trim().default('*'),
       user: Joi.string().trim(),
       password: Joi.string().trim(),
     });
@@ -79,13 +76,14 @@ class InfluxdbServerEditor extends Dialog {
     });
     let fn;
     if (server) {
+      /* eslint no-underscore-dangle:0 */
       fn = serverAction.edit(server._id, server.token, result.value);
     } else {
       fn = serverAction.add(result.value);
     }
     return dispatch(fn).then(() => {
       dispatch(navigationAction.back());
-    }).catch(err => { 
+    }).catch(err => {
       this.setState({
         status: '',
         error: util.getError(err),
@@ -93,15 +91,17 @@ class InfluxdbServerEditor extends Dialog {
     });
   }
   onKeyUp(e) {
-    switch(e.keyCode) {
+    switch (e.keyCode) {
       case 13:
         return this.handleSubmit(e);
       case 27:
         return this.onClose(e);
+      default:
+        return null;
     }
   }
   setDefaultValue() {
-    const { server, dispatch } = this.props;
+    const { server } = this.props;
     const refs = this.refs;
     const defaultValue = {
       host: 'localhost',
@@ -141,7 +141,7 @@ class InfluxdbServerEditor extends Dialog {
   }
   getContent() {
     const { status } = this.state;
-    const { dispatch, server, type } = this.props;
+    const { server, type } = this.props;
     if (type === 'update' && !server) {
       return null;
     }

@@ -3,7 +3,6 @@
 import React, { PropTypes, Component } from 'react';
 import * as _ from 'lodash';
 import classnames from 'classnames';
-import * as influxdbAction from '../actions/influxdb';
 import * as navigationAction from '../actions/navigation';
 import * as dashboardAction from '../actions/dashboard';
 import * as util from '../helpers/util';
@@ -45,7 +44,7 @@ class InfluxdbDashboardEditor extends Component {
     const desc = refs.desc.value;
     if (!name || !desc) {
       return this.setState({
-        error: `Name and description can\'t be empty`,
+        error: 'Name and description can\'t be empty',
       });
     }
     if (!selectedList.length) {
@@ -68,11 +67,13 @@ class InfluxdbDashboardEditor extends Component {
         error: util.getError(err),
       });
     });
+    return null;
   }
   renderConfigures() {
     const { configures } = this.props;
     const { selectedList } = this.state;
     return _.map(configures, (item, index) => {
+      /* eslint no-underscore-dangle: 0 */
       const id = item._id;
       const cls = {
         fa: true,
@@ -105,7 +106,7 @@ class InfluxdbDashboardEditor extends Component {
     return (
       <div
         className="influxdbDashboardEditor"
-      > 
+      >
         <div className="pure-g">
           <div className="pure-u-5-12"><div className="mright10">
             <input
@@ -129,7 +130,7 @@ class InfluxdbDashboardEditor extends Component {
               className="pure-button pure-button-primary"
               onClick={e => this.submit(e)}
             >Submit
-              { status === 'processing' && <span>...</span> }
+              {status === 'processing' && <span>...</span>}
             </a>
           </div>
         </div>
@@ -145,8 +146,8 @@ class InfluxdbDashboardEditor extends Component {
             {this.renderConfigures()}
           </tbody>
         </table>
-        { error && 
-          <div className="warning mtop10">
+        {
+          error && <div className="warning mtop10">
             <i className="fa fa-exclamation-triangle" aria-hidden="true"></i>
             <span>{error}</span>
           </div>
@@ -155,5 +156,10 @@ class InfluxdbDashboardEditor extends Component {
     );
   }
 }
+
+InfluxdbDashboardEditor.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  configures: PropTypes.array,
+};
 
 export default InfluxdbDashboardEditor;

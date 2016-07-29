@@ -1,9 +1,5 @@
 'use strict';
 const uuid = require('uuid');
-const mongoose = require('mongoose');
-
-function addModifyTime() {
-}
 
 module.exports = {
   schema: {
@@ -50,9 +46,4 @@ module.exports = {
       owner: 1,
     },
   ],
-  post: {
-    validate: [
-      addModifyTime,
-    ],
-  },
 };

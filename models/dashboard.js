@@ -1,6 +1,5 @@
 'use strict';
 const uuid = require('uuid');
-const mongoose = require('mongoose');
 
 module.exports = {
   schema: {

@@ -3,143 +3,16 @@
 import React, { PropTypes, Component } from 'react';
 import * as _ from 'lodash';
 import classnames from 'classnames';
-import DatePicker from 'react-datepicker';
-import TimePicker from 'rc-time-picker';
-import moment from 'moment';
 import Select from 'react-select';
 import * as uuid from 'uuid';
 import * as util from '../helpers/util';
 import * as influxdbAction from '../actions/influxdb';
-import * as configureAction from '../actions/configure';
-import * as navigationAction from '../actions/navigation';
 import InfluxdbVisualizationView from '../components/influxdb-visualization-view';
 import RadioSelector from '../components/radio-selector';
-import Dialog from '../components/dialog';
 import DateTimePicker from '../components/date-time-picker';
 import ParallelSelector from '../components/parallel-selector';
-import { STATS_VIEW_TYPES } from '../constants/common';
-
-class VisualizationSaveDialog extends Dialog {
-  constructor(props) {
-    super(props);
-    const conf = _.get(props, 'orginalData.configure');
-    this.state = {
-      title: conf ? 'Update Visualization' : 'Save Visualization',
-      classes: {
-        visualizationSaveDialog: true,
-      },
-      status: '',
-    };
-  }
-  onKeyUp(e) {
-    this.setState({
-      error: '',
-    });
-    switch(e.keyCode) {
-      case 27:
-        return this.onClose(e);
-    }
-  }
-  componentDidMount() {
-    const props = this.props;
-    _.forEach(this.refs, (ref, k) => {
-      const v = _.get(props, `orginalData.${k}`);
-      if(v) {
-        ref.value = v;
-      }
-    });
-  }
-  getData() {
-    const refs = this.refs;
-    return {
-      name: (refs.name.value || '').trim(),
-      desc: (refs.desc.value || '').trim(),
-    };
-  }
-  onClose(e) {
-    const { onClose } = this.props;
-    e.preventDefault();
-    onClose();
-  }
-  submit(e) {
-    e.preventDefault();
-    const props = this.props;
-    const { status } = this.state;
-    const { dispatch, data } = props;
-    if (status === 'processing') {
-      return;
-    }
-    const inputs = this.getData();
-    if (!inputs.name || !inputs.desc) {
-      return this.setState({
-        error: 'name and description catn\'t be empty',
-      });
-    }
-    const postData = _.extend({}, data, inputs);
-    this.setState({
-      status: 'processing',
-    });
-    const id = _.get(props, 'orginalData._id');
-    let fn;
-    if (id) {
-      const token = props.orginalData.token;
-      fn = dispatch(configureAction.update(id, token, postData));
-    } else {
-      fn = dispatch(configureAction.add(postData));
-    }
-    fn.then(data => {
-      dispatch(navigationAction.showVisualizations());
-    }).catch(err => {
-      this.setState({
-        status: '',
-        error: util.getError(err),
-      });
-    });
-  }
-  getContent() {
-    const { status, error } = this.state;
-    return (
-      <form className="pure-form pure-form-aligned"><fieldset>
-        <div className="pure-control-group">
-          <label htmlFor="name">Name</label>
-          <input
-            id="name"
-            type="text"
-            autoFocus="true"
-            onKeyUp={e => this.onKeyUp(e)}
-            placeholder="Visualization Name"
-            ref="name"
-          />
-        </div>
-        <div className="pure-control-group">
-          <label htmlFor="desc">Description</label>
-          <textarea
-            id="desc"
-            onKeyUp={e => this.onKeyUp(e)}
-            placeholder="Visualization Description"
-            ref="desc"
-          >
-          </textarea>
-        </div>
-        { error && 
-          <div className="warning">
-            <i className="fa fa-exclamation-triangle" aria-hidden="true"></i>
-            <span>{error}</span>
-          </div>
-        }
-        <div className="pure-controls">
-          <a
-            className="pure-button pure-button-primary submit"
-            href="#"
-            onClick={e => this.submit(e)}
-          >Submit
-            { status === 'processing' && <span>...</span> }
-          </a>
-        </div>
-      </fieldset></form>
-    );
-  }
-}
+import VisualizationSaveDialog from './visualization-save-dialog';
+import { STATS_VIEW_TYPES, OFFSET_TIME_LIST } from '../constants/common';
 
 class InfluxdbVisualizationEditor extends Component {
   constructor(props) {
@@ -516,61 +389,11 @@ class InfluxdbVisualizationEditor extends Component {
     if (end) {
       arr[1] = end;
     }
-    const options = [
-      {
-        label: 'Past 5 minutes',
-        value: '-5m',
-      },
-      {
-        label: 'Past 15 minutes',
-        value: '-15m',
-      },
-      {
-        label: 'Past 30 minutes',
-        value: '-30m',
-      },
-      {
-        label: 'Past 1 hour',
-        value: '-1h',
-      },
-      {
-        label: 'Past 2 hours',
-        value: '-2h',
-      },
-      {
-        label: 'Past 6 hour',
-        value: '-6h',
-      },
-      {
-        label: 'Past 12 hour',
-        value: '-12h',
-      },
-      {
-        label: 'Past 1 day',
-        value: '-1d',
-      },
-      {
-        label: 'Past 2 days',
-        value: '-2d',
-      },
-      {
-        label: 'Past 7 days',
-        value: '-7d',
-      },
-      {
-        label: 'Past 30 days',
-        value: '-30d',
-      },
-      {
-        label: 'Custom',
-        value: 'Custom',
-      },
-    ];
     const defaultValue = this.state.offsetTime;
     return (
       <Select
         value={defaultValue}
-        options={options}
+        options={OFFSET_TIME_LIST}
         onChange={item => {
           const value = (item && item.value) || '';
           if (value && value.charAt(0) !== '-') {
@@ -886,5 +709,10 @@ class InfluxdbVisualizationEditor extends Component {
     </div>
   }
 }
+
+InfluxdbVisualizationEditor.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  data: PropTypes.object,
+};
 
 export default InfluxdbVisualizationEditor;

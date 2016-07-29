@@ -3,6 +3,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Router, Route } from 'react-enroute';
 import * as ReactRedux from 'react-redux';
+import * as _ from 'lodash';
 import RegisterLogin from './register-login';
 import MainHeader from './main-header';
 import MainNav from './main-nav';
@@ -14,8 +15,6 @@ import InfluxdbVisualizationViewBoard from './influxdb-visualization-view-board'
 import InfluxdbDashboardEditor from './influxdb-dashboard-editor';
 import InfluxdbDashboardList from './influxdb-dashboard-list';
 import * as urls from '../constants/urls';
-import * as navigationAction from '../actions/navigation';
-import * as influxdbAction from '../actions/influxdb';
 import * as dashboardAction from '../actions/dashboard';
 import * as configureAction from '../actions/configure';
 import * as serverAction from '../actions/server';
@@ -25,42 +24,63 @@ class App extends Component {
     super(props);
     this.state = {};
   }
+  componentWillReceiveProps(nextProps) {
+    const { dispatch } = this.props;
+    const currentAccount = _.get(nextProps, 'user.basic.account');
+    const account = _.get(this.props, 'user.basic.account');
+    if (currentAccount && currentAccount !== account) {
+      dispatch(serverAction.list());
+      dispatch(configureAction.list());
+      dispatch(dashboardAction.list());
+    }
+  }
   renderRegister() {
     const { dispatch } = this.props;
-    return <RegisterLogin
-      type={"register"}
-      dispatch={dispatch}
-    />
+    return (
+      <RegisterLogin
+        type={"register"}
+        dispatch={dispatch}
+      />
+    );
   }
   renderLogin() {
     const { dispatch } = this.props;
-    return <RegisterLogin
-      type={"login"}
-      dispatch={dispatch}
-    />
+    return (
+      <RegisterLogin
+        type={"login"}
+        dispatch={dispatch}
+      />
+    );
   }
   renderAddServer() {
     const { dispatch } = this.props;
-    return <InfluxdbServerEditor
-      dispatch={dispatch}
-    />
+    return (
+      <InfluxdbServerEditor
+        dispatch={dispatch}
+      />
+    );
   }
   renderServerList() {
     const { dispatch, influxdbServer, user } = this.props;
-    return <InfluxdbServerList
-      dispatch={dispatch}
-      influxdbServer={influxdbServer}
-      user={user}
-    />
+    return (
+      <InfluxdbServerList
+        dispatch={dispatch}
+        influxdbServer={influxdbServer}
+        user={user}
+      />
+    );
   }
   renderEditServer({ params: { id } }) {
     const { dispatch, influxdbServer } = this.props;
+    /* eslint no-underscore-dangle:0 */
     const server = _.find(influxdbServer.list, item => item._id === id);
-    return <InfluxdbServerEditor
-      dispatch={dispatch}
-      server={server}
-      type={'update'}
-    />
+    return (
+      <InfluxdbServerEditor
+        dispatch={dispatch}
+        server={server}
+        type={'update'}
+      />
+    );
   }
   renderVisualizations() {
     const { dispatch, user } = this.props;
@@ -72,15 +92,15 @@ class App extends Component {
     );
   }
   renderVisualization({ params: { id } }) {
-    const { dispatch, user, influxdbServer } = this.props;
-    const item = _.find(user.configures, item => item._id === id);
-    if (!item) {
+    const { dispatch, user } = this.props;
+    const result = _.find(user.configures, item => item._id === id);
+    if (!result) {
       return null;
     }
     return (
       <InfluxdbVisualizationViewBoard
         dispatch={dispatch}
-        configure={item}
+        configure={result}
       />
     );
   }
@@ -95,14 +115,14 @@ class App extends Component {
   }
   renderEditVisualization({ params: { id } }) {
     const { dispatch, user, influxdbServer } = this.props;
-    const item = _.find(user.configures, item => item._id === id);
-    if (!item) {
+    const result = _.find(user.configures, item => item._id === id);
+    if (!result) {
       return null;
     }
     return (
       <InfluxdbVisualizationEditor
         dispatch={dispatch}
-        data={item}
+        data={result}
         influxdbServer={influxdbServer}
       />
     );
@@ -125,41 +145,84 @@ class App extends Component {
       />
     );
   }
-  componentWillReceiveProps(nextProps, props) {
-    const { dispatch } = this.props;
-    const currentAccount = _.get(nextProps, 'user.basic.account');
-    const account = _.get(this.props, 'user.basic.account');
-    if (currentAccount && currentAccount !== account) {
-      dispatch(serverAction.list());
-      dispatch(configureAction.list());
-      dispatch(dashboardAction.list());
+  renderEditDashboard({ params: { id } }) {
+    const { dispatch, user } = this.props;
+    const result = _.find(user.dashboards, item => item._id === id);
+    if (!result) {
+      return null;
     }
+    return (
+      <InfluxdbDashboardEditor
+        dispatch={dispatch}
+        dashboard={result}
+        configures={user.configures}
+      />
+    );
   }
   render() {
     const { user, navigation, influxdbServer, dispatch } = this.props;
-    return <div>
-      <MainHeader
-        dispatch={dispatch}
-        user={user}
-        influxdbServer={influxdbServer}
-      />
-      <MainNav
-        dispatch={dispatch}
-      />
-      <Router {...navigation}>
-        <Route path={urls.REGISTER} component={this.renderRegister.bind(this)} />
-        <Route path={urls.LOGIN} component={this.renderLogin.bind(this)} />
-        <Route path={urls.ADD_SERVER} component={this.renderAddServer.bind(this)} />
-        <Route path={urls.SHOW_SERVERS} component={this.renderServerList.bind(this)} />
-        <Route path={urls.EDIT_SERVER + '/:id'} component={this.renderEditServer.bind(this)} />
-        <Route path={urls.ADD_VISUALIZATIONS} component={this.renderAddVisualization.bind(this)} />
-        <Route path={urls.EDIT_VISUALIZATIONS + '/:id'} component={this.renderEditVisualization.bind(this)} />
-        <Route path={urls.SHOW_VISUALIZATIONS} component={this.renderVisualizations.bind(this)} />
-        <Route path={urls.SHOW_VISUALIZATIONS + '/:id'} component={this.renderVisualization.bind(this)} />
-        <Route path={urls.ADD_DASHBOARD} component={this.renderAddDashboard.bind(this)} />
-        <Route path={urls.SHOW_DASHBOARDS} component={this.renderDashboards.bind(this)} />
-      </Router>
-    </div>
+    return (
+      <div>
+        <MainHeader
+          dispatch={dispatch}
+          user={user}
+          influxdbServer={influxdbServer}
+        />
+        <MainNav
+          dispatch={dispatch}
+        />
+        <Router {...navigation}>
+          <Route
+            path={urls.REGISTER}
+            component={() => this.renderRegister()}
+          />
+          <Route
+            path={urls.LOGIN}
+            component={() => this.renderLogin()}
+          />
+          <Route
+            path={urls.ADD_SERVER}
+            component={() => this.renderAddServer()}
+          />
+          <Route
+            path={urls.SHOW_SERVERS}
+            component={() => this.renderServerList()}
+          />
+          <Route
+            path={`${urls.EDIT_SERVER}/:id`}
+            component={() => this.renderEditServer()}
+          />
+          <Route
+            path={urls.ADD_VISUALIZATIONS}
+            component={() => this.renderAddVisualization()}
+          />
+          <Route
+            path={`${urls.EDIT_VISUALIZATION}/:id`}
+            component={() => this.renderEditVisualization()}
+          />
+          <Route
+            path={urls.SHOW_VISUALIZATIONS}
+            component={() => this.renderVisualizations()}
+          />
+          <Route
+            path={`${urls.SHOW_VISUALIZATIONS}/:id`}
+            component={() => this.renderVisualization()}
+          />
+          <Route
+            path={urls.ADD_DASHBOARD}
+            component={() => this.renderAddDashboard()}
+          />
+          <Route
+            path={urls.SHOW_DASHBOARDS}
+            component={() => this.renderDashboards()}
+          />
+          <Route
+            path={`${urls.EDIT_DASHBOARD}/:id`}
+            component={() => this.renderEditDashboard()}
+          />
+        </Router>
+      </div>
+    );
   }
 }
 

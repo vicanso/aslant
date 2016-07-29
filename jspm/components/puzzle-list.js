@@ -30,7 +30,6 @@ class PuzzleList extends Component {
   confirmRemoveStep(e, id) {
     e.preventDefault();
     e.stopPropagation();
-    const { dispatch } = this.props;
     const stepDict = this.state.stepDict;
     stepDict[id] = 'processing';
     this.setState({
@@ -47,9 +46,10 @@ class PuzzleList extends Component {
     _.invoke(this.props, 'show', id);
   }
   renderList() {
-    const { items, dispatch } = this.props;
+    const { items } = this.props;
     const stepDict = this.state.stepDict;
     return _.map(items, item => {
+      /* eslint no-underscore-dangle:0 */
       const id = item._id;
       const step = stepDict[id];
       return (
@@ -59,8 +59,8 @@ class PuzzleList extends Component {
         >
           <div className="item">
             <div className="title">
-              { !step &&
-                <a
+              {
+                !step && <a
                   onClick={e => this.toggleRemoveStep(e, id)}
                   className="pullRight"
                   href="#"
@@ -69,8 +69,7 @@ class PuzzleList extends Component {
                 </a>
               }
               {
-                step === 'confirm' &&
-                <span className="pullRight">
+                step === 'confirm' && <span className="pullRight">
                   <a
                     href="#"
                     onClick={e => this.confirmRemoveStep(e, id)}
@@ -86,8 +85,7 @@ class PuzzleList extends Component {
                 </span>
               }
               {
-                step === 'processing' &&
-                <span className="pullRight mright5">
+                step === 'processing' && <span className="pullRight mright5">
                   <i className="fa fa-spinner" aria-hidden="true"></i>
                 </span>
               }
@@ -118,7 +116,7 @@ class PuzzleList extends Component {
     });
   }
   render() {
-    const cls = `${(this.props.className || '')} puzzleList`.trim(); 
+    const cls = `${(this.props.className || '')} puzzleList`.trim();
     return (
       <div className={cls}>
         <div className="pure-g">
@@ -127,11 +125,21 @@ class PuzzleList extends Component {
               <i className="fa fa-plus" aria-hidden="true"></i>
             </a>
           </div>
-          { this.renderList() }
+          {this.renderList()}
         </div>
       </div>
     );
   }
 }
+
+PuzzleList.propTypes = {
+  className: PropTypes.string,
+  add: PropTypes.func,
+  remove: PropTypes.func,
+  edit: PropTypes.func,
+  show: PropTypes.func,
+  dispatch: PropTypes.func.isRequired,
+  items: PropTypes.array.isRequired,
+};
 
 export default PuzzleList;

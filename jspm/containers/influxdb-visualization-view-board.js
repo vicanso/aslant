@@ -1,74 +1,25 @@
 'use strict';
 /* eslint import/no-unresolved:0 */
 import React, { PropTypes, Component } from 'react';
+import * as _ from 'lodash';
 import Select from 'react-select';
 import InfluxdbVisualizationView from '../components/influxdb-visualization-view';
 import RadioSelector from '../components/radio-selector';
-import { STATS_VIEW_TYPES } from '../constants/common';
+import { STATS_VIEW_TYPES, OFFSET_TIME_LIST } from '../constants/common';
 
 class InfluxdbVisualizationViewBoard extends Component {
   constructor(props) {
     super(props);
     this.state = {
       autoRefresh: '60s',
-      offsetTime: 'Custom',
+      offsetTime: _.get(props, 'configure.offsetTime', 'Custom'),
     };
   }
   renderOffsetTimeSelector() {
-    const options = [
-      {
-        label: 'Past 5 minutes',
-        value: '-5m',
-      },
-      {
-        label: 'Past 15 minutes',
-        value: '-15m',
-      },
-      {
-        label: 'Past 30 minutes',
-        value: '-30m',
-      },
-      {
-        label: 'Past 1 hour',
-        value: '-1h',
-      },
-      {
-        label: 'Past 2 hours',
-        value: '-2h',
-      },
-      {
-        label: 'Past 6 hour',
-        value: '-6h',
-      },
-      {
-        label: 'Past 12 hour',
-        value: '-12h',
-      },
-      {
-        label: 'Past 1 day',
-        value: '-1d',
-      },
-      {
-        label: 'Past 2 days',
-        value: '-2d',
-      },
-      {
-        label: 'Past 7 days',
-        value: '-7d',
-      },
-      {
-        label: 'Past 30 days',
-        value: '-30d',
-      },
-      {
-        label: 'Custom',
-        value: 'Custom',
-      },
-    ];
     return (
       <Select
         value={this.state.offsetTime}
-        options={options}
+        options={OFFSET_TIME_LIST}
         className="offsetTimeSelector"
         onChange={item => {
           const value = (item && item.value) || '';
