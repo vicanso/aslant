@@ -39,7 +39,7 @@ class RadioSelector extends Component {
     const cls = `radioSelector ${className || ''}`.trim();
     return (
       <div className={cls}>
-        <span>{desc}</span>
+        {desc && <span>{desc}</span>}
         {this.renderOptions()}
       </div>
     );

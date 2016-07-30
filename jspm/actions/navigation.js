@@ -63,6 +63,10 @@ export function editDashboard(id) {
   return to(`${urls.EDIT_DASHBOARD}/${id}`);
 }
 
+export function showDashboard(id) {
+  return to(`${urls.SHOW_DASHBOARDS}/${id}`);
+}
+
 export function back() {
   return dispatch => {
     dispatch({

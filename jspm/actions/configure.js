@@ -1,4 +1,5 @@
 'use strict';
+import * as _ from 'lodash';
 import * as http from '../helpers/http';
 import {
   CONFIGURE_LIST,
@@ -6,6 +7,12 @@ import {
   CONFIGURE_UPDATE,
   CONFIGURE_REMOVE,
 } from '../constants/action-types';
+
+export function getByIds(ids) {
+  const queryString = _.map(ids, id => `id=${id}`).join('&');
+  return http.get(`/api/configures?${queryString}`)
+    .then(res => res.body);
+}
 
 export function add(data) {
   return dispatch => http.post('/api/configures', data)

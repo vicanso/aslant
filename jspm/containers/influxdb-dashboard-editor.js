@@ -3,29 +3,48 @@
 import React, { PropTypes, Component } from 'react';
 import * as _ from 'lodash';
 import classnames from 'classnames';
+import RadioSelector from '../components/radio-selector';
 import * as navigationAction from '../actions/navigation';
 import * as dashboardAction from '../actions/dashboard';
 import * as util from '../helpers/util';
+import { WIDTH_LIST } from '../constants/common';
 
 class InfluxdbDashboardEditor extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedList: [],
     };
   }
-  toggle(e, id) {
-    e.preventDefault();
-    const list = this.state.selectedList.slice(0);
-    const index = _.indexOf(list, id);
-    if (!~index) {
-      list.push(id);
-    } else {
-      list.splice(index, 1);
+  componentDidMount() {
+    const { type, dashboard } = this.props;
+    if (type !== 'update') {
+      return;
     }
+    const refs = this.refs;
+    refs.name.value = dashboard.name;
+    refs.desc.value = dashboard.desc;
+  }
+  initConfigures() {
+    if (this.state.configures || !this.props.configures) {
+      return;
+    }
+    const selectedConfigures = _.get(this.props, 'dashboard.configures', []);
+    const configures = _.sortBy(_.map(this.props.configures, item => {
+      const tmp = {
+        width: WIDTH_LIST[0],
+        key: `${selectedConfigures.length}${item.createdAt}`,
+      };
+      const index = _.findIndex(selectedConfigures, selectedItem => selectedItem.id === item._id);
+      if (~index) {
+        tmp.width = selectedConfigures[index].width;
+        tmp.selected = true;
+        tmp.key = `${index}${item.createdAt}`;
+      }
+      return Object.assign(tmp, item);
+    }), item => item.key);
+
     this.setState({
-      selectedList: list,
-      error: '',
+      configures,
     });
   }
   resetError() {
@@ -35,10 +54,20 @@ class InfluxdbDashboardEditor extends Component {
       });
     }
   }
+  toggle(e, id) {
+    e.preventDefault();
+    const cloneConfigres = _.cloneDeep(this.state.configures);
+    const found = _.find(cloneConfigres, item => item._id === id);
+    found.selected = !found.selected;
+    this.setState({
+      configures: cloneConfigres,
+      error: '',
+    });
+  }
   submit(e) {
     e.preventDefault();
-    const { selectedList } = this.state;
-    const { dispatch } = this.props;
+    const { configures } = this.state;
+    const { dispatch, type, dashboard } = this.props;
     const refs = this.refs;
     const name = refs.name.value;
     const desc = refs.desc.value;
@@ -47,7 +76,16 @@ class InfluxdbDashboardEditor extends Component {
         error: 'Name and description can\'t be empty',
       });
     }
-    if (!selectedList.length) {
+    const selectedConfigures = [];
+    _.forEach(configures, item => {
+      if (item.selected) {
+        selectedConfigures.push({
+          id: item._id,
+          width: item.width,
+        });
+      }
+    });
+    if (!selectedConfigures.length) {
       return this.setState({
         error: 'At least one configure must be selected',
       });
@@ -55,11 +93,19 @@ class InfluxdbDashboardEditor extends Component {
     this.setState({
       status: 'processing',
     });
-    dispatch(dashboardAction.add({
+    const data = {
       name,
       desc,
-      configures: selectedList,
-    })).then(() => {
+      width: this.state.width,
+      configures: selectedConfigures,
+    };
+    let fn;
+    if (type === 'update') {
+      fn = dashboardAction.update(dashboard._id, dashboard.token, data);
+    } else {
+      fn = dashboardAction.add(data);
+    }
+    dispatch(fn).then(() => {
       dispatch(navigationAction.back());
     }).catch(err => {
       this.setState({
@@ -69,32 +115,84 @@ class InfluxdbDashboardEditor extends Component {
     });
     return null;
   }
+  move(e, index, offset) {
+    e.preventDefault();
+    const { configures } = this.state;
+    const newIndex = index + offset;
+    if (newIndex < 0 || newIndex >= configures.length) {
+      return;
+    }
+    const cloneConfigres = _.map(configures, item => Object.assign({}, item));
+    const tmp = cloneConfigres[index];
+    cloneConfigres[index] = cloneConfigres[newIndex];
+    cloneConfigres[newIndex] = tmp;
+    this.setState({
+      configures: cloneConfigres,
+    });
+  }
+
   renderConfigures() {
-    const { configures } = this.props;
-    const { selectedList } = this.state;
+    const { configures } = this.state;
     return _.map(configures, (item, index) => {
       /* eslint no-underscore-dangle: 0 */
       const id = item._id;
       const cls = {
         fa: true,
       };
-      if (~_.indexOf(selectedList, id)) {
-        cls['fa-check-square'] = true;
+      if (item.selected) {
+        cls['fa-check-square-o'] = true;
       } else {
         cls['fa-square-o'] = true;
       }
+      const trClass = {};
+      if (index % 2 === 0) {
+        trClass['pure-table-odd'] = true;
+      }
       return (
-        <tr key={id}>
+        <tr
+          key={id}
+          className={classnames(trClass)}
+        >
           <td>{index + 1}</td>
           <td>{item.name}</td>
           <td>{item.desc}</td>
           <td>{item.owner}</td>
+          <td>
+            <RadioSelector
+              options={WIDTH_LIST}
+              selected={item.width}
+              onSelect={option => {
+                const cloneConfigres = _.cloneDeep(this.state.configures);
+                if (cloneConfigres[index].width !== option) {
+                  cloneConfigres[index].width = option;
+                  this.setState({
+                    configures: cloneConfigres,
+                  });
+                }
+              }}
+            />
+          </td>
           <td>
             <a
               href="#"
               onClick={e => this.toggle(e, id)}
             >
               <i className={classnames(cls)} aria-hidden="true"></i>
+              Add
+            </a>
+            <a
+              href="#"
+              onClick={e => this.move(e, index, -1)}
+            >
+              <i className="fa fa-arrow-up" aria-hidden="true"></i>
+              Up
+            </a>
+            <a
+              href="#"
+              onClick={e => this.move(e, index, 1)}
+            >
+              <i className="fa fa-arrow-down" aria-hidden="true"></i>
+              Down
             </a>
           </td>
         </tr>
@@ -102,6 +200,8 @@ class InfluxdbDashboardEditor extends Component {
     });
   }
   render() {
+    this.initConfigures();
+    const { type } = this.props;
     const { status, error } = this.state;
     return (
       <div
@@ -129,7 +229,8 @@ class InfluxdbDashboardEditor extends Component {
               href="#"
               className="pure-button pure-button-primary"
               onClick={e => this.submit(e)}
-            >Submit
+            >
+              {type === 'update' ? 'Update' : 'Submit'}
               {status === 'processing' && <span>...</span>}
             </a>
           </div>
@@ -140,7 +241,16 @@ class InfluxdbDashboardEditor extends Component {
             <th>Name</th>
             <th>Description</th>
             <th>Owner</th>
-            <th>Add</th>
+            <th
+              style={{
+                width: '295px',
+              }}
+            >Width</th>
+            <th
+              style={{
+                width: '180px',
+              }}
+            >Operation</th>
           </tr></thead>
           <tbody>
             {this.renderConfigures()}
@@ -160,6 +270,8 @@ class InfluxdbDashboardEditor extends Component {
 InfluxdbDashboardEditor.propTypes = {
   dispatch: PropTypes.func.isRequired,
   configures: PropTypes.array,
+  dashboard: PropTypes.object,
+  type: PropTypes.string,
 };
 
 export default InfluxdbDashboardEditor;

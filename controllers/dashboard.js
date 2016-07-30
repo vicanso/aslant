@@ -3,13 +3,20 @@ const Joi = require('joi');
 const _ = require('lodash');
 const dashboardService = localRequire('services/dashboard');
 
+const validate = (data, opts) => Joi.validateThrow(data, {
+  name: Joi.string().trim().required(),
+  desc: Joi.string().trim().required(),
+  configures: Joi.array().min(1).items(
+    Joi.object().keys({
+      id: Joi.string().length(24).required(),
+      width: Joi.string().required(),
+    })
+  )
+  .required(),
+}, opts);
+
 exports.add = (ctx) => {
-  const data = Joi.validateThrow(ctx.request.body, {
-    name: Joi.string().trim().required(),
-    desc: Joi.string().trim().required(),
-    configures: Joi.array().min(1).items(Joi.string().length(24))
-      .required(),
-  });
+  const data = validate(ctx.request.body);
   const account = _.get(ctx, 'session.user.account');
   return dashboardService.add(_.extend({
     owner: account,
@@ -40,5 +47,19 @@ exports.remove = (ctx) => {
   return dashboardService.remove(conditions).then(() => {
     /* eslint no-param-reassign:0 */
     ctx.body = null;
+  });
+};
+
+exports.update = (ctx) => {
+  const conditions = {
+    owner: _.get(ctx, 'session.user.account'),
+    _id: ctx.params.id,
+  };
+  const data = validate(ctx.request.body, {
+    allowUnknown: true,
+  });
+  return dashboardService.update(conditions, ctx.get('X-Token'), data).then(dashboard => {
+    /* eslint no-param-reassign:0 */
+    ctx.body = dashboard;
   });
 };

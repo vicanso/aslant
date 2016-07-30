@@ -24,9 +24,18 @@ exports.add = (ctx) => {
 
 exports.list = (ctx) => {
   const account = _.get(ctx, 'session.user.account');
-  return configureService.list({
+  let query = {
     owner: account,
-  }).then(configures => {
+  };
+  if (ctx.query.id) {
+    const ids = _.isArray(ctx.query.id) ? ctx.query.id : [ctx.query.id];
+    query = {
+      _id: {
+        $in: ids,
+      },
+    };
+  }
+  return configureService.list(query).then(configures => {
     /* eslint no-param-reassign:0 */
     ctx.body = {
       items: configures,

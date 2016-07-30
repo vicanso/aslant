@@ -8,6 +8,7 @@ import {
   DASHBOARD_ADD,
   DASHBOARD_LIST,
   DASHBOARD_REMOVE,
+  DASHBOARD_UPDATE,
 } from '../constants/action-types';
 import * as _ from 'lodash';
 const defaultStates = {
@@ -76,6 +77,18 @@ export default function user(state = defaultStates, action) {
       const index = _.findIndex(dashboards, item => item._id === action.id);
       if (~index) {
         dashboards.splice(index, 1);
+      }
+      return Object.assign({}, state, {
+        dashboards,
+      });
+    }
+    case DASHBOARD_UPDATE: {
+      const dashboards = _.map(state.dashboards, item => Object.assign({}, item));
+      const dashboard = action.dashboard;
+      /* eslint no-underscore-dangle:0 */
+      const index = _.findIndex(dashboards, item => item._id === dashboard._id);
+      if (~index) {
+        dashboards[index] = Object.assign({}, dashboard);
       }
       return Object.assign({}, state, {
         dashboards,

@@ -36,6 +36,7 @@ module.exports = [
   '[POST] [/api/dashboards] [m.session.login & c.dashboard.add]',
   '[GET] [/api/dashboards] [m.session.login & c.dashboard.list]',
   '[DELETE] [/api/dashboards/:id] [m.session.login & c.dashboard.remove]',
+  '[PUT] [/api/dashboards/:id] [m.session.login & m.validateToken & c.dashboard.update]',
 
   '[GET] [/influxdb/:id/databases] [m.cache-60 & c.influxdb.listDatabase]',
   '[GET] [/influxdb/:id/:db/rps] [m.cache-60 & c.influxdb.listRP]',

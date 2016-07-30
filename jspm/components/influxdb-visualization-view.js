@@ -43,6 +43,27 @@ class InfluxdbVisualizationView extends Component {
       return series;
     });
   }
+  getQL() {
+    const { configure, offsetTime } = this.props;
+    let tmp = configure;
+    if (offsetTime && offsetTime !== 'Custom') {
+      tmp = Object.assign({}, configure, {
+        offsetTime,
+      });
+    }
+    return util.getInfluxQL(tmp);
+  }
+  checkToStartAutoRefresh() {
+    const { autoRefresh } = this.props;
+    if (!autoRefresh) {
+      clearInterval(this.state.timer);
+      return;
+    }
+    if (autoRefresh !== this.state.autoRefresh) {
+      this.autoRefresh(this.getQL());
+      this.state.autoRefresh = autoRefresh;
+    }
+  }
   autoRefresh(ql) {
     const { autoRefresh } = this.props;
     if (this.state.timer) {
@@ -58,14 +79,7 @@ class InfluxdbVisualizationView extends Component {
   }
   updateSeries() {
     const state = this.state;
-    const { configure, autoRefresh, offsetTime } = this.props;
-    let tmp = configure;
-    if (offsetTime && offsetTime !== 'Custom') {
-      tmp = Object.assign({}, configure, {
-        offsetTime,
-      });
-    }
-    const ql = util.getInfluxQL(tmp);
+    const ql = this.getQL();
     if (!ql || state.doingQuery || ql === state.originalQL) {
       return;
     }
@@ -80,9 +94,6 @@ class InfluxdbVisualizationView extends Component {
         error: '',
         doingQuery: false,
       });
-      if (autoRefresh) {
-        this.autoRefresh(ql);
-      }
     }).catch(err => {
       this.setState({
         series: null,
@@ -128,6 +139,7 @@ class InfluxdbVisualizationView extends Component {
 
   render() {
     this.updateSeries();
+    this.checkToStartAutoRefresh();
     const { disableViewSelector } = this.props;
     const { series, doingQuery } = this.state;
     const type = this.state.type || this.props.type || STATS_VIEW_TYPES[0];

@@ -4,6 +4,7 @@ import React, { PropTypes, Component } from 'react';
 import * as _ from 'lodash';
 import Select from 'react-select';
 import InfluxdbVisualizationView from '../components/influxdb-visualization-view';
+import AutoRefreshSelector from '../components/auto-refresh-selector';
 import { OFFSET_TIME_LIST } from '../constants/common';
 
 class InfluxdbVisualizationViewBoard extends Component {
@@ -31,41 +32,20 @@ class InfluxdbVisualizationViewBoard extends Component {
       />
     );
   }
-  renderAutoRefreshSelector() {
-    const seconds = [10, 15, 30, 45, 60];
-    const minutes = [2, 5, 10];
-    const options = [];
-    _.forEach(seconds, v => options.push({
-      label: `Auto Refresh:${v} seconds`,
-      value: `${v}s`,
-    }));
-    _.forEach(minutes, v => options.push({
-      label: `Auto Refresh:${v} minutes`,
-      value: `${v}m`,
-    }));
-    return (
-      <Select
-        value={this.state.autoRefresh}
-        options={options}
-        className="autoRefreshSelector"
-        onChange={item => {
-          const value = (item && item.value) || '';
-          if (value !== this.state.autoRefresh) {
-            this.setState({
-              autoRefresh: value,
-            });
-          }
-        }}
-      />
-    );
-  }
   render() {
     const { dispatch, configure } = this.props;
     return (
       <div className="visualizationViewContainer">
         <div className="clearfix">
           <div className="pullRight mtop10 mright5">
-            {this.renderAutoRefreshSelector()}
+            <AutoRefreshSelector
+              value={this.state.autoRefresh}
+              onChange={value => {
+                this.setState({
+                  autoRefresh: value,
+                });
+              }}
+            />
             {this.renderOffsetTimeSelector()}
           </div>
         </div>

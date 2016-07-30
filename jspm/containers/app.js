@@ -14,6 +14,7 @@ import InfluxdbVisualizationEditor from './influxdb-visualization-editor';
 import InfluxdbVisualizationViewBoard from './influxdb-visualization-view-board';
 import InfluxdbDashboardEditor from './influxdb-dashboard-editor';
 import InfluxdbDashboardList from './influxdb-dashboard-list';
+import InfluxdbDashboardView from './influxdb-dashboard-view';
 import * as urls from '../constants/urls';
 import * as dashboardAction from '../actions/dashboard';
 import * as configureAction from '../actions/configure';
@@ -153,9 +154,23 @@ class App extends Component {
     }
     return (
       <InfluxdbDashboardEditor
+        type={'update'}
         dispatch={dispatch}
         dashboard={result}
         configures={user.configures}
+      />
+    );
+  }
+  renderDashboard({ params: { id } }) {
+    const { dispatch, user } = this.props;
+    const result = _.find(user.dashboards, item => item._id === id);
+    if (!result) {
+      return null;
+    }
+    return (
+      <InfluxdbDashboardView
+        dashboard={result}
+        dispatch={dispatch}
       />
     );
   }
@@ -198,7 +213,7 @@ class App extends Component {
           />
           <Route
             path={`${urls.EDIT_VISUALIZATION}/:id`}
-            component={() => this.renderEditVisualization()}
+            component={params => this.renderEditVisualization(params)}
           />
           <Route
             path={urls.SHOW_VISUALIZATIONS}
@@ -206,7 +221,7 @@ class App extends Component {
           />
           <Route
             path={`${urls.SHOW_VISUALIZATIONS}/:id`}
-            component={() => this.renderVisualization()}
+            component={arg => this.renderVisualization(arg)}
           />
           <Route
             path={urls.ADD_DASHBOARD}
@@ -218,7 +233,11 @@ class App extends Component {
           />
           <Route
             path={`${urls.EDIT_DASHBOARD}/:id`}
-            component={() => this.renderEditDashboard()}
+            component={params => this.renderEditDashboard(params)}
+          />
+          <Route
+            path={`${urls.SHOW_DASHBOARDS}/:id`}
+            component={arg => this.renderDashboard(arg)}
           />
         </Router>
       </div>

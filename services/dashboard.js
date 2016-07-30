@@ -26,3 +26,13 @@ exports.remove = (conditions) => {
     return doc.toJSON();
   });
 };
+
+exports.update = (conditions, token, data) => {
+  const Dashboard = Models.get('Dashboard');
+  return Dashboard.findOneAndUpdateByToken(conditions, token, data).then(doc => {
+    if (!doc) {
+      return null;
+    }
+    return doc.toJSON();
+  });
+};

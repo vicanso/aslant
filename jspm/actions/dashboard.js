@@ -4,6 +4,7 @@ import {
   DASHBOARD_LIST,
   DASHBOARD_ADD,
   DASHBOARD_REMOVE,
+  DASHBOARD_UPDATE,
 } from '../constants/action-types';
 
 export function add(data) {
@@ -30,4 +31,14 @@ export function remove(id) {
         id,
       });
     });
+}
+
+export function update(id, token, data) {
+  return dispatch => http.put(`/api/dashboards/${id}`)
+    .set('X-Token', token)
+    .send(data)
+    .then(res => dispatch({
+      type: DASHBOARD_UPDATE,
+      dashboard: res.body,
+    }));
 }

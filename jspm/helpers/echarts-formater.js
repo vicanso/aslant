@@ -22,10 +22,13 @@ function getDefaultLineOption(name) {
 export function getLineOption(data, name) {
   const result = _.map(data, util.convertSeriesData);
   const series = _.map(data, item => {
-    const tagsDesc = _.map(item.tags, (v, k) => {
-      return `${k}(${v})`;
-    }).join(' ');
-    return getDefaultLineOption(tagsDesc);
+    let desc = item.name;
+    if (item.tags) {
+      desc = _.map(item.tags, (v, k) => {
+        return `${k}(${v})`;
+      }).join(' ');
+    }
+    return getDefaultLineOption(desc);
   });
   const dateList = [];
   _.forEach(result, (arr, index) => {

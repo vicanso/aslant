@@ -13,6 +13,7 @@ const InfluxdbDashboardList = (props) => {
       add={() => dispatch(navigationAction.addDashboard())}
       remove={id => dispatch(dashboardAction.remove(id))}
       edit={id => dispatch(navigationAction.editDashboard(id))}
+      show={id => dispatch(navigationAction.showDashboard(id))}
       items={dashboards}
     />
   );

@@ -50,3 +50,4 @@ export const OFFSET_TIME_LIST = [
     value: 'Custom',
   },
 ];
+export const WIDTH_LIST = ['100%', '50%', '33%', '25%'];
