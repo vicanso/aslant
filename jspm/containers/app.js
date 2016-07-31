@@ -6,7 +6,6 @@ import * as ReactRedux from 'react-redux';
 import * as _ from 'lodash';
 import RegisterLogin from './register-login';
 import MainHeader from './main-header';
-import MainNav from './main-nav';
 import InfluxdbServerEditor from './influxdb-server-editor';
 import InfluxdbServerList from './influxdb-server-list';
 import InfluxdbVisualizationList from './influxdb-visualization-list';
@@ -15,6 +14,7 @@ import InfluxdbVisualizationViewBoard from './influxdb-visualization-view-board'
 import InfluxdbDashboardEditor from './influxdb-dashboard-editor';
 import InfluxdbDashboardList from './influxdb-dashboard-list';
 import InfluxdbDashboardView from './influxdb-dashboard-view';
+import NotifyCenter from './notify-center';
 import * as urls from '../constants/urls';
 import * as dashboardAction from '../actions/dashboard';
 import * as configureAction from '../actions/configure';
@@ -183,8 +183,8 @@ class App extends Component {
           user={user}
           influxdbServer={influxdbServer}
         />
-        <MainNav
-          dispatch={dispatch}
+        <NotifyCenter
+          messages={[]}
         />
         <Router {...navigation}>
           <Route

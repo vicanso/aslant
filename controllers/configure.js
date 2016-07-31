@@ -1,6 +1,7 @@
 'use strict';
 const Joi = require('joi');
 const _ = require('lodash');
+const errors = localRequire('helpers/errors');
 const configureService = localRequire('services/configure');
 
 const validate = (data, opts) => Joi.validateThrow(data, {
@@ -52,6 +53,9 @@ exports.update = (ctx) => {
     allowUnknown: true,
   });
   return configureService.update(conditions, ctx.get('X-Token'), data).then(configure => {
+    if (!configure) {
+      throw errors.get('update configure info fail, may be token is expired');
+    }
     /* eslint no-param-reassign:0 */
     ctx.body = configure;
   });

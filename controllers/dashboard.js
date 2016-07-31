@@ -2,6 +2,7 @@
 const Joi = require('joi');
 const _ = require('lodash');
 const dashboardService = localRequire('services/dashboard');
+const errors = localRequire('helpers/errors');
 
 const validate = (data, opts) => Joi.validateThrow(data, {
   name: Joi.string().trim().required(),
@@ -59,6 +60,9 @@ exports.update = (ctx) => {
     allowUnknown: true,
   });
   return dashboardService.update(conditions, ctx.get('X-Token'), data).then(dashboard => {
+    if (!dashboard) {
+      throw errors.get('update dashboard info fail, may be token is expired');
+    }
     /* eslint no-param-reassign:0 */
     ctx.body = dashboard;
   });

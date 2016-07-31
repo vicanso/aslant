@@ -116,6 +116,7 @@ class MainHeader extends Component {
   render() {
     return (
       <header className="mainHeader">
+        <span className="logo">Aslant</span>
         <ul
           className="pullRight"
           style={{

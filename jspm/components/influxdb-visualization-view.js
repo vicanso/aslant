@@ -54,14 +54,16 @@ class InfluxdbVisualizationView extends Component {
     return util.getInfluxQL(tmp);
   }
   checkToStartAutoRefresh() {
-    const { autoRefresh } = this.props;
+    const { autoRefresh, offsetTime } = this.props;
+    const state = this.state;
     if (!autoRefresh) {
       clearInterval(this.state.timer);
       return;
     }
-    if (autoRefresh !== this.state.autoRefresh) {
+    if (autoRefresh !== state.autoRefresh || offsetTime !== state.offsetTime) {
       this.autoRefresh(this.getQL());
-      this.state.autoRefresh = autoRefresh;
+      state.autoRefresh = autoRefresh;
+      state.offsetTime = offsetTime;
     }
   }
   autoRefresh(ql) {

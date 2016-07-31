@@ -1,6 +1,7 @@
 'use strict';
 const _ = require('lodash');
 const Models = localRequire('models');
+const errors = localRequire('helpers/errors');
 
 const isExists = (name) => {
   const Server = Models.get('Server');
@@ -45,7 +46,7 @@ exports.update = (conditions, token, data) => {
   const Server = Models.get('Server');
   return Server.findOneAndUpdateByToken(conditions, token, data).then(doc => {
     if (!doc) {
-      throw errors.get('update server info fail, may be token is expired');
+      return null;
     }
     return doc.toJSON();
   });

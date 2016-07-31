@@ -2,6 +2,7 @@
 const Joi = require('joi');
 const _ = require('lodash');
 const serverService = localRequire('services/server');
+const errors = localRequire('helpers/errors');
 
 const validate = data => Joi.validateThrow(data, {
   name: Joi.string().trim().required(),
@@ -43,13 +44,16 @@ exports.list = (ctx) => {
   });
 };
 
-exports.edit = (ctx) => {
+exports.update = (ctx) => {
   const conditions = {
     owner: _.get(ctx, 'session.user.account'),
     _id: ctx.params.id,
   };
   const data = validate(ctx.request.body);
   return serverService.update(conditions, ctx.get('X-Token'), data).then(server => {
+    if (!server) {
+      throw errors.get('update server info fail, may be token is expired');
+    }
     /* eslint no-param-reassign:0 */
     ctx.body = server;
   });

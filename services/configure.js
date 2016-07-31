@@ -21,7 +21,7 @@ exports.update = (conditions, token, data) => {
   const Configure = Models.get('Configure');
   return Configure.findOneAndUpdateByToken(conditions, token, data).then(doc => {
     if (!doc) {
-      throw errors.get('update configure info fail, may be token is expired');
+      return null;
     }
     return doc.toJSON();
   });

@@ -25,7 +25,7 @@ module.exports = [
   // influxdb
   '[POST] [/api/servers] [m.session.login & c.server.add]',
   '[GET] [/api/servers] [m.session.login & c.server.list]',
-  '[PUT] [/api/servers/:id] [m.session.login & m.validateToken & c.server.edit]',
+  '[PUT] [/api/servers/:id] [m.session.login & m.validateToken & c.server.update]',
   '[DELETE] [/api/servers/:id] [m.session.login & c.server.remove]',
 
   '[POST] [/api/configures] [m.session.login & c.configure.add]',

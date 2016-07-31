@@ -2,7 +2,10 @@
 /* eslint import/no-unresolved:0 */
 import React, { PropTypes, Component } from 'react';
 import * as _ from 'lodash';
+import Select from 'react-select';
 import InfluxdbVisualizationView from '../components/influxdb-visualization-view';
+import AutoRefreshSelector from '../components/auto-refresh-selector';
+import { OFFSET_TIME_LIST } from '../constants/common';
 import * as configureAction from '../actions/configure';
 
 class InfluxdbDashboardView extends Component {
@@ -43,11 +46,30 @@ class InfluxdbDashboardView extends Component {
           <InfluxdbVisualizationView
             dispatch={dispatch}
             configure={item}
+            autoRefresh={this.state.autoRefresh}
+            offsetTime={this.state.offsetTime}
             type={item.statsView}
           />
         </div>
       );
     });
+  }
+  renderOffsetTimeSelector() {
+    return (
+      <Select
+        value={this.state.offsetTime}
+        options={OFFSET_TIME_LIST}
+        className="offsetTimeSelector"
+        onChange={item => {
+          const value = (item && item.value) || '';
+          if (value !== this.state.offsetTime) {
+            this.setState({
+              offsetTime: value,
+            });
+          }
+        }}
+      />
+    );
   }
   render() {
     if (!this.state.visualizations) {
@@ -55,6 +77,19 @@ class InfluxdbDashboardView extends Component {
     }
     return (
       <div className="dashboardViewContainer pure-g">
+        <div className="clearfix pure-u-1-1">
+          <div className="pullRight mtop10 mright5">
+            <AutoRefreshSelector
+              value={this.state.autoRefresh}
+              onChange={value => {
+                this.setState({
+                  autoRefresh: value,
+                });
+              }}
+            />
+            {this.renderOffsetTimeSelector()}
+          </div>
+        </div>
         {this.renderVisualizations()}
       </div>
     );
