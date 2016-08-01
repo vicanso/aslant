@@ -391,7 +391,7 @@ class InfluxdbVisualizationEditor extends Component {
         onChange={item => {
           const value = (item && item.value) || '';
           const data = {};
-          if (value && value.charAt(0) !== '-') {
+          if (value && value === 'Custom') {
             data.showDateTimeSelector = true;
           } else {
             data.offsetTime = value;

@@ -7,6 +7,8 @@ const errors = localRequire('helpers/errors');
 const validate = (data, opts) => Joi.validateThrow(data, {
   name: Joi.string().trim().required(),
   desc: Joi.string().trim().required(),
+  autoRefresh: Joi.string().trim(),
+  offsetTime: Joi.string().trim(),
   configures: Joi.array().min(1).items(
     Joi.object().keys({
       id: Joi.string().length(24).required(),

@@ -142,7 +142,7 @@ class InfluxdbVisualizationView extends Component {
   render() {
     this.updateSeries();
     this.checkToStartAutoRefresh();
-    const { disableViewSelector } = this.props;
+    const { disableViewSelector, configure } = this.props;
     const { series, doingQuery } = this.state;
     const type = this.state.type || this.props.type || STATS_VIEW_TYPES[0];
     if (!series || doingQuery) {
@@ -166,6 +166,7 @@ class InfluxdbVisualizationView extends Component {
       <div
         className="visualizationView"
       >
+        {configure && configure.name && <div className="name">{configure.name}</div>}
         {!disableViewSelector && this.renderStatsViewSelector()}
         {
           doingQuery && <p className="tac">

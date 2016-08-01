@@ -175,7 +175,7 @@ class App extends Component {
     );
   }
   render() {
-    const { user, navigation, influxdbServer, dispatch } = this.props;
+    const { user, navigation, influxdbServer, dispatch, notify } = this.props;
     return (
       <div>
         <MainHeader
@@ -184,7 +184,7 @@ class App extends Component {
           influxdbServer={influxdbServer}
         />
         <NotifyCenter
-          messages={[]}
+          messages={notify.messages}
         />
         <Router {...navigation}>
           <Route
@@ -249,6 +249,7 @@ App.propTypes = {
   user: PropTypes.object.isRequired,
   navigation: PropTypes.object.isRequired,
   influxdbServer: PropTypes.object.isRequired,
+  notify: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
 };
 
@@ -257,6 +258,7 @@ function mapStateToProps(state) {
     user: state.user,
     navigation: state.navigation,
     influxdbServer: state.influxdbServer,
+    notify: state.notify,
   };
 }
 

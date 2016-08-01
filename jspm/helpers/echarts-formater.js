@@ -60,8 +60,9 @@ export function getLineOption(data, name) {
       boundaryGap: [0, '100%'],
     },
     grid: {
-      left: 60,
-      right: 60,
+      left: 30,
+      right: 30,
+      top: 15,
     },
     dataZoom: [{
       type: 'inside',

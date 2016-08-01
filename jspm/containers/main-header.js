@@ -114,9 +114,17 @@ class MainHeader extends Component {
   }
 
   render() {
+    const { dispatch } = this.props;
     return (
       <header className="mainHeader">
-        <span className="logo">Aslant</span>
+        <a
+          href="#"
+          onClick={e => {
+            e.preventDefault();
+            dispatch(navigationAction.home());
+          }}
+          className="logo"
+        >Aslant</a>
         <ul
           className="pullRight"
           style={{

@@ -30,6 +30,14 @@ export const OFFSET_TIME_LIST = [
     value: '-12h',
   },
   {
+    label: 'Today',
+    value: 'Today',
+  },
+  {
+    label: 'Yesterday',
+    value: 'Yesterday',
+  },
+  {
     label: 'Past 1 day',
     value: '-1d',
   },

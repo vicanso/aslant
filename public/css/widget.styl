@@ -67,6 +67,19 @@
 .visualizationView
   overflow auto
   position relative
+  &:hover
+    .name
+      display none
+  .name
+    position absolute
+    border 1px solid $GRAY_BORDER_COLOR
+    text-align center
+    left 50%
+    padding 3px 10px
+    margin-left -50px
+    background-color #fff
+    border-radius 3px
+    z-index 2
   .statsViewSelector
     position absolute
     right 5px

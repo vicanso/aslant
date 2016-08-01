@@ -14,6 +14,8 @@ class InfluxdbDashboardView extends Component {
     this.state = {
       visualizations: null,
       status: '',
+      offsetTime: _.get(props, 'dashboard.offsetTime'),
+      autoRefresh: _.get(props, 'dashboard.autoRefresh'),
     };
   }
   refreshData() {

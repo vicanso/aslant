@@ -19,6 +19,8 @@ module.exports = {
       type: Array,
       required: true,
     },
+    offsetTime: String,
+    autoRefresh: String,
     token: {
       type: String,
       default: () => uuid.v4(),

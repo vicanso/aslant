@@ -3,16 +3,20 @@
 import React, { PropTypes, Component } from 'react';
 import * as _ from 'lodash';
 import classnames from 'classnames';
+import Select from 'react-select';
 import RadioSelector from '../components/radio-selector';
+import AutoRefreshSelector from '../components/auto-refresh-selector';
 import * as navigationAction from '../actions/navigation';
 import * as dashboardAction from '../actions/dashboard';
 import * as util from '../helpers/util';
-import { WIDTH_LIST } from '../constants/common';
+import { WIDTH_LIST, OFFSET_TIME_LIST } from '../constants/common';
 
 class InfluxdbDashboardEditor extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      offsetTime: _.get(props, 'dashboard.offsetTime'),
+      autoRefresh: _.get(props, 'dashboard.autoRefresh'),
     };
   }
   componentDidMount() {
@@ -93,12 +97,11 @@ class InfluxdbDashboardEditor extends Component {
     this.setState({
       status: 'processing',
     });
-    const data = {
+    const data = _.extend({
       name,
       desc,
-      width: this.state.width,
       configures: selectedConfigures,
-    };
+    }, _.pick(this.state, ['width', 'offsetTime', 'autoRefresh']));
     let fn;
     if (type === 'update') {
       fn = dashboardAction.update(dashboard._id, dashboard.token, data);
@@ -199,6 +202,23 @@ class InfluxdbDashboardEditor extends Component {
       );
     });
   }
+  renderOffsetTimeSelector() {
+    return (
+      <Select
+        value={this.state.offsetTime}
+        options={OFFSET_TIME_LIST}
+        className="offsetTimeSelector"
+        onChange={item => {
+          const value = (item && item.value) || '';
+          if (value !== this.state.offsetTime) {
+            this.setState({
+              offsetTime: value,
+            });
+          }
+        }}
+      />
+    );
+  }
   render() {
     this.initConfigures();
     const { type } = this.props;
@@ -208,7 +228,7 @@ class InfluxdbDashboardEditor extends Component {
         className="influxdbDashboardEditor"
       >
         <div className="pure-g">
-          <div className="pure-u-5-12"><div className="mright10">
+          <div className="pure-u-1-4"><div className="mright10">
             <input
               type="text"
               placeholder="the name of dashboard"
@@ -216,13 +236,26 @@ class InfluxdbDashboardEditor extends Component {
               onChange={() => this.resetError()}
             />
           </div></div>
-          <div className="pure-u-5-12"><div className="mright10">
+          <div className="pure-u-1-4"><div className="mright10">
             <input
               type="text"
               placeholder="the description of dashboard"
               ref="desc"
               onChange={() => this.resetError()}
             />
+          </div></div>
+          <div className="pure-u-1-6"><div className="mright10">
+            <AutoRefreshSelector
+              value={this.state.autoRefresh}
+              onChange={value => {
+                this.setState({
+                  autoRefresh: value,
+                });
+              }}
+            />
+          </div></div>
+          <div className="pure-u-1-6"><div className="mright10">
+            {this.renderOffsetTimeSelector()}
           </div></div>
           <div className="pure-u-1-6">
             <a

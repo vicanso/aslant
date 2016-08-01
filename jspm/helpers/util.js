@@ -28,6 +28,18 @@ export function convertSeriesData(data) {
   return arr;
 }
 
+function formatDate(day) {
+  const now = moment();
+  switch (day) {
+    case 'Today':
+      return moment(now.format('YYYY-MM-DD')).toISOString();
+    case 'Yesterday':
+      return moment(now.add('day', -1).format('YYYY-MM-DD')).toISOString();
+    default:
+      return now.toISOString();
+  }
+}
+
 export function getInfluxQL(options) {
   const ql = new QL();
   ql.measurement = options.measurement;
@@ -62,8 +74,16 @@ export function getInfluxQL(options) {
   if (options.groupByTime) {
     ql.addGroup(`time(${options.groupByTime})`);
   }
-  if (options.offsetTime && options.offsetTime.charAt(0) === '-') {
-    ql.start = options.offsetTime;
+  const offsetTime = options.offsetTime;
+  if (offsetTime) {
+    if (offsetTime.charAt(0) === '-') {
+      ql.start = offsetTime;
+    } else if (offsetTime === 'Today') {
+      ql.start = formatDate(offsetTime);
+    } else if (offsetTime === 'Yesterday') {
+      ql.start = formatDate(offsetTime);
+      ql.end = formatDate('Today');
+    }
   }
   if (options.orderByTime) {
     ql.order = options.orderByTime;
