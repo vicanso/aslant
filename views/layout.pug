@@ -18,7 +18,7 @@ html(lang='zh-CN')
       - importer.import('//o3tra507p.qnssl.com/font-awesome-4.6.3.css', '//o3tra507p.qnssl.com/pure-0.6.0.css')
     - importer.import('/css/widget.css', '/css/global.css')
     if ENV === 'development' || DEBUG
-      - importer.import('/jspm/packages/system.js', '/jspm/config.js', '/jspm/dev.js')
+      - importer.import('/jspm/packages/system.js', '/jspm/jspm.config.js')
     else 
       - importer.import('/jspm/bundles/bootstrap.js')
   body
@@ -35,5 +35,5 @@ html(lang='zh-CN')
   script.
     TIMING.end('js')
     if (CONFIG.env === 'development' || CONFIG.debug) {
-      System.import(CONFIG.staticUrlPrefix + '/jspm/bootstrap.js')
+      System.import('aslant/bootstrap.js')
     }
