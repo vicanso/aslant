@@ -134,7 +134,7 @@
       "path": "github:jspm/nodelibs-path@^0.2.0-alpha",
       "process": "github:jspm/nodelibs-process@^0.2.0-alpha",
       "querystring": "github:jspm/nodelibs-querystring@^0.2.0-alpha",
-      "react": "npm:react@^15.1.0",
+      "react": "npm:react@^15.2.1",
       "react-dom": "npm:react-dom@^15.1.0",
       "redux": "npm:redux@^3.5.2",
       "stream": "github:jspm/nodelibs-stream@^0.2.0-alpha",

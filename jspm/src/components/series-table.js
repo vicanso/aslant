@@ -23,7 +23,8 @@ class SeriesTable extends Table {
 }
 
 SeriesTable.propTypes = {
-  data: PropTypes.object.isRequired,
+  seriesItem: PropTypes.object.isRequired,
+  hideEmptyPoint: PropTypes.bool,
 };
 
 export default SeriesTable;

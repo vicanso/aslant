@@ -26,7 +26,7 @@ class InfluxdbDashboardView extends Component {
     const ids = _.map(dashboard.configures, item => item.id);
     configureAction.getByIds(ids).then(data => {
       this.setState({
-        visualizations: data.items,
+        visualizations: _.sortBy(data.items, item => _.indexOf(ids, item._id)),
       });
     });
   }

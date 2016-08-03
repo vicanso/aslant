@@ -45,7 +45,7 @@
     background-color $BG_COLOR
     .influxdbSelector
       margin-bottom 10px
-  .filterSelector, .extractSelector, .groupBySelector, .extraSelector
+  .filterSelector, .extractSelector, .groupBySelector, .extraSelector, .echartSetting
     margin-right 10px
     border 1px solid $GRAY_BORDER_COLOR
     padding 10px
@@ -71,7 +71,6 @@
       .parallelSelector
         width 100%
   .extraSelector
-    margin-right 0
     line-height 24px
     .hideEmptyPoint
       display block
@@ -91,7 +90,18 @@
       display block
   .radioSelector
     border-bottom 1px solid $GRAY_BORDER_COLOR
-
+  .echartSetting
+    margin-right 0
+    .xAxisSetting
+      line-height 30px
+      .pure-g
+        margin-left 50px
+        .pure-u-1-2
+          padding-right 10px
+          &:last-child
+            padding-right 0
+          input
+            width 100%
   .visualizationSaveDialog .dialog
     margin-top -130px
     fieldset

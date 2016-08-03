@@ -78,8 +78,8 @@ class ParallelSelector extends Component {
 
 ParallelSelector.propTypes = {
   hidden: PropTypes.array,
-  keys: PropTypes.object.isRequired,
-  values: PropTypes.object.isRequired,
+  keys: PropTypes.array.isRequired,
+  values: PropTypes.array.isRequired,
   onSelect: PropTypes.func.isRequired,
   onToggle: PropTypes.func.isRequired,
   toggleType: PropTypes.string.isRequired,

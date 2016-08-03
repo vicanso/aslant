@@ -440,6 +440,24 @@ class InfluxdbVisualizationEditor extends Component {
       </div>
     );
   }
+  renderEchartSetting() {
+    return (
+      <div className="echartSetting">
+        <label>Echart Settng</label>
+        <div className="xAxisSetting">
+          <span className="pullLeft">yAxis:</span>
+          <div className="pure-g">
+            <div className="pure-u-1-2">
+              <input type="number" placeholder="min" />
+            </div>
+            <div className="pure-u-1-2">
+              <input type="number" placeholder="max" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
   renderQueryBar() {
     const { showDateTimeSelector } = this.state;
     return (
@@ -583,8 +601,8 @@ class InfluxdbVisualizationEditor extends Component {
       <ParallelSelector
         hidden={hidden}
         key={id || uuid.v4()}
-        keys={keys}
-        values={values}
+        keys={keys || []}
+        values={values || []}
         defaultKey={defaultKey}
         defaultValue={defaultValue}
         onSelect={item => {
@@ -701,14 +719,17 @@ class InfluxdbVisualizationEditor extends Component {
         {this.renderQueryBar()}
         {this.renderBasicSelector()}
         <div className="pure-g">
-          <div className="pure-u-1-3">
+          <div className="pure-u-1-4">
             {this.renderFilterSelector()}
           </div>
-          <div className="pure-u-1-3">
+          <div className="pure-u-1-4">
             {this.renderExtractSelecotr()}
           </div>
-          <div className="pure-u-1-3">
+          <div className="pure-u-1-4">
             {this.renderExtraSelector()}
+          </div>
+          <div className="pure-u-1-4">
+            {this.renderEchartSetting()}
           </div>
         </div>
         {this.renderStatsView()}

@@ -17,8 +17,7 @@ const sessionMiddleware = session({
     key: config.sessionKey,
   }),
   cookie: {
-    maxAge: 24 * 60 * 60 * 1000,
-    path: `${config.appUrlPrefix}/`,
+    maxAge: 30 * 24 * 60 * 60 * 1000,
   },
 });
 
