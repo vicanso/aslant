@@ -4,4 +4,4 @@ coverage
 assets
 jspm/packages
 jspm/bundles
-jspm/dev.js*
+jspm/build.js*
