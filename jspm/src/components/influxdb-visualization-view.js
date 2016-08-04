@@ -114,10 +114,12 @@ class InfluxdbVisualizationView extends Component {
   }
   renderCharts(type) {
     const { series } = this.state;
+    const { configure } = this.props;
     return (
       <Chart
         series={series}
         type={type}
+        setting={configure.echart}
       />
     );
   }

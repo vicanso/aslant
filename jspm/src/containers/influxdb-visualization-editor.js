@@ -11,6 +11,7 @@ import InfluxdbVisualizationView from 'aslant/components/influxdb-visualization-
 import RadioSelector from 'aslant/components/radio-selector';
 import DateTimePicker from 'aslant/components/date-time-picker';
 import ParallelSelector from 'aslant/components/parallel-selector';
+import EchartSetting from 'aslant/components/echart-setting';
 import VisualizationSaveDialog from 'aslant/containers/visualization-save-dialog';
 import { STATS_VIEW_TYPES, OFFSET_TIME_LIST } from 'aslant/constants/common';
 
@@ -48,6 +49,7 @@ class InfluxdbVisualizationEditor extends Component {
         end: null,
       },
       error: '',
+      echart: {},
     }, props.data);
     this.restore();
   }
@@ -101,7 +103,7 @@ class InfluxdbVisualizationEditor extends Component {
   }
   getConfigure() {
     /* eslint max-len:0 */
-    const keys = 'server database rp measurement groupByTime offsetTime conditions extracts groups fields date hideEmptyPoint orderByTime statsView'.split(' ');
+    const keys = 'server database rp measurement groupByTime offsetTime conditions extracts groups fields date hideEmptyPoint orderByTime statsView echart'.split(' ');
     return _.pick(this.state, keys);
   }
   setError(err) {
@@ -478,6 +480,7 @@ class InfluxdbVisualizationEditor extends Component {
           className="influxQl"
         >
           <input
+            readOnly
             style={{
               width: '100%',
               padding: '9px',
@@ -705,7 +708,7 @@ class InfluxdbVisualizationEditor extends Component {
     );
   }
   render() {
-    const { showSubmitDialog } = this.state;
+    const { showSubmitDialog, echart } = this.state;
     return (
       <div
         className="influxdbVisualizationEditor"
@@ -726,10 +729,15 @@ class InfluxdbVisualizationEditor extends Component {
             {this.renderExtractSelecotr()}
           </div>
           <div className="pure-u-1-4">
-            {this.renderExtraSelector()}
+            <EchartSetting
+              setting={echart}
+              onChange={data => this.setState({
+                echart: data,
+              })}
+            />
           </div>
           <div className="pure-u-1-4">
-            {this.renderEchartSetting()}
+            {this.renderExtraSelector()}
           </div>
         </div>
         {this.renderStatsView()}

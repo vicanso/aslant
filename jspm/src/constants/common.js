@@ -1,5 +1,5 @@
 'use strict';
-export const STATS_VIEW_TYPES = ['line-chart', 'pie-chart', 'bar-chart', 'table'];
+export const STATS_VIEW_TYPES = ['line-chart', 'pie-chart', 'bar-chart', 'gauge-chart', 'table'];
 export const OFFSET_TIME_LIST = [
   {
     label: 'Past 5 minutes',

@@ -1,5 +1,6 @@
 'use strict';
 const uuid = require('uuid');
+const mongoose = require('mongoose');
 
 module.exports = {
   schema: {
@@ -32,6 +33,7 @@ module.exports = {
     hideEmptyPoint: Boolean,
     orderByTime: String,
     statsView: String,
+    echart: mongoose.Schema.Types.Mixed,
     token: {
       type: String,
       default: () => uuid.v4(),

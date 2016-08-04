@@ -21,7 +21,7 @@ class Chart extends Component {
     chart.setOption(this.getOption());
   }
   getOption() {
-    const { type, series } = this.props;
+    const { type, series, setting } = this.props;
     let fn;
     switch (type) {
       case 'pie-chart':
@@ -30,11 +30,14 @@ class Chart extends Component {
       case 'bar-chart':
         fn = formater.getBarOption;
         break;
+      case 'gauge-chart':
+        fn = formater.getGaugeOption;
+        break;
       default:
         fn = formater.getLineOption;
         break;
     }
-    return fn(series, this.props.name);
+    return fn(series, this.props.name, setting);
   }
   render() {
     return (

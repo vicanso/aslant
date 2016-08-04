@@ -19,7 +19,7 @@ function getDefaultLineOption(name) {
   };
 }
 
-export function getLineOption(data, name) {
+export function getLineOption(data, name, setting) {
   const result = _.map(data, util.convertSeriesData);
   const series = _.map(data, item => {
     let desc = item.name;
@@ -42,7 +42,7 @@ export function getLineOption(data, name) {
     });
   });
   const onePageSize = Math.ceil(Math.min(50 / dateList.length, 1) * 100);
-  return {
+  return _.extend({
     tooltip: {
       trigger: 'axis',
     },
@@ -82,11 +82,11 @@ export function getLineOption(data, name) {
       }
     }],
     series,
-  };
+  }, setting);
 }
 
-export function getPieOption(data, name) {
-  const pieData = {
+export function getPieOption(data, name, setting) {
+  const pieData = _.extend({
     name,
     type: 'pie',
     radius: '55%',
@@ -103,7 +103,7 @@ export function getPieOption(data, name) {
         shadowColor: 'rgba(0, 0, 0, 0.5)',
       },
     },
-  };
+  }, setting);
   const option = {
     title: {
       text: name,
@@ -128,7 +128,7 @@ export function getPieOption(data, name) {
   return option;
 }
 
-export function getBarOption(data, name) {
+export function getBarOption(data, name, setting) {
   const result = _.map(data, util.convertSeriesData);
   const series = _.map(data, item => {
     const tagsDesc = _.map(item.tags, (v, k) => {
@@ -153,7 +153,7 @@ export function getBarOption(data, name) {
     });
   });
 
-  const option = {
+  const option = _.extend({
     tooltip: {
       trigger: 'axis',
       axisPointer: {
@@ -181,6 +181,35 @@ export function getBarOption(data, name) {
       },
     ],
     series: series,
-  };
+  }, setting);
   return option;
+}
+
+export function getGaugeOption(data, name, setting) {
+  return _.extend({
+    tooltip: {
+      formatter: '{a} <br/>{b} : {c}%',
+    },
+    toolbox: {
+      feature: {
+        restore: {},
+        saveAsImage: {},
+      },
+    },
+    series: [
+      {
+        name,
+        type: 'gauge',
+        detail: {
+          formatter: '{value}%',
+        },
+        data: [
+          {
+            value: _.last(_.last(_.last(data).values)),
+            name,
+          }
+        ]
+      }
+    ],
+  });
 }
