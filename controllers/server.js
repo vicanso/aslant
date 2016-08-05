@@ -9,7 +9,7 @@ const validate = data => Joi.validateThrow(data, {
   host: Joi.string().trim().required(),
   port: Joi.number().integer().required(),
   ssl: Joi.boolean().required(),
-  group: Joi.string().trim().required(),
+  access: Joi.string().trim().required(),
   user: Joi.string().trim(),
   password: Joi.string().trim(),
 });
@@ -33,7 +33,7 @@ exports.list = (ctx) => {
         owner: account,
       },
       {
-        group: '*',
+        access: '*',
       },
     ],
   }).then(servers => {

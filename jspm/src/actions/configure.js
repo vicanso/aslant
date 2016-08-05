@@ -1,4 +1,5 @@
 'use strict';
+/* eslint import/no-unresolved:0 */
 import * as _ from 'lodash';
 import * as http from 'aslant/helpers/http';
 import {

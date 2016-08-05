@@ -1,4 +1,5 @@
 'use strict';
+/* eslint import/no-unresolved:0 */
 import * as globals from 'aslant/helpers/globals';
 const appUrlPrfix = globals.get('CONFIG.appUrlPrefix');
 

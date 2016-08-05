@@ -30,6 +30,10 @@ module.exports = {
       start: String,
       end: String,
     },
+    access: {
+      type: String,
+      default: '*',
+    },
     hideEmptyPoint: Boolean,
     orderByTime: String,
     statsView: String,

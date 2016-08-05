@@ -1,4 +1,5 @@
 'use strict';
+/* eslint import/no-unresolved:0 */
 import * as http from 'aslant/helpers/http';
 import * as crypto from 'aslant/helpers/crypto';
 import {

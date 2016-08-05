@@ -1,4 +1,5 @@
 'use strict';
+/* eslint import/no-unresolved:0 */
 import {
   USER_INFO,
   CONFIGURE_LIST,

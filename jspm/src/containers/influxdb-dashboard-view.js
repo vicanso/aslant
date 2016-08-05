@@ -26,6 +26,7 @@ class InfluxdbDashboardView extends Component {
     const ids = _.map(dashboard.configures, item => item.id);
     configureAction.getByIds(ids).then(data => {
       this.setState({
+        /* eslint no-underscore-dangle:0 */
         visualizations: _.sortBy(data.items, item => _.indexOf(ids, item._id)),
       });
     });
@@ -43,10 +44,12 @@ class InfluxdbDashboardView extends Component {
         '33%': 'pure-u-1-3',
         '25%': 'pure-u-1-4',
       };
+      /* eslint no-underscore-dangle:0 */
+      const key = item._id;
       return (
         <div
           className={cls[width]}
-          key={item._id}
+          key={key}
         >
           <InfluxdbVisualizationView
             dispatch={dispatch}

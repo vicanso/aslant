@@ -58,6 +58,7 @@ Chart.propTypes = {
   name: PropTypes.string,
   type: PropTypes.string,
   series: PropTypes.array.isRequired,
+  setting: PropTypes.object,
 };
 
 export default Chart;

@@ -32,7 +32,7 @@ class InfluxdbServerEditor extends Dialog {
       port: refs.port.value,
       ssl: refs.ssl.checked,
     };
-    _.forEach('user password group'.split(' '), k => {
+    _.forEach('user password access'.split(' '), k => {
       const v = refs[k].value;
       if (v) {
         data[k] = v;
@@ -60,7 +60,7 @@ class InfluxdbServerEditor extends Dialog {
       host: Joi.string().trim().required(),
       port: Joi.number().integer().required(),
       ssl: Joi.boolean().required(),
-      group: Joi.string().trim().default('*'),
+      access: Joi.string().trim().default('*'),
       user: Joi.string().trim(),
       password: Joi.string().trim(),
     });
@@ -145,7 +145,6 @@ class InfluxdbServerEditor extends Dialog {
     if (type === 'update' && !server) {
       return null;
     }
-    this.setDefaultValue();
     return (
       <form className="pure-form pure-form-aligned pure-g"><fieldset>
         <div className="pure-u-1-2">
@@ -157,6 +156,7 @@ class InfluxdbServerEditor extends Dialog {
               placeholder="Ex: My Awesome Server"
               ref="name"
               required="true"
+              defaultValue={_.get(server, 'name')}
               onKeyUp={e => this.onKeyUp(e)}
               onChange={() => this.handleChange()}
             />
@@ -170,6 +170,7 @@ class InfluxdbServerEditor extends Dialog {
               placeholder="Ex: localhost"
               ref="host"
               required="true"
+              defaultValue={_.get(server, 'host', 'localhost')}
               onKeyUp={e => this.onKeyUp(e)}
               onChange={() => this.handleChange()}
             />
@@ -183,6 +184,7 @@ class InfluxdbServerEditor extends Dialog {
               placeholder="Ex: 8086"
               ref="port"
               required="true"
+              defaultValue={_.get(server, 'port', '8086')}
               onKeyUp={e => this.onKeyUp(e)}
               onChange={() => this.handleChange()}
             />
@@ -199,6 +201,7 @@ class InfluxdbServerEditor extends Dialog {
               id="useSSL"
               type="checkbox"
               ref="ssl"
+              defaultChecked={_.get(server, 'ssl')}
               onChange={() => this.handleChange()}
             />
             <label
@@ -218,7 +221,8 @@ class InfluxdbServerEditor extends Dialog {
             <input
               type="text"
               placeholder="Ex: *"
-              ref="group"
+              ref="access"
+              defaultValue={_.get(server, 'access', '*')}
               onKeyUp={e => this.onKeyUp(e)}
               onChange={() => this.handleChange()}
             />
@@ -231,6 +235,7 @@ class InfluxdbServerEditor extends Dialog {
               type="text"
               placeholder="Ex: vicanso"
               ref="user"
+              defaultValue={_.get(server, 'user')}
               onKeyUp={e => this.onKeyUp(e)}
               onChange={() => this.handleChange()}
             />
@@ -243,6 +248,7 @@ class InfluxdbServerEditor extends Dialog {
               type="text"
               placeholder="Ex: mypass"
               ref="password"
+              defaultValue={_.get(server, 'password')}
               onKeyUp={e => this.onKeyUp(e)}
               onChange={() => this.handleChange()}
             />

@@ -22,7 +22,7 @@
   },
   "readmeFilename": "README.md",
   "scripts": {
-    "eslint-jspm": "node ./node_modules/.bin/eslint jspm/bootstrap.js jspm/store.js jspm/components/*.js jspm/actions/*.js jspm/constants/*.js jspm/reducers/*.js jspm/services/*.js jspm/containers/*.js",
+    "eslint-jspm": "node ./node_modules/.bin/eslint jspm/src/bootstrap.js jspm/src/store.js jspm/src/components/*.js jspm/src/actions/*.js jspm/src/constants/*.js jspm/src/reducers/*.js jspm/src/services/*.js jspm/src/containers/*.js",
     "eslint-node": "node ./node_modules/.bin/eslint *.js helpers/*.js middlewares/*.js router/*.js controllers/*.js models/*.js",
     "eslint": "npm run eslint-node && npm run eslint-jspm",
     "coverage": "node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha test/*.js test/controllers/*.js test/helpers/*.js test/middlewares/*.js test/services/*.js --",

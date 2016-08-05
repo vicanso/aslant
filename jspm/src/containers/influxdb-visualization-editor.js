@@ -50,6 +50,7 @@ class InfluxdbVisualizationEditor extends Component {
       },
       error: '',
       echart: {},
+      access: '',
     }, props.data);
     this.restore();
   }
@@ -103,7 +104,7 @@ class InfluxdbVisualizationEditor extends Component {
   }
   getConfigure() {
     /* eslint max-len:0 */
-    const keys = 'server database rp measurement groupByTime offsetTime conditions extracts groups fields date hideEmptyPoint orderByTime statsView echart'.split(' ');
+    const keys = 'server database rp measurement groupByTime offsetTime conditions extracts groups fields date hideEmptyPoint orderByTime statsView echart access'.split(' ');
     return _.pick(this.state, keys);
   }
   setError(err) {
@@ -191,6 +192,7 @@ class InfluxdbVisualizationEditor extends Component {
       <div className="extraSelector">
         <label>Extra Setting</label>
         <RadioSelector
+          className="item"
           desc={'stats view:'}
           options={STATS_VIEW_TYPES}
           selected={this.state.statsView}
@@ -203,6 +205,7 @@ class InfluxdbVisualizationEditor extends Component {
           }}
         />
         <RadioSelector
+          className="item"
           desc={'order by time:'}
           options={['asc', 'desc']}
           selected={orderByTime}
@@ -214,8 +217,8 @@ class InfluxdbVisualizationEditor extends Component {
             }
           }}
         />
-        <span
-          className="hideEmptyPoint"
+        <div
+          className="hideEmptyPoint item"
         >table view:
           <a
             href="#"
@@ -230,7 +233,31 @@ class InfluxdbVisualizationEditor extends Component {
             <i className={classnames(emptyPointCls)} aria-hidden="true"></i>
             Hide Empty Point
           </a>
-        </span>
+        </div>
+        <div className="acess item">
+          <span className="pullLeft">access:</span>
+          <div
+            style={{
+              marginLeft: '60px',
+            }}
+          >
+            <input
+              style={{
+                width: '100%',
+              }}
+              defaultValue={_.get(conf, 'access')}
+              type="text"
+              ref="access"
+              onChange={() => {
+                const access = this.refs.access.value || '';
+                this.setState({
+                  access,
+                });
+              }}
+              placeholder="The Access of Configure"
+            />
+          </div>
+        </div>
         {this.renderShowFieldSelector()}
         <a
           className="pure-button pure-button-primary submit"

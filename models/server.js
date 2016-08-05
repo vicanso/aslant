@@ -23,7 +23,7 @@ module.exports = {
       type: Boolean,
       required: true,
     },
-    group: {
+    access: {
       type: String,
       required: true,
     },
@@ -43,7 +43,7 @@ module.exports = {
       owner: 1,
     },
     {
-      group: 1,
+      access: 1,
     },
   ],
 };

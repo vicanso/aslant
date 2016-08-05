@@ -17,7 +17,7 @@ class EchartSetting extends Component {
       yAxis: {},
     };
     _.forEach(['min', 'max'], key => {
-      const v = parseInt(refs[key].value);
+      const v = parseInt(refs[key].value, 10);
       if (_.isInteger(v)) {
         data.yAxis[key] = v;
       }
@@ -53,7 +53,7 @@ class EchartSetting extends Component {
           </div>
         </div>
       </div>
-    ); 
+    );
   }
 }
 
