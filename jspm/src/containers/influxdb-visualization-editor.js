@@ -320,7 +320,7 @@ class InfluxdbVisualizationEditor extends Component {
     });
     return (
       <ul
-        className="fieldShowSelector"
+        className="fieldShowSelector item"
       >
         <li>Fields:</li>
         {list}
@@ -564,6 +564,7 @@ class InfluxdbVisualizationEditor extends Component {
       index,
       keys,
       values,
+      funcDesc: '=',
       id: _.get(conditions, `[${index}].id`),
       defaultKey: _.get(conditions, `[${index}].key`),
       defaultValue: _.get(conditions, `[${index}].value`),
@@ -626,12 +627,13 @@ class InfluxdbVisualizationEditor extends Component {
     );
   }
   renderParallelSelector(opts) {
-    const { index, keys, id, values, defaultKey, defaultValue, listKey, countKey, hidden } = opts;
+    const { index, keys, id, values, defaultKey, defaultValue, listKey, countKey, hidden, funcDesc } = opts;
     return (
       <ParallelSelector
         hidden={hidden}
         key={id || uuid.v4()}
         keys={keys || []}
+        funcDesc={funcDesc}
         values={values || []}
         defaultKey={defaultKey}
         defaultValue={defaultValue}

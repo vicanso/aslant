@@ -36,7 +36,7 @@ class ParallelSelector extends Component {
     );
   }
   render() {
-    const { keys, values, toggleType, hidden } = this.props;
+    const { keys, values, toggleType, hidden, funcDesc } = this.props;
     const convert = (arr) => _.map(arr, v => {
       if (_.isObject(v)) {
         return Object.assign({}, v);
@@ -51,7 +51,7 @@ class ParallelSelector extends Component {
     return (
       <div className="pure-g">
         {!hiddenKeySelector && <div className="pure-u-1-2 parallelSelector">
-          <span className="pullRight funcDesc">BY</span>
+          <span className="pullRight funcDesc">{funcDesc || 'BY'}</span>
           {
             this.renderSelector({
               options: convert(keys),

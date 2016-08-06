@@ -129,7 +129,7 @@ class InfluxdbVisualizationView extends Component {
         className="statsViewSelector"
         desc={'stats view:'}
         options={STATS_VIEW_TYPES}
-        selected={this.state.type}
+        selected={this.state.type || this.props.type || STATS_VIEW_TYPES[0]}
         onSelect={option => {
           if (this.state.type !== option) {
             this.setState({

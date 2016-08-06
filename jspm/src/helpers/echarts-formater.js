@@ -205,7 +205,7 @@ export function getGaugeOption(data, name, setting) {
         },
         data: [
           {
-            value: _.last(_.last(_.last(data).values)),
+            value: _.round(_.last(_.last(_.last(data).values)), 2),
             name,
           }
         ]

@@ -40,7 +40,7 @@
     "bytes": "^2.4.0",
     "debug": "^2.2.0",
     "http-errors": "^1.5.0",
-    "influxdb-nodejs": "^1.0.9",
+    "influxdb-nodejs": "^1.1.0",
     "joi": "^9.0.0-5",
     "jtfileimporter": "^0.4.2",
     "koa": "^2.0.0",
