@@ -83,6 +83,7 @@ ParallelSelector.propTypes = {
   onSelect: PropTypes.func.isRequired,
   onToggle: PropTypes.func.isRequired,
   toggleType: PropTypes.string.isRequired,
+  funcDesc: PropTypes.string,
   placeholders: PropTypes.object,
 };
 

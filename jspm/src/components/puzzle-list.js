@@ -45,13 +45,62 @@ class PuzzleList extends Component {
     e.preventDefault();
     _.invoke(this.props, 'show', id);
   }
+  renderFunctions(item) {
+    const { account } = this.props;
+    /* eslint no-underscore-dangle:0 */
+    const id = item._id;
+    const stepDict = this.state.stepDict;
+    const step = stepDict[id];
+    if (account !== item.owner) {
+      return null;
+    }
+    return (
+      <div
+        className="pullRight"
+      >
+        {
+          !step && <a
+            onClick={e => this.toggleRemoveStep(e, id)}
+            href="#"
+          >
+            <i className="fa fa-times" aria-hidden="true"></i>
+          </a>
+        }
+        {
+          step === 'confirm' && <span>
+            <a
+              href="#"
+              onClick={e => this.confirmRemoveStep(e, id)}
+            >
+              <i className="fa fa-check" aria-hidden="true"></i>
+            </a>
+            <a
+              onClick={e => this.toggleRemoveStep(e, id)}
+              href="#"
+            >
+              <i className="fa fa-times" aria-hidden="true"></i>
+            </a>
+          </span>
+        }
+        {
+          step === 'processing' && <span className="mright5">
+            <i className="fa fa-spinner" aria-hidden="true"></i>
+          </span>
+        }
+        <a
+          href="#"
+          onClick={e => this.edit(e, id)}
+        >
+          <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
+        </a>
+      </div>
+    );
+  }
   renderList() {
     const { items } = this.props;
-    const stepDict = this.state.stepDict;
     return _.map(items, item => {
       /* eslint no-underscore-dangle:0 */
       const id = item._id;
-      const step = stepDict[id];
       return (
         <div
           className="pure-u-1-4"
@@ -59,46 +108,9 @@ class PuzzleList extends Component {
         >
           <div className="item">
             <div className="title">
-              {
-                !step && <a
-                  onClick={e => this.toggleRemoveStep(e, id)}
-                  className="pullRight"
-                  href="#"
-                >
-                  <i className="fa fa-times" aria-hidden="true"></i>
-                </a>
-              }
-              {
-                step === 'confirm' && <span className="pullRight">
-                  <a
-                    href="#"
-                    onClick={e => this.confirmRemoveStep(e, id)}
-                  >
-                    <i className="fa fa-check" aria-hidden="true"></i>
-                  </a>
-                  <a
-                    onClick={e => this.toggleRemoveStep(e, id)}
-                    href="#"
-                  >
-                    <i className="fa fa-times" aria-hidden="true"></i>
-                  </a>
-                </span>
-              }
-              {
-                step === 'processing' && <span className="pullRight mright5">
-                  <i className="fa fa-spinner" aria-hidden="true"></i>
-                </span>
-              }
-              <a
-                className="pullRight"
-                href="#"
-                onClick={e => this.edit(e, id)}
-              >
-                <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
-              </a>
+              {this.renderFunctions(item)}
               <i className="fa fa-bar-chart mright3" aria-hidden="true"></i>
               {item.name}
-
             </div>
             <div
               className="content"
@@ -134,6 +146,7 @@ class PuzzleList extends Component {
 
 PuzzleList.propTypes = {
   className: PropTypes.string,
+  account: PropTypes.string,
   add: PropTypes.func,
   remove: PropTypes.func,
   edit: PropTypes.func,

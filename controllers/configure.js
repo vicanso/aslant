@@ -26,7 +26,14 @@ exports.add = (ctx) => {
 exports.list = (ctx) => {
   const account = _.get(ctx, 'session.user.account');
   let query = {
-    owner: account,
+    $or: [
+      {
+        owner: account,
+      },
+      {
+        access: '*',
+      },
+    ],
   };
   if (ctx.query.id) {
     const ids = _.isArray(ctx.query.id) ? ctx.query.id : [ctx.query.id];

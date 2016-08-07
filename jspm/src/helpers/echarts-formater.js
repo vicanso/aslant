@@ -133,7 +133,7 @@ export function getBarOption(data, name, setting) {
   const series = _.map(data, item => {
     const tagsDesc = _.map(item.tags, (v, k) => {
       return `${k}(${v})`;
-    }).join(' ');
+    }).join(' ') || _.last(item.columns);
     return {
       name: tagsDesc,
       type: 'bar',

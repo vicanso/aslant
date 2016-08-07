@@ -27,6 +27,7 @@ class InfluxdbDashboardEditor extends Component {
     const refs = this.refs;
     refs.name.value = dashboard.name;
     refs.desc.value = dashboard.desc;
+    refs.access.value = dashboard.access;
   }
   initConfigures() {
     if (this.state.configures || !this.props.configures) {
@@ -100,6 +101,7 @@ class InfluxdbDashboardEditor extends Component {
     const data = _.extend({
       name,
       desc,
+      access: refs.access.value,
       configures: selectedConfigures,
     }, _.pick(this.state, ['width', 'offsetTime', 'autoRefresh']));
     let fn;
@@ -244,7 +246,7 @@ class InfluxdbDashboardEditor extends Component {
               onChange={() => this.resetError()}
             />
           </div></div>
-          <div className="pure-u-1-6"><div className="mright10">
+          <div className="pure-u-1-8"><div className="mright10">
             <AutoRefreshSelector
               value={this.state.autoRefresh}
               onChange={value => {
@@ -254,10 +256,18 @@ class InfluxdbDashboardEditor extends Component {
               }}
             />
           </div></div>
-          <div className="pure-u-1-6"><div className="mright10">
+          <div className="pure-u-1-8"><div className="mright10">
             {this.renderOffsetTimeSelector()}
           </div></div>
-          <div className="pure-u-1-6">
+          <div className="pure-u-1-8"><div className="mright10">
+            <input
+              type="text"
+              placeholder="access"
+              ref="access"
+              onChange={() => this.resetError()}
+            />
+          </div></div>
+          <div className="pure-u-1-8">
             <a
               href="#"
               className="pure-button pure-button-primary"

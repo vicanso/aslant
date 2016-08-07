@@ -19,6 +19,10 @@ module.exports = {
       type: Array,
       required: true,
     },
+    access: {
+      type: String,
+      default: '*',
+    },
     offsetTime: String,
     autoRefresh: String,
     token: {

@@ -89,6 +89,7 @@ class App extends Component {
       <InfluxdbVisualizationList
         configures={user.configures}
         dispatch={dispatch}
+        account={_.get(user, 'basic.account')}
       />
     );
   }
@@ -134,6 +135,7 @@ class App extends Component {
       <InfluxdbDashboardList
         dispatch={dispatch}
         dashboards={user.dashboards}
+        account={_.get(user, 'basic.account')}
       />
     );
   }

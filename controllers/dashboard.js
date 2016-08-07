@@ -7,6 +7,7 @@ const errors = localRequire('helpers/errors');
 const validate = (data, opts) => Joi.validateThrow(data, {
   name: Joi.string().trim().required(),
   desc: Joi.string().trim().required(),
+  access: Joi.string().trim(),
   autoRefresh: Joi.string().trim(),
   offsetTime: Joi.string().trim(),
   configures: Joi.array().min(1).items(
@@ -33,7 +34,14 @@ exports.add = (ctx) => {
 exports.list = (ctx) => {
   const account = _.get(ctx, 'session.user.account');
   return dashboardService.list({
-    owner: account,
+    $or: [
+      {
+        owner: account,
+      },
+      {
+        access: '*',
+      },
+    ],
   }).then(dashboards => {
     /* eslint no-param-reassign:0 */
     ctx.body = {
