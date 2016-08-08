@@ -1,7 +1,17 @@
 'use strict';
 /* eslint import/no-unresolved:0 */
 import * as _ from 'lodash';
+import * as echarts from 'echarts';
 import * as util from 'aslant/helpers/util';
+import {
+  MACARONS,
+  INFO_GRAPHIC,
+  VINTAGE,
+  DARK,
+  SHINE,
+} from 'aslant/constants/themes';
+
+const defaultTheme = '';
 
 function getDefaultLineOption(name) {
   return {
@@ -17,6 +27,16 @@ function getDefaultLineOption(name) {
     },
     data: [],
   };
+}
+
+echarts.registerTheme('macarons', MACARONS);
+echarts.registerTheme('infographic', INFO_GRAPHIC);
+echarts.registerTheme('vintage', VINTAGE);
+echarts.registerTheme('dark', DARK);
+echarts.registerTheme('shine', SHINE);
+
+export function init(dom, theme = defaultTheme, opts) {
+  return echarts.init(dom, theme, opts);
 }
 
 export function getLineOption(data, name, setting) {
@@ -164,8 +184,9 @@ export function getBarOption(data, name, setting) {
       data: [],
     },
     grid: {
-      left: '3%',
-      right: '4%',
+      left: 40,
+      right: 40,
+      top: 15,
       bottom: '3%',
       containLabel: true,
     },

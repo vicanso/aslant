@@ -1,8 +1,7 @@
 'use strict';
 /* eslint  import/no-unresolved:0 */
 import React, { PropTypes, Component } from 'react';
-import * as echarts from 'echarts';
-import * as formater from 'aslant/helpers/echarts-formater';
+import * as echarts from 'aslant/helpers/echarts';
 
 class Chart extends Component {
   componentDidMount() {
@@ -25,16 +24,16 @@ class Chart extends Component {
     let fn;
     switch (type) {
       case 'pie-chart':
-        fn = formater.getPieOption;
+        fn = echarts.getPieOption;
         break;
       case 'bar-chart':
-        fn = formater.getBarOption;
+        fn = echarts.getBarOption;
         break;
       case 'gauge-chart':
-        fn = formater.getGaugeOption;
+        fn = echarts.getGaugeOption;
         break;
       default:
-        fn = formater.getLineOption;
+        fn = echarts.getLineOption;
         break;
     }
     return fn(series, this.props.name, setting);

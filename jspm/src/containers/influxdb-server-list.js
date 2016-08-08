@@ -38,7 +38,7 @@ class InfluxdbServerList extends Component {
             <th>Host</th>
             <th>Port</th>
             <th>SSL</th>
-            <th>Group</th>
+            <th>Access</th>
             <th>User Name(auth)</th>
             <th>User Name(password)</th>
             <th

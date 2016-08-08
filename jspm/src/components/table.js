@@ -56,7 +56,10 @@ class Table extends Component {
       trClass['pure-table-odd'] = true;
     }
     return (
-      <tr className={classnames(trClass)}>
+      <tr
+        className={classnames(trClass)}
+        key={index}
+      >
         <td>{index + 1}</td>
         {
           arr.map(v => <td>{v}</td>)

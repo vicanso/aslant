@@ -100,26 +100,6 @@ class InfluxdbServerEditor extends Dialog {
         return null;
     }
   }
-  setDefaultValue() {
-    const { server } = this.props;
-    const refs = this.refs;
-    const defaultValue = {
-      host: 'localhost',
-      port: '8086',
-      group: '*',
-    };
-    _.forEach(refs, (ref, k) => {
-      const v = _.get(server, k, defaultValue[k]);
-      if (!_.isUndefined(v)) {
-        /* eslint no-param-reassign:0 */
-        if (k === 'ssl') {
-          ref.checked = v;
-          return;
-        }
-        ref.value = v;
-      }
-    });
-  }
   getError() {
     const { error } = this.state;
     if (!error) {
