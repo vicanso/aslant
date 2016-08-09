@@ -40,7 +40,10 @@ class Table extends Component {
               cls[`fa-sort-${sortBy}`] = true;
             }
             return (
-              <th onClick={() => this.onClickHead(i)}>
+              <th
+                key={`table-th-${i}`}
+                onClick={() => this.onClickHead(i)}
+              >
                 {v}
                 <i className={classnames(cls)} aria-hidden="true"></i>
               </th>
@@ -58,11 +61,11 @@ class Table extends Component {
     return (
       <tr
         className={classnames(trClass)}
-        key={index}
+        key={`table-tr-${index}`}
       >
         <td>{index + 1}</td>
         {
-          arr.map(v => <td>{v}</td>)
+          arr.map((v, i) => <td key={`table-td-${i}`}>{v}</td>)
         }
       </tr>
     );

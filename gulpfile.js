@@ -44,6 +44,7 @@ gulp.task('reset', ['del:jspm', 'del:assets', 'del:build'], () => del(['jspm/pac
 gulp.task('stylus', ['del:assets', 'del:build'], () => gulp.src('public/**/*.styl')
   .pipe(stylus({
     use: nib(),
+    'include css': true,
   }))
   .pipe(base64())
   .pipe(cssmin())
@@ -71,7 +72,7 @@ gulp.task('static:js', ['copy:others'], () => gulp.src(['public/**/*.js', '!publ
 );
 
 gulp.task('jspm:bundle', ['del:jspm'], shell.task([
-  'node node_modules/.bin/jspm bundle-sfx bootstrap.js jspm/bundles/bootstrap.js --inject --minify',
+  'node node_modules/.bin/jspm bundle src/bootstrap.js jspm/bundles/bootstrap.js --inject --minify',
 ]));
 
 gulp.task('static:jspm', ['jspm:bundle'], () => gulp.src(['jspm/*/system.js', 'jspm/config.js', 'jspm/*/bootstrap.js'])

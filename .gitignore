@@ -5,3 +5,4 @@ assets
 jspm/packages
 jspm/bundles
 jspm/build.js*
+jspm/src/bootstrap.*.js

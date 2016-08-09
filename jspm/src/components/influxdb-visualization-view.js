@@ -8,6 +8,7 @@ import SeriesTable from 'aslant/components/series-table';
 import Chart from 'aslant/components/chart';
 import { STATS_VIEW_TYPES } from 'aslant/constants/common';
 import RadioSelector from 'aslant/components/radio-selector';
+import classnames from 'classnames';
 
 class InfluxdbVisualizationView extends Component {
   constructor(props) {
@@ -107,7 +108,8 @@ class InfluxdbVisualizationView extends Component {
   renderSeriesTable() {
     const { series } = this.state;
     const { hideEmptyPoint } = this.props.configure;
-    return _.map(series, item => <SeriesTable
+    return _.map(series, (item, index) => <SeriesTable
+      key={`series-table-${index}`}
       seriesItem={item}
       hideEmptyPoint={hideEmptyPoint}
     />);
@@ -164,11 +166,29 @@ class InfluxdbVisualizationView extends Component {
         view = this.renderCharts(type);
         break;
     }
+    const nameCls = {
+      name: true,
+    };
+    const name = _.get(configure, 'name', '');
+    const nameContainerWidth = name.length * 14 + 20;
+
+    let nameStyle = {
+      width: `${nameContainerWidth}px`,
+    };
+    if (type === 'table') {
+      nameCls.table = true;
+    } else {
+      nameStyle['margin-left'] = `${-(nameContainerWidth / 2)}px`;
+      nameCls.chart = true;
+    }
     return (
       <div
         className="visualizationView"
       >
-        {configure && configure.name && <div className="name">{configure.name}</div>}
+        {configure && configure.name && <div
+          className={classnames(nameCls)}
+          style={nameStyle}
+        >{configure.name}</div>}
         {!disableViewSelector && this.renderStatsViewSelector()}
         {
           doingQuery && <p className="tac">

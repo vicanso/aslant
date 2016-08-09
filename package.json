@@ -1,7 +1,7 @@
 {
   "name": "aslant",
   "description": "graphing and visualization application for influxdb",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "author": "Tree Xie <vicansocanbico@gmail.com>",
   "repository": {
     "type": "git",
@@ -100,7 +100,7 @@
       "classnames": "npm:classnames@^2.2.5",
       "debug": "npm:debug@^2.2.0",
       "echarts": "npm:echarts@^3.2.2",
-      "influx-ql": "npm:influx-ql@^0.1.4",
+      "influx-ql": "npm:influx-ql@^0.1.5",
       "joi": "github:capaj/joi-browser@^5.2.0",
       "lodash": "npm:lodash@^4.12.0",
       "moment": "npm:moment@^2.14.1",

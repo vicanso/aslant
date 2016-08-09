@@ -68,18 +68,22 @@
   overflow auto
   position relative
   &:hover
-    .name
+    .name.chart
       display none
   .name
-    position absolute
     border 1px solid $GRAY_BORDER_COLOR
     text-align center
-    left 50%
-    padding 3px 10px
-    margin-left -50px
     background-color #fff
     border-radius 3px
-    z-index 2
+    padding 3px 0
+    &.chart
+      z-index 2
+      position absolute
+      left 50%
+      margin-left -50px
+    &.table
+      margin 10px auto
+      
   .statsViewSelector
     position absolute
     right 5px
@@ -109,6 +113,7 @@
         margin-left 3px
   .chartContainer
     height 300px
+    overflow-x hidden
     > *
       height 100%
 .radioSelector

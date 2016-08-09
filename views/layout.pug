@@ -17,9 +17,8 @@ html(lang='zh-CN')
     else
       - importer.import('//o3tra507p.qnssl.com/font-awesome-4.6.3.css', '//o3tra507p.qnssl.com/pure-0.6.0.css')
     - importer.import('/css/widget.css', '/css/global.css')
-    if ENV === 'development' || DEBUG
-      - importer.import('/jspm/packages/system.js', '/jspm/jspm.config.js')
-    else 
+    - importer.import('/jspm/packages/system.js', '/jspm/jspm.config.js')
+    if !(ENV === 'development' || DEBUG)
       - importer.import('/jspm/bundles/bootstrap.js')
   body
     block bodyContainer
@@ -34,6 +33,4 @@ html(lang='zh-CN')
   //JS_FILES_CONTAINER
   script.
     TIMING.end('js')
-    if (CONFIG.env === 'development' || CONFIG.debug) {
-      System.import('aslant/bootstrap.js')
-    }
+    System.import('aslant/bootstrap.js')
