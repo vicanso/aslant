@@ -35,11 +35,13 @@ gulp.task('del:assets', () => del([assetsPath]));
 
 gulp.task('del:build', () => del(['build']));
 
+gulp.task('del:node_modules', () => del(['node_modules']));
+
 gulp.task('del:jspm', () => del(['jspm/config.*.js', 'jspm/bundles', 'jspm/packages/system.*.js']));
 gulp.task('clean', ['crc32'], () => del(['build']));
 
 /* eslint max-len:0 */
-gulp.task('reset', ['del:jspm', 'del:assets', 'del:build'], () => del(['jspm/packages', 'node_modules']));
+gulp.task('reset', ['del:jspm', 'del:assets', 'del:build', 'del:modules'], () => del(['jspm/packages', 'node_modules']));
 
 gulp.task('stylus', ['del:assets', 'del:build'], () => gulp.src('public/**/*.styl')
   .pipe(stylus({

@@ -2,7 +2,6 @@ FROM mhart/alpine-node
 
 ADD ./ /app
 
-CMD cd /app && npm run install-all
-  && npm run gulp
+RUN cd /app && npm rebuild
 
-RUN node /app/app.js
+CMD cd /app && npm run start

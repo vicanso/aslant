@@ -1,5 +1,5 @@
 'use strict';
-const uuid = require('node-uuid');
+const uuid = require('uuid');
 const errors = localRequire('helpers/errors');
 const Joi = require('joi');
 const _ = require('lodash');
