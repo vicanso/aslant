@@ -1,6 +1,8 @@
 import React, { PropTypes } from 'react';
 
 import FormView from '../components/form';
+import * as influxdbAction from '../actions/influxdb';
+
 
 class AddServer extends FormView {
   constructor(props) {
@@ -33,12 +35,22 @@ class AddServer extends FormView {
     }
     const { dispatch } = this.props;
     const { name, host, port } = this.getData();
-    console.dir(name);
-    console.dir(host);
-    console.dir(port);
+    dispatch(influxdbAction.add({
+      name,
+      host,
+      port,
+    })).then(() => {
+      this.setState({
+        status: '',
+      });
+    }).catch((err) => {
+      console.error(err);
+      this.setState({
+        status: '',
+      });
+    });
   }
   render() {
-    const { dispatch } = this.props;
     return (
       <div className="login-register-container">
         <h3 className="tac">Add Influxdb Server</h3>

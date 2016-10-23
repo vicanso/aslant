@@ -89,7 +89,7 @@ class MainHeader extends Component {
     const onSelect = (e, item) => {
       e.preventDefault();
       if (item.action === 'redirect') {
-        return dispatch(navigationAction.to(item.href));
+        dispatch(navigationAction.to(item.href));
       } else if (item.action === 'logout') {
         dispatch(userAction.logout());
       }

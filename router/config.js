@@ -32,6 +32,7 @@ module.exports = [
 
   // influxdb
   '[GET] [/api/influxdb/servers] [m.session.isLogined & m.session.read & c.influxdb.list]',
+  '[POST] [/api/influxdb/servers] [m.session.isLogined & m.session.read & c.influxdb.add]',
 
   // stats
   '[POST] [/api/stats/ajax] [c.stats.ajax]',
