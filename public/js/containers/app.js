@@ -7,15 +7,18 @@ import * as globals from '../helpers/globals';
 import {
   VIEW_LOGIN,
   VIEW_REGISTER,
+  VIEW_ADD_SERVER,
 } from '../constants/urls';
 
 import Login from './login';
 import Register from './register';
 import MainHeader from './main-header';
 import APIView from './api-view';
+import AddServerView from './add-server';
 
 import * as navigationAction from '../actions/navigation';
 import * as userAction from '../actions/user';
+import * as influxdbAction from '../actions/influxdb';
 
 class App extends Component {
   constructor(props) {
@@ -31,6 +34,7 @@ class App extends Component {
       this.setState({
         isFetchingUserInfo: false,
       });
+      dispatch(influxdbAction.list());
     }).catch((err) => {
       this.setState({
         isFetchingUserInfo: false,
@@ -47,6 +51,16 @@ class App extends Component {
       e.preventDefault();
       dispatch(navigationAction.to(url));
     };
+  }
+  renderAddServer() {
+    const {
+      dispatch,
+    } = this.props;
+    return (
+      <AddServerView
+        dispatch={dispatch}
+      />
+    );
   }
   renderAPIView() {
     const {
@@ -100,6 +114,10 @@ class App extends Component {
           <Route
             path={VIEW_REGISTER}
             component={() => this.renderRegister()}
+          />
+          <Route
+            path={VIEW_ADD_SERVER}
+            component={() => this.renderAddServer()}
           />
           <Route
             path="*"

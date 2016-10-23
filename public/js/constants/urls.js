@@ -12,8 +12,13 @@ export const USER_LIKE = '/api/users/like';
 export const USER_REGISTER = '/api/users/register';
 export const USER_LOGOUT = '/api/users/logout';
 
+export const INFLUXDB_ADD_SERVER = '/api/influxdb/servers';
+export const INFLUXDB_SERVERS = '/api/influxdb/servers';
+
 export const VIEW_HOME = `${appUrlPrfix}/`;
 export const VIEW_LOGIN = `${appUrlPrfix}/login`;
 export const VIEW_REGISTER = `${appUrlPrfix}/register`;
 export const VIEW_SETTING = `${appUrlPrfix}/setting`;
 export const VIEW_ACCOUNT = `${appUrlPrfix}/account`;
+
+export const VIEW_ADD_SERVER = `${appUrlPrfix}/influxdb/servers/add`;

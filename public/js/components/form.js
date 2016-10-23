@@ -81,6 +81,7 @@ class Form extends Component {
             autoCapitalize="off"
             autoCorrect="off"
             autoFocus={field.autoFocus || false}
+            defaultValue={field.value}
             type={field.type || 'text'}
             tabIndex={index + 1}
             ref={(c) => {

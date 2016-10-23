@@ -6,8 +6,10 @@ import {
   VIEW_REGISTER,
   VIEW_SETTING,
   VIEW_ACCOUNT,
+  VIEW_ADD_SERVER,
 } from '../constants/urls';
 import * as userAction from '../actions/user';
+import * as navigationAction from '../actions/navigation';
 import Dropdown from '../components/dropdown';
 
 class MainHeader extends Component {
@@ -60,8 +62,9 @@ class MainHeader extends Component {
         type: 'divider',
       },
       {
-        name: 'Your profile',
-        action: 'profile',
+        name: 'Add Server',
+        action: 'redirect',
+        href: VIEW_ADD_SERVER,
       },
       {
         name: 'Help',
@@ -85,7 +88,9 @@ class MainHeader extends Component {
     ];
     const onSelect = (e, item) => {
       e.preventDefault();
-      if (item.action === 'logout') {
+      if (item.action === 'redirect') {
+        return dispatch(navigationAction.to(item.href));
+      } else if (item.action === 'logout') {
         dispatch(userAction.logout());
       }
       this.setState({

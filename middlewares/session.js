@@ -3,6 +3,7 @@ const RedisStore = require('koa-simple-redis');
 const _ = require('lodash');
 
 const config = localRequire('config');
+const errors = localRequire('helpers/errors');
 
 const sessionMiddleware = session({
   key: config.app,
@@ -31,5 +32,12 @@ const normal = exports.normal = (ctx, next) => {
 
 exports.readonly = (ctx, next) => normal(ctx, () => {
   Object.freeze(ctx.session);
+  return next();
+});
+
+exports.isLogined = (ctx, next) => normal(ctx, () => {
+  if (!_.get(ctx, 'session.user.account')) {
+    throw errors.get(107);
+  }
   return next();
 });

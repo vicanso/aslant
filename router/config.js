@@ -12,7 +12,7 @@ module.exports = [
   '[POST] [/api/sys/restart] [m.auth.admin & c.system.restart]',
 
   // page view
-  '[GET] [/,/login,/register] [v.home & c.home]',
+  '[GET] [/,/login,/register,/influxdb/*] [v.home & c.home]',
 
   // user
   '[GET] [/api/users/me] [m.noCache & m.session.read & c.user.me]',
@@ -29,6 +29,9 @@ module.exports = [
       'c.user.like',
     ],
   },
+
+  // influxdb
+  '[GET] [/api/influxdb/servers] [m.session.isLogined & m.session.read & c.influxdb.list]',
 
   // stats
   '[POST] [/api/stats/ajax] [c.stats.ajax]',

@@ -80,7 +80,7 @@ class Register extends FormView {
     const { dispatch } = this.props;
     return (
       <div className="login-register-container">
-        <h3 className="tac">Join Albi</h3>
+        <h3 className="tac">Join Aslant</h3>
         {
           this.renderError()
         }

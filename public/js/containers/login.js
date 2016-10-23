@@ -76,7 +76,7 @@ class Login extends FormView {
     const { dispatch } = this.props;
     return (
       <div className="login-register-container">
-        <h3 className="tac">Sign in to Albi</h3>
+        <h3 className="tac">Sign in to Aslant</h3>
         {
           this.renderError()
         }
