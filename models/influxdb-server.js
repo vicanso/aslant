@@ -20,8 +20,18 @@ module.exports = {
       type: Number,
       required: true,
     },
+    ssl: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
+    username: String,
     password: String,
     createdAt: {
+      type: String,
+      required: true,
+    },
+    updatedAt: {
       type: String,
       required: true,
     },

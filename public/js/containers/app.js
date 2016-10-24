@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Router, Route } from 'react-enroute';
 import * as ReactRedux from 'react-redux';
+import * as _ from 'lodash';
 
 import * as globals from '../helpers/globals';
 
@@ -8,13 +9,15 @@ import {
   VIEW_LOGIN,
   VIEW_REGISTER,
   VIEW_ADD_SERVER,
+  VIEW_EDIT_SERVER,
+  VIEW_SERVERS,
 } from '../constants/urls';
 
 import Login from './login';
 import Register from './register';
 import MainHeader from './main-header';
-import APIView from './api-view';
-import AddServerView from './add-server';
+import ServerView from './influxdb/server';
+import ServersView from './influxdb/servers';
 
 import * as navigationAction from '../actions/navigation';
 import * as userAction from '../actions/user';
@@ -57,18 +60,25 @@ class App extends Component {
       dispatch,
     } = this.props;
     return (
-      <AddServerView
+      <ServerView
         dispatch={dispatch}
       />
     );
   }
-  renderAPIView() {
+  renderEditServer({ params: { id } }) {
     const {
       dispatch,
+      influxdb,
     } = this.props;
+    /* eslint no-underscore-dangle:0 */
+    const server = _.find(influxdb.servers, item => item._id === id);
+    if (!server) {
+      return null;
+    }
     return (
-      <APIView
+      <ServerView
         dispatch={dispatch}
+        server={server}
       />
     );
   }
@@ -85,6 +95,19 @@ class App extends Component {
     return (
       <Register
         dispatch={dispatch}
+      />
+    );
+  }
+  renderServers() {
+    const {
+      dispatch,
+      influxdb,
+    } = this.props;
+    return (
+      <ServersView
+        dispatch={dispatch}
+        servers={influxdb.servers}
+        handleLink={this.handleLink}
       />
     );
   }
@@ -120,8 +143,12 @@ class App extends Component {
             component={() => this.renderAddServer()}
           />
           <Route
-            path="*"
-            component={() => this.renderAPIView()}
+            path={VIEW_EDIT_SERVER}
+            component={arg => this.renderEditServer(arg)}
+          />
+          <Route
+            path={VIEW_SERVERS}
+            component={() => this.renderServers()}
           />
         </Router>
       </div>
@@ -132,6 +159,7 @@ class App extends Component {
 App.propTypes = {
   user: PropTypes.object.isRequired,
   navigation: PropTypes.object.isRequired,
+  influxdb: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
 };
 
@@ -139,6 +167,7 @@ function mapStateToProps(state) {
   return {
     user: state.user,
     navigation: state.navigation,
+    influxdb: state.influxdb,
   };
 }
 

@@ -6,5 +6,13 @@ module.exports = {
   2: {
     en: 'Query string must be empty',
     status: 400,
-  }
+  },
+  3: {
+    en: 'Token can\'t be empty',
+    status: 400,
+  },
+  4: {
+    en: 'Token is expired',
+    status: 400,
+  },
 };

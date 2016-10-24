@@ -7,6 +7,7 @@ import {
   VIEW_SETTING,
   VIEW_ACCOUNT,
   VIEW_ADD_SERVER,
+  VIEW_SERVERS,
 } from '../constants/urls';
 import * as userAction from '../actions/user';
 import * as navigationAction from '../actions/navigation';
@@ -65,6 +66,11 @@ class MainHeader extends Component {
         name: 'Add Server',
         action: 'redirect',
         href: VIEW_ADD_SERVER,
+      },
+      {
+        name: 'Servers',
+        action: 'redirect',
+        href: VIEW_SERVERS,
       },
       {
         name: 'Help',
@@ -135,7 +141,7 @@ class MainHeader extends Component {
         <a
           href={VIEW_HOME}
           onClick={handleLink(VIEW_HOME)}
-        >Albi</a>
+        >Aslant</a>
         <div
           className="pull-right user-infos"
         >

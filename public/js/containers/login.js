@@ -11,14 +11,16 @@ class Login extends FormView {
     super(props);
     this.state.fields = [
       {
-        label: 'Username or email address',
+        label: 'Username',
         id: 'account',
         autoFocus: true,
+        required: true,
       },
       {
         label: 'Password',
         id: 'password',
         type: 'password',
+        required: true,
       },
     ];
   }
@@ -40,17 +42,20 @@ class Login extends FormView {
       return;
     }
     const { dispatch } = this.props;
-    const { account, password } = this.getData();
+    const data = this.getData();
+    if (!data) {
+      return;
+    }
+    const {
+      account,
+      password,
+    } = data;
     let error = '';
-    if (!account || !password) {
-      error = 'Account and Password can\'t be empty';
-    } else {
-      if (password.length < 6) {
-        error = 'Password catn\'t be less than 6 character!';
-      }
-      if (account.length < 4) {
-        error = 'Account catn\'t be less than 4 character!';
-      }
+    if (password.length < 6) {
+      error = 'Password catn\'t be less than 6 character!';
+    }
+    if (account.length < 4) {
+      error = 'Account catn\'t be less than 4 character!';
     }
     if (error) {
       this.setState({

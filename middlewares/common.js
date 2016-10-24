@@ -2,6 +2,7 @@ const _ = require('lodash');
 const url = require('url');
 const checker = require('koa-query-checker');
 const stringify = require('simple-stringify');
+const Joi = require('joi');
 
 const errors = localRequire('helpers/errors');
 const influx = localRequire('helpers/influx');
@@ -96,4 +97,17 @@ exports.tracker = (category, params) => (ctx, next) => {
     console.info(`user tracker ${stringify.json(data)}`);
     throw err;
   });
+};
+
+exports.validateToken = (ctx, next) => {
+  const token = ctx.get('X-Token');
+  if (!token) {
+    throw errors.get(3);
+  }
+  Joi.validateThrow({
+    token,
+  }, {
+    token: Joi.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/),
+  });
+  return next();
 };

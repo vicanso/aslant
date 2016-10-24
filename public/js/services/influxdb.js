@@ -13,3 +13,10 @@ export function add(data) {
     .send(data)
     .then(res => res.body);
 }
+
+export function update(data, token) {
+  return http.put(INFLUXDB_SERVER)
+    .set('X-Token', token)
+    .send(data)
+    .then(res => res.body);
+}

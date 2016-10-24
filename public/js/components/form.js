@@ -14,11 +14,27 @@ class Form extends Component {
   getData() {
     const inputs = this.inputs;
     const data = {};
+    const errors = [];
     _.forEach(this.state.fields, (field) => {
+      const required = field.required;
       const key = field.id;
       const ref = inputs[key];
-      data[key] = ref.value || '';
+      const value = ref.value || '';
+      if (field.type === 'checkbox' || field.type === 'radio') {
+        data[key] = ref.checked;
+      } else if (value) {
+        data[key] = value;
+      }
+      if (required && !data[key]) {
+        errors.push(`${field.label} cat not be null`);
+      }
     });
+    if (errors.length) {
+      this.setState({
+        error: errors.join(','),
+      });
+      return null;
+    }
     return data;
   }
   getSubmitText() {

@@ -7,6 +7,7 @@ module.exports = {
       'classnames',
       'lodash',
       'debug',
+      'moment',
       'node-uuid',
       'react',
       'react-dom',

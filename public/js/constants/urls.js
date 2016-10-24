@@ -21,3 +21,5 @@ export const VIEW_SETTING = `${appUrlPrfix}/setting`;
 export const VIEW_ACCOUNT = `${appUrlPrfix}/account`;
 
 export const VIEW_ADD_SERVER = `${appUrlPrfix}/influxdb/servers/add`;
+export const VIEW_EDIT_SERVER = `${appUrlPrfix}/influxdb/servers/:id`;
+export const VIEW_SERVERS = `${appUrlPrfix}/influxdb/servers`;
