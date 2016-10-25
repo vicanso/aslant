@@ -2,6 +2,7 @@ import {
   INFLUXDB_SERVERS,
   INFLUXDB_ADD_SERVER,
   INFLUXDB_UPDATE_SERVER,
+  INFLUXDB_REMOVE_SERVER,
 } from '../constants/action-types';
 import * as influxdb from '../services/influxdb';
 
@@ -19,9 +20,16 @@ export function add(server) {
   }));
 }
 
-export function update(updateData, token) {
-  return dispatch => influxdb.update(updateData, token).then(data => dispatch({
+export function update(id, updateData, token) {
+  return dispatch => influxdb.update(id, updateData, token).then(data => dispatch({
     type: INFLUXDB_UPDATE_SERVER,
     item: data,
+  }));
+}
+
+export function remove(id) {
+  return dispatch => influxdb.remove(id).then(() => dispatch({
+    type: INFLUXDB_REMOVE_SERVER,
+    id,
   }));
 }

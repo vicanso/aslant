@@ -15,4 +15,8 @@ module.exports = {
     en: 'Token is expired',
     status: 400,
   },
+  5: {
+    en: 'Data is not exists',
+    status: 404,
+  },
 };

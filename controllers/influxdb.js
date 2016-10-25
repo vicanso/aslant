@@ -33,14 +33,89 @@ exports.list = (ctx) => {
 };
 
 exports.update = (ctx) => {
-  const token = ctx.get('X-Token');
+  const token = ctx.get('X-Access-Token');
   const account = ctx.session.user.account;
+  const id = ctx.params.id;
   const data = validateServer(ctx.request.body);
   return InfluxdbServer.update({
+    _id: id,
     account,
     token,
   }, data).then((doc) => {
     /* eslint no-param-reassign:0 */
     ctx.body = doc;
+  });
+};
+
+exports.remove = (ctx) => {
+  const account = ctx.session.user.account;
+  const id = ctx.params.id;
+  return InfluxdbServer.remove({
+    _id: id,
+    account,
+  }).then(() => {
+    ctx.body = null;
+  });
+};
+
+exports.showDatabases = (ctx) => {
+  const id = ctx.params.id;
+  return InfluxdbServer.showDatabases(id).then((data) => {
+    ctx.set('Cache-Control', 'public, max-age=60');
+    /* eslint no-param-reassign:0 */
+    ctx.body = data;
+  });
+};
+
+exports.showRetentionPolicies = (ctx) => {
+  const id = ctx.params.id;
+  const db = ctx.params.db;
+  return InfluxdbServer.showRetentionPolicies(id, db).then((data) => {
+    ctx.set('Cache-Control', 'public, max-age=60');
+    /* eslint no-param-reassign:0 */
+    ctx.body = data;
+  });
+};
+
+exports.showMeasurements = (ctx) => {
+  const id = ctx.params.id;
+  const db = ctx.params.db;
+  return InfluxdbServer.showMeasurements(id, db).then((data) => {
+    ctx.set('Cache-Control', 'public, max-age=60');
+    /* eslint no-param-reassign:0 */
+    ctx.body = data;
+  });
+};
+
+exports.showTagKeys = (ctx) => {
+  const id = ctx.params.id;
+  const db = ctx.params.db;
+  const measurement = ctx.params.measurement;
+  return InfluxdbServer.showTagKeys(id, db, measurement).then((data) => {
+    ctx.set('Cache-Control', 'public, max-age=60');
+    /* eslint no-param-reassign:0 */
+    ctx.body = data;
+  });
+};
+
+exports.showFieldKeys = (ctx) => {
+  const id = ctx.params.id;
+  const db = ctx.params.db;
+  const measurement = ctx.params.measurement;
+  return InfluxdbServer.showFieldKeys(id, db, measurement).then((data) => {
+    ctx.set('Cache-Control', 'public, max-age=60');
+    /* eslint no-param-reassign:0 */
+    ctx.body = data;
+  });
+};
+
+exports.showSeries = (ctx) => {
+  const id = ctx.params.id;
+  const db = ctx.params.db;
+  const measurement = ctx.params.measurement;
+  return InfluxdbServer.showSeries(id, db, measurement).then((data) => {
+    ctx.set('Cache-Control', 'public, max-age=60');
+    /* eslint no-param-reassign:0 */
+    ctx.body = data;
   });
 };

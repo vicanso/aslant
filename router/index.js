@@ -42,7 +42,7 @@ addToRouter('m.session.isLogined', middlewares.session.isLogined);
 addToRouter('m.cache-60', middlewares.common.cacheMaxAge(60));
 addToRouter('m.cache-300', middlewares.common.cacheMaxAge(300));
 addToRouter('m.cache-600', middlewares.common.cacheMaxAge(600));
-addToRouter('m.validateToken', middlewares.common.validateToken);
+addToRouter('m.validateAccessToken', middlewares.common.validateAccessToken);
 
 addToRouter('v', views);
 

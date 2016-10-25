@@ -1,4 +1,43 @@
-.influxdb-servers
+@import './common'
+
+.influxdb-servers-wrapper
   margin 20px
   table
     width 100%
+    .op
+      a
+        display inline-block
+        width 20px
+        text-align center
+.server-status-wrapper
+  .server-status
+    border-bottom 1px solid $COLOR_GRAY
+    padding 15px
+    margin-bottom 15px
+    h3
+      line-height 2
+      margin 0
+    table
+      width 100%
+  .dbs
+    margin 0
+    padding 0
+    list-style none
+    li
+      display inline-block
+      background-color $COLOR_INDIGO
+      margin-right 10px
+      padding 3px 15px
+      border-radius 3px
+      &.active
+        background-color $COLOR_BLUE
+      a
+        color #fff
+  .measurements
+    margin 0
+    padding 0
+    list-style 0
+    li
+      display inline-block
+      margin-right 10px
+      padding 3px 15px

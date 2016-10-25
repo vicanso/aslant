@@ -113,3 +113,35 @@
       color #fff
       text-decoration none
       background-color #4078c0
+
+.dialog
+  position fixed
+  $width = 400px
+  width $width
+  left 50%
+  top 50%
+  margin-left -($width / 2)
+  margin-top -150px
+  background-color #fff
+  border 1px solid #ddd
+  .title
+    height 30px
+    line-height @height
+    background-color #293744
+    color #fff
+    text-indent 1em
+    .close
+      text-indent 0
+      display block
+      text-align center
+      width 30px
+      color #f0f0f0
+      &:hover
+        color #fff
+  .content
+    padding 30px
+  .btns
+    text-align center
+    margin 15px
+    .btn:first-child
+      margin-right 15px

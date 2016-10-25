@@ -99,8 +99,8 @@ exports.tracker = (category, params) => (ctx, next) => {
   });
 };
 
-exports.validateToken = (ctx, next) => {
-  const token = ctx.get('X-Token');
+exports.validateAccessToken = (ctx, next) => {
+  const token = ctx.get('X-Access-Token');
   if (!token) {
     throw errors.get(3);
   }

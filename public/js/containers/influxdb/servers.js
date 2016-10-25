@@ -1,13 +1,39 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
 
+import * as influxdbAction from '../../actions/influxdb';
 import {
   VIEW_EDIT_SERVER,
+  VIEW_SERVER_STATUS,
 } from '../../constants/urls';
 
 class Servers extends Component {
   constructor(props) {
     super(props);
+  }
+  confirmToRemove(e, item) {
+    const {
+      confirm,
+    } = this.props;
+    e.preventDefault();
+
+    confirm({
+      content: `<p>Confirm to remove the server's config?(${item.name})</p>`,
+    }, (type) => {
+      if (type === 'confirm') {
+        this.remove(item);
+      }
+    });
+  }
+  remove(item) {
+    const {
+      dispatch,
+    } = this.props;
+    dispatch(influxdbAction.remove(item._id)).then(() => {
+
+    }).catch((err) => {
+      console.error(err);
+    });
   }
   renderServers() {
     const {
@@ -19,7 +45,8 @@ class Servers extends Component {
     }
     const arr = _.map(servers, (server) => {
       const id = server._id;
-      const href = VIEW_EDIT_SERVER.replace(':id', id);
+      const editHref = VIEW_EDIT_SERVER.replace(':id', id);
+      const statusHref = VIEW_SERVER_STATUS.replace(':id', id);
       const updatedAt = moment(server.updatedAt).format('YYYY-MM-DD HH:mm:ss');
       return (
         <tr key={id}>
@@ -30,12 +57,24 @@ class Servers extends Component {
           <td>{server.username || '--'}</td>
           <td>{server.password || '--'}</td>
           <td>{updatedAt}</td>
-          <td>
+          <td className="op">
             <a
-              href={href}
-              onClick={handleLink(href)}
+              href={statusHref}
+              onClick={handleLink(statusHref)}
+            >
+              <i className="fa fa-server" aria-hidden="true"></i>
+            </a>
+            <a
+              href={editHref}
+              onClick={handleLink(editHref)}
             >
               <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
+            </a>
+            <a
+              href="javascript:;"
+              onClick={(e) => this.confirmToRemove(e, server)}
+            >
+              <i className="fa fa-times" aria-hidden="true"></i>
             </a>
           </td>
         </tr>
@@ -63,7 +102,7 @@ class Servers extends Component {
   }
   render() {
     return (
-      <div className="influxdb-servers">
+      <div className="influxdb-servers-wrapper">
         { this.renderServers() }
       </div>
     );
@@ -74,6 +113,7 @@ Servers.propTypes = {
   dispatch: PropTypes.func.isRequired,
   servers: PropTypes.array.isRequired,
   handleLink: PropTypes.func.isRequired,
+  confirm: PropTypes.func.isRequired,
 };
 
 export default Servers;

@@ -11,6 +11,7 @@ import {
   VIEW_ADD_SERVER,
   VIEW_EDIT_SERVER,
   VIEW_SERVERS,
+  VIEW_SERVER_STATUS,
 } from '../constants/urls';
 
 import Login from './login';
@@ -18,6 +19,7 @@ import Register from './register';
 import MainHeader from './main-header';
 import ServerView from './influxdb/server';
 import ServersView from './influxdb/servers';
+import ServerStatusView from './influxdb/status';
 
 import * as navigationAction from '../actions/navigation';
 import * as userAction from '../actions/user';
@@ -32,6 +34,12 @@ class App extends Component {
     });
     this.state = {
       isFetchingUserInfo: true,
+      confirmDialogConfig: {
+        shown: false,
+        content: '',
+        title: '',
+        handler: null,
+      },
     };
     dispatch(userAction.me()).then(() => {
       this.setState({
@@ -45,6 +53,32 @@ class App extends Component {
       console.error(err);
     });
     this.handleLink = this.handleLink.bind(this);
+    this.confirm = this.confirm.bind(this);
+  }
+  confirm(options, handler) {
+    const {
+      confirmDialogConfig,
+    } = this.state;
+    const data = _.extend({}, confirmDialogConfig, options);
+    data.handler = handler;
+    data.shown = true;
+    this.setState({
+      confirmDialogConfig: data,
+    });
+  }
+  closeConfirmDialog(e, type) {
+    e.preventDefault();
+    const {
+      handler,
+    } = this.state.confirmDialogConfig;
+    if (_.isFunction(handler)) {
+      handler(type);
+    }
+    this.setState({
+      confirmDialogConfig: {
+        shown: false,
+      },
+    });
   }
   handleLink(url) {
     const {
@@ -63,6 +97,53 @@ class App extends Component {
       <ServerView
         dispatch={dispatch}
       />
+    );
+  }
+  renderConfirmDialog() {
+    const {
+      shown,
+      content,
+      title,
+    } = this.state.confirmDialogConfig;
+    if (!shown) {
+      return null;
+    }
+    return (
+      <div
+        className="dialog"
+      >
+        <div className="title">
+          <a
+            href="javascript:;"
+            className="close pull-right"
+            onClick={e => this.closeConfirmDialog(e, 'close')}
+          >
+            <i className="fa fa-times" aria-hidden="true" />
+          </a>
+          { title || 'Confirm' }
+        </div>
+        <div className="content">
+          {
+            React.createElement('div', {
+              dangerouslySetInnerHTML: {
+                __html: content,
+              },
+            })
+          }
+        </div>
+        <div
+          className="btns"
+        >
+          <button
+            className="btn btn-primary"
+            onClick={e => this.closeConfirmDialog(e, 'confirm')}
+          >Confirm</button>
+          <button
+            className="btn"
+            onClick={e => this.closeConfirmDialog(e, 'cancel')}
+          >Cancel</button>
+        </div>
+      </div>
     );
   }
   renderEditServer({ params: { id } }) {
@@ -105,9 +186,21 @@ class App extends Component {
     } = this.props;
     return (
       <ServersView
+        confirm={this.confirm}
         dispatch={dispatch}
         servers={influxdb.servers}
         handleLink={this.handleLink}
+      />
+    );
+  }
+  renderServerStatus({ params: { id } }) {
+    const {
+      dispatch,
+    } = this.props;
+    return (
+      <ServerStatusView
+        dispatch={dispatch}
+        id={id}
       />
     );
   }
@@ -129,6 +222,9 @@ class App extends Component {
           handleLink={handleLink}
           dispatch={dispatch}
         />
+        {
+          this.renderConfirmDialog()
+        }
         <Router {...navigation}>
           <Route
             path={VIEW_LOGIN}
@@ -149,6 +245,10 @@ class App extends Component {
           <Route
             path={VIEW_SERVERS}
             component={() => this.renderServers()}
+          />
+          <Route
+            path={VIEW_SERVER_STATUS}
+            component={arg => this.renderServerStatus(arg)}
           />
         </Router>
       </div>

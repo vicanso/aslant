@@ -33,8 +33,14 @@ module.exports = [
   // influxdb
   '[GET] [/api/influxdb/servers] [m.session.isLogined & m.session.read & c.influxdb.list]',
   '[POST] [/api/influxdb/servers] [m.session.isLogined & m.session.read & c.influxdb.add]',
-  '[PUT] [/api/influxdb/servers] [m.validateToken & m.session.isLogined & m.session.read & c.influxdb.update]',
-
+  '[PUT] [/api/influxdb/servers/:id] [m.validateAccessToken & m.session.isLogined & m.session.read & c.influxdb.update]',
+  '[DELETE] [/api/influxdb/servers/:id] [m.session.isLogined & m.session.read & c.influxdb.remove]',
+  '[GET] [/api/influxdb/server/:id/dbs] [c.influxdb.showDatabases]',
+  '[GET] [/api/influxdb/server/:id/:db/rps] [c.influxdb.showRetentionPolicies]',
+  '[GET] [/api/influxdb/server/:id/:db/measurements] [c.influxdb.showMeasurements]',
+  '[GET] [/api/influxdb/server/:id/:db/tag-keys,/api/influxdb/server/:id/:db/:measurement/tag-keys] [c.influxdb.showTagKeys]',
+  '[GET] [/api/influxdb/server/:id/:db/field-keys,/api/influxdb/server/:id/:db/:measurement/field-keys] [c.influxdb.showFieldKeys]',
+  '[GET] [/api/influxdb/server/:id/:db/series,/api/influxdb/server/:id/:db/:measurement/series] [c.influxdb.showSeries]',
   // stats
   '[POST] [/api/stats/ajax] [c.stats.ajax]',
   '[POST] [/api/stats/exception] [c.stats.exception]',

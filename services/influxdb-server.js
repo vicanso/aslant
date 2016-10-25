@@ -1,8 +1,23 @@
 const uuid = require('node-uuid');
 const _ = require('lodash');
+const Influx = require('influxdb-nodejs');
 
 const Models = localRequire('models');
 const errors = localRequire('helpers/errors');
+
+function getInfluxClient(id, db = '_internal') {
+  const InfluxdbServer = Models.get('Influxdb-server');
+  return InfluxdbServer.findById(id).then((doc) => {
+    const config = doc.toJSON();
+    const arr = [];
+    arr.push(config.ssl? 'https://' : 'http://');
+    if (config.username && config.password) {
+      arr.push(`${config.username}:${config.password}@`)
+    }
+    arr.push(`${config.host}:${config.port}/${db}`);
+    return new Influx(arr.join(''));
+  });
+}
 
 exports.add = (data) => {
   const InfluxdbServer = Models.get('Influxdb-server');
@@ -23,7 +38,7 @@ exports.list = (conditon) => {
 
 exports.update = (conditon, data) => {
   data.token = uuid.v4();
-  data.updatedAt = date;
+  data.updatedAt = (new Date()).toISOString();
   const InfluxdbServer = Models.get('Influxdb-server');
   return InfluxdbServer.findOneAndUpdate(conditon, data, {
     new: true,
@@ -34,3 +49,25 @@ exports.update = (conditon, data) => {
     return doc.toJSON();
   });
 };
+
+exports.remove = (conditon) => {
+  const InfluxdbServer = Models.get('Influxdb-server');
+  return InfluxdbServer.findOneAndRemove(conditon).then((doc) => {
+    if (!doc) {
+      throw errors.get(5);
+    }
+    return null;
+  });
+};
+
+exports.showDatabases = id => getInfluxClient(id).then(client => client.showDatabases());
+
+exports.showRetentionPolicies = (id, db) => getInfluxClient(id, db).then(client => client.showRetentionPolicies());
+
+exports.showMeasurements = (id, db) => getInfluxClient(id, db).then(client => client.showMeasurements());
+
+exports.showTagKeys = (id, db, measurement) => getInfluxClient(id, db).then(client => client.showTagKeys(measurement));
+
+exports.showFieldKeys = (id, db, measurement) => getInfluxClient(id, db).then(client => client.showFieldKeys(measurement));
+
+exports.showSeries = (id, db, measurement) => getInfluxClient(id, db).then(client => client.showSeries(measurement));

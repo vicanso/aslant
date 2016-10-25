@@ -3,6 +3,9 @@ import React, { PropTypes } from 'react';
 import FormView from '../../components/form';
 import * as influxdbAction from '../../actions/influxdb';
 import * as navigationAction from '../../actions/navigation';
+import {
+  VIEW_SERVERS,
+} from '../../constants/urls';
 
 class Server extends FormView {
   constructor(props) {
@@ -87,12 +90,12 @@ class Server extends FormView {
     }
     let fn;
     if (server) {
-      fn = influxdbAction.update(data, server.token);
+      fn = influxdbAction.update(server._id, data, server.token);
     } else {
       fn = influxdbAction.add(data);
     }
     dispatch(fn).then(() => {
-      dispatch(navigationAction.back());
+      dispatch(navigationAction.to(VIEW_SERVERS));
     }).catch((err) => {
       this.setState({
         status: '',

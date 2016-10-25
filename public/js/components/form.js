@@ -98,6 +98,7 @@ class Form extends Component {
             autoCorrect="off"
             autoFocus={field.autoFocus || false}
             defaultValue={field.value}
+            defaultChecked={field.value}
             type={field.type || 'text'}
             tabIndex={index + 1}
             ref={(c) => {
