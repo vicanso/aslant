@@ -60,7 +60,12 @@ class Status extends Component {
     influxdbService.showTagKeys(id, db)
       .then(this.createSuccessHandler('tagKeys'))
       .catch(this.createErrorHandler('tagKeys'));
-
+    influxdbService.showFieldKeys(id, db)
+      .then(this.createSuccessHandler('fieldKeys'))
+      .catch(this.createErrorHandler('fieldKeys'));
+    influxdbService.showSeries(id, db)
+      .then(this.createSuccessHandler('series'))
+      .catch(this.createErrorHandler('series'));
   }
   renderDatabase() {
     const dbConfig = this.state.db;
@@ -113,11 +118,80 @@ class Status extends Component {
       </div>
     );
   }
+  renderFieldKeys() {
+    return this.renderKeys('fieldKeys');
+  }
+  renderKeys(type) {
+    if (!_.get(this.state, 'db.current')) {
+      return null;
+    }
+    const config = this.state[type];
+    if (!config) {
+      return null;
+    }
+    const {
+      status,
+      error,
+      items,
+    } = config;
+    const titleDict = {
+      tagKeys: 'Tag Keys',
+      fieldKeys: 'Field Keys',
+    };
+    const arr = _.map(items, (item) => {
+      const name = item.name;
+      const values = _.map(item.values, (value) => {
+        let type = null;
+        if (value.type) {
+          type = <td>{value.type}</td>;
+        }
+        return (
+          <tr
+            key={value.key}
+          >
+            <td>{value.key}</td>
+            { type }
+          </tr>
+        );
+      });
+      return (
+        <div
+          key={name}
+          className="pure-u-1-5 keys-wrapper"
+        >
+          <div className="keys">
+            <h4>{name}</h4>
+            <table>
+              <tbody>
+                { values }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+    });
+    return (
+      <div
+        className="server-status"
+      >
+        <h3>{titleDict[type]}</h3>
+        {
+          this.renderStatus(status, error)
+        }
+        <div className="pure-g">
+          { arr }
+        </div>
+      </div>
+    );
+  }
   renderMeasurements() {
     if (!_.get(this.state, 'db.current')) {
       return null;
     }
     const measurementsConfig = this.state.measurements;
+    if (!measurementsConfig) {
+      return null;
+    }
     const {
       status,
       error,
@@ -151,6 +225,9 @@ class Status extends Component {
       return null;
     }
     const rpsConfig = this.state.rps;
+    if (!rpsConfig) {
+      return null;
+    }
     const {
       status,
       error,
@@ -200,6 +277,62 @@ class Status extends Component {
       </div>
     );
   }
+  renderSeries() {
+    if (!_.get(this.state, 'db.current')) {
+      return null;
+    }
+    const seriesConfig = this.state.series;
+    if (!seriesConfig) {
+      return null;
+    }
+    const {
+      status,
+      error,
+      items,
+    } = seriesConfig;
+    const renderTable = (items) => {
+      if (!items) {
+        return null;
+      }
+      const arr = _.map(items, (item, index) => {
+        const tmpArr = item.split(',');
+        const measurement = tmpArr.shift();
+        return (
+          <tr
+            key={index}
+          >
+            <td>{measurement}</td>
+            <td>{tmpArr.join()}</td>
+          </tr>
+        );
+      });
+
+      return (
+        <table className="pure-table">
+          <thead><tr>
+            <th>measurement</th>
+            <th>series</th>
+          </tr></thead>
+          <tbody>
+            { arr }
+          </tbody>
+        </table>
+      );
+    };
+    return (
+      <div
+        className="server-status"
+      >
+        <h3>Series</h3>
+        {
+          this.renderStatus(status, error)
+        }
+        {
+          renderTable(items)
+        }
+      </div>
+    );
+  }
   renderStatus(status, error) {
     if (status === 'fetching') {
       return <p className="tac">Loading...</p>;
@@ -208,6 +341,9 @@ class Status extends Component {
       return <p className="flash flash-error">{error}</p>;
     }
     return null;
+  }
+  renderTagKeys() {
+    return this.renderKeys('tagKeys');
   }
   render() {
     const {
@@ -226,6 +362,15 @@ class Status extends Component {
         }
         {
           this.renderMeasurements()
+        }
+        {
+          this.renderTagKeys()
+        }
+        {
+          this.renderFieldKeys()
+        }
+        {
+          this.renderSeries()
         }
       </div>
     );

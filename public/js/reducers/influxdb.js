@@ -5,6 +5,7 @@ import {
   INFLUXDB_ADD_SERVER,
   INFLUXDB_UPDATE_SERVER,
   INFLUXDB_REMOVE_SERVER,
+  INFLUXDB_RESET,
 } from '../constants/action-types';
 
 const defaultStates = {
@@ -43,6 +44,11 @@ export default function influxdb(state = defaultStates, action) {
       const servers = _.filter(state.servers, item => item._id !== id);
       return Object.assign({}, state, {
         servers,
+      });
+    }
+    case INFLUXDB_RESET: {
+      return Object.assign({}, state, {
+        servers: [],
       });
     }
     default:

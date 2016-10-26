@@ -3,6 +3,7 @@ import {
   INFLUXDB_ADD_SERVER,
   INFLUXDB_UPDATE_SERVER,
   INFLUXDB_REMOVE_SERVER,
+  INFLUXDB_RESET,
 } from '../constants/action-types';
 import * as influxdb from '../services/influxdb';
 
@@ -32,4 +33,10 @@ export function remove(id) {
     type: INFLUXDB_REMOVE_SERVER,
     id,
   }));
+}
+
+export function reset() {
+  return {
+    type: INFLUXDB_RESET,
+  };
 }

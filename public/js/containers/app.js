@@ -45,7 +45,7 @@ class App extends Component {
       this.setState({
         isFetchingUserInfo: false,
       });
-      dispatch(influxdbAction.list());
+      // dispatch(influxdbAction.list());
     }).catch((err) => {
       this.setState({
         isFetchingUserInfo: false,
@@ -54,6 +54,20 @@ class App extends Component {
     });
     this.handleLink = this.handleLink.bind(this);
     this.confirm = this.confirm.bind(this);
+  }
+  componentWillReceiveProps(nextProps) {
+    const {
+      dispatch,
+    } = this.props;
+    const currentAccount = _.get(this.props, 'user.account');
+    const nextAccount = _.get(nextProps, 'user.account');
+    if (currentAccount !== nextAccount) {
+      if (nextAccount) {
+        dispatch(influxdbAction.list());
+      } else {
+        dispatch(influxdbAction.reset());
+      }
+    }
   }
   confirm(options, handler) {
     const {
