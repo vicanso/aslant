@@ -8,6 +8,9 @@ class Dropdown extends Component {
       items,
       onSelect,
     } = this.props;
+    if (!items || !items.length) {
+      return null;
+    }
     const fn = onSelect || _.noop;
     return _.map(items, (item, index) => {
       const type = item.type || 'item';
@@ -40,7 +43,7 @@ class Dropdown extends Component {
               href={item.href}
               title={item.title}
               onClick={e => fn(e, item)}
-            >{item.name}</a>
+            >{item.name || item}</a>
           );
       }
     });

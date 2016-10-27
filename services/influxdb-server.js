@@ -71,3 +71,25 @@ exports.showTagKeys = (id, db, measurement) => getInfluxClient(id, db).then(clie
 exports.showFieldKeys = (id, db, measurement) => getInfluxClient(id, db).then(client => client.showFieldKeys(measurement));
 
 exports.showSeries = (id, db, measurement) => getInfluxClient(id, db).then(client => client.showSeries(measurement));
+
+
+exports.select = (id, db, measurement, query) => {
+  return getInfluxClient(id, db).then((client) => {
+    const reader = client.query(measurement);
+    _.forEach(query, (v, k) => {
+      switch (k) {
+        case 'fields':
+          reader.addField(...v);
+          break;
+        case 'conditon':
+          reader.conditon(v);
+          break;
+        default:
+          reader[k] = v;
+          break;
+      }
+    });
+    return reader;
+  });
+};
+

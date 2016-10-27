@@ -119,3 +119,26 @@ exports.showSeries = (ctx) => {
     ctx.body = data;
   });
 };
+
+exports.select = (ctx) => {
+  const {
+    id,
+    db,
+    measurement,
+  } = ctx.params;
+  const query = Joi.validateThrow(ctx.query, {
+    fields: Joi.array().items(Joi.string()),
+    start: Joi.string(),
+    end: Joi.string(),
+    limit: Joi.number().integer(),
+    slimit: Joi.number().integer(),
+    condition: Joi.object(),
+    fill: Joi.any(),
+    order: Joi.string().valid('asc', 'desc'),
+  });
+  return InfluxdbServer.select(id, db, measurement, query).then((data) => {
+    ctx.set('Cache-Control', 'public, max-age=10');
+    /* eslint no-param-reassign:0 */
+    ctx.body = data;
+  });
+};

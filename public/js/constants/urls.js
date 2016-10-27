@@ -19,6 +19,7 @@ export const INFLUXDB_MEASUREMENTS = '/api/influxdb/server/:id/:db/measurements'
 export const INFLUXDB_TAG_KEYS = '/api/influxdb/server/:id/:db/tag-keys';
 export const INFLUXDB_FIELD_KEYS = '/api/influxdb/server/:id/:db/field-keys';
 export const INFLUXDB_SERIES = '/api/influxdb/server/:id/:db/series';
+export const INFLUXDB_SELECT = '/api/influxdb/select/:id/:db/:measurement';
 
 export const VIEW_HOME = `${appUrlPrfix}/`;
 export const VIEW_LOGIN = `${appUrlPrfix}/login`;
@@ -30,3 +31,5 @@ export const VIEW_ADD_SERVER = `${appUrlPrfix}/influxdb/servers/add`;
 export const VIEW_EDIT_SERVER = `${appUrlPrfix}/influxdb/servers/:id`;
 export const VIEW_SERVERS = `${appUrlPrfix}/influxdb/servers`;
 export const VIEW_SERVER_STATUS = `${appUrlPrfix}/influxdb/servers/:id/status`;
+
+export const VIEW_ADD_INFLUX = `${appUrlPrfix}/influxdb/influx/add`;

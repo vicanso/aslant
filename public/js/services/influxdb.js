@@ -1,3 +1,5 @@
+import * as _ from 'lodash';
+
 import * as http from '../helpers/http';
 import {
   INFLUXDB_SERVER,
@@ -7,7 +9,33 @@ import {
   INFLUXDB_TAG_KEYS,
   INFLUXDB_FIELD_KEYS,
   INFLUXDB_SERIES,
+  INFLUXDB_SELECT,
 } from '../constants/urls';
+
+function toJSON(data) {
+  const result = {};
+  if (!data || !data.results) {
+    return result;
+  }
+  _.forEach(data.results, (tmp) => {
+    _.forEach(tmp.series, (item) => {
+      const columns = item.columns;
+      const arr = [];
+      _.forEach(item.values, (valueList) => {
+        const point = {};
+        _.forEach(valueList, (v, i) => {
+          point[columns[i]] = v;
+        });
+        arr.push(point);
+      });
+      if (!result[item.name]) {
+        result[item.name] = [];
+      }
+      result[item.name] = result[item.name].concat(arr);
+    });
+  });
+  return result;
+}
 
 export function list() {
   return http.get(INFLUXDB_SERVER)
@@ -60,4 +88,11 @@ export function showFieldKeys(id, db) {
 export function showSeries(id, db) {
   const url = INFLUXDB_SERIES.replace(':id', id).replace(':db', db);
   return http.get(url).then(res => res.body);
+}
+
+export function select(id, db, measurement, query) {
+  const url = INFLUXDB_SELECT.replace(':id', id)
+    .replace(':db', db)
+    .replace(':measurement', measurement);
+  return http.get(url, query).then(res => toJSON(res.body));
 }

@@ -12,6 +12,7 @@ import {
   VIEW_EDIT_SERVER,
   VIEW_SERVERS,
   VIEW_SERVER_STATUS,
+  VIEW_ADD_INFLUX,
 } from '../constants/urls';
 
 import Login from './login';
@@ -20,6 +21,7 @@ import MainHeader from './main-header';
 import ServerView from './influxdb/server';
 import ServersView from './influxdb/servers';
 import ServerStatusView from './influxdb/status';
+import InfluxView from './influxdb/influx';
 
 import * as navigationAction from '../actions/navigation';
 import * as userAction from '../actions/user';
@@ -102,6 +104,18 @@ class App extends Component {
       e.preventDefault();
       dispatch(navigationAction.to(url));
     };
+  }
+  renderAddInflux() {
+    const {
+      dispatch,
+      influxdb,
+    } = this.props;
+    return (
+      <InfluxView
+        dispatch={dispatch}
+        servers={influxdb.servers}
+      />
+    );
   }
   renderAddServer() {
     const {
@@ -263,6 +277,10 @@ class App extends Component {
           <Route
             path={VIEW_SERVER_STATUS}
             component={arg => this.renderServerStatus(arg)}
+          />
+          <Route
+            path={VIEW_ADD_INFLUX}
+            component={() => this.renderAddInflux()}
           />
         </Router>
       </div>

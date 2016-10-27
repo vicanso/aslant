@@ -114,7 +114,36 @@
       color #fff
       text-decoration none
       background-color $COLOR_BLUE
-
+.dropdown-selector
+  border 1px solid rgba(0, 0, 0, 0.15)
+  // border-bottom none
+  border-radius 3px
+  // background-color #f8f9f7
+  background-color #f6f7f9
+  background-image linear-gradient(#fff, #f6f7f9)
+  position relative
+  width 180px
+  height 30px
+  line-height @height
+  cursor pointer
+  &.active
+    background-color #fff
+    background-image none
+  .select-value
+    margin 0 20px 0 5px
+    overflow hidden
+    text-overflow ellipsis
+    white-space nowrap
+  .fa-sort-desc
+    position absolute
+    right 8px
+    top 3px
+    font-size 16px
+    color #1e2835
+  .dropdown
+    left -2px
+    right -2px
+    line-height 1.4em
 .dialog
   position fixed
   $width = 400px
@@ -124,7 +153,7 @@
   margin-left -($width / 2)
   margin-top -150px
   background-color #fff
-  border 1px solid $COLOR_GRAY
+  border 1px solid $COLOR_DARK
   border-radius 3px
   .title
     height 30px

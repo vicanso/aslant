@@ -161,7 +161,7 @@ class Status extends Component {
         >
           <div className="keys">
             <h4>{name}</h4>
-            <table>
+            <table className="pure-table">
               <tbody>
                 { values }
               </tbody>

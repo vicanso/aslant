@@ -1,13 +1,14 @@
 import React, { PropTypes, Component } from 'react';
+import * as _ from 'lodash';
 
 import {
   VIEW_HOME,
   VIEW_LOGIN,
   VIEW_REGISTER,
   VIEW_SETTING,
-  VIEW_ACCOUNT,
   VIEW_ADD_SERVER,
   VIEW_SERVERS,
+  VIEW_ADD_INFLUX,
 } from '../constants/urls';
 import * as userAction from '../actions/user';
 import * as navigationAction from '../actions/navigation';
@@ -63,6 +64,11 @@ class MainHeader extends Component {
         type: 'divider',
       },
       {
+        name: 'Add Influx',
+        action: 'redirect',
+        href: VIEW_ADD_INFLUX,
+      },
+      {
         name: 'Add Server',
         action: 'redirect',
         href: VIEW_ADD_SERVER,
@@ -99,21 +105,20 @@ class MainHeader extends Component {
       } else if (item.action === 'logout') {
         dispatch(userAction.logout());
       }
-      this.setState({
-        showUserNav: false,
-      });
     };
     return (
       <ul>
         <li className="account">
           <a
-            onClick={(e) => {
-              e.preventDefault();
+            onFocus={() => this.setState({
+              showUserNav: true,
+            })}
+            onBlur={() => _.delay(() => {
               this.setState({
-                showUserNav: !showUserNav,
+                showUserNav: false,
               });
-            }}
-            href={VIEW_ACCOUNT}
+            }, 150)}
+            href="javascript:;"
           >
             {user.account}
           </a>
