@@ -75,8 +75,13 @@ export function showMeasurements(id, db) {
   return http.get(url).then(res => res.body);
 }
 
-export function showTagKeys(id, db) {
-  const url = INFLUXDB_TAG_KEYS.replace(':id', id).replace(':db', db);
+export function showTagKeys(id, db, measurement) {
+  let url = INFLUXDB_TAG_KEYS.replace(':id', id).replace(':db', db);
+  if (!measurement) {
+    url = url.replace('/:measurement', '');
+  } else {
+    url = url.replace(':measurement', measurement);
+  }
   return http.get(url).then(res => res.body);
 }
 
@@ -85,8 +90,13 @@ export function showFieldKeys(id, db) {
   return http.get(url).then(res => res.body);
 }
 
-export function showSeries(id, db) {
-  const url = INFLUXDB_SERIES.replace(':id', id).replace(':db', db);
+export function showSeries(id, db, measurement) {
+  let url = INFLUXDB_SERIES.replace(':id', id).replace(':db', db);
+  if (!measurement) {
+    url = url.replace('/:measurement', '');
+  } else {
+    url = url.replace(':measurement', measurement);
+  }
   return http.get(url).then(res => res.body);
 }
 

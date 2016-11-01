@@ -110,10 +110,11 @@ class App extends Component {
       dispatch,
       influxdb,
     } = this.props;
+    const servers = _.sortBy(influxdb.servers, item => item.name);
     return (
       <InfluxView
         dispatch={dispatch}
-        servers={influxdb.servers}
+        servers={servers}
       />
     );
   }

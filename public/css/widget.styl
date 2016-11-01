@@ -115,15 +115,14 @@
       text-decoration none
       background-color $COLOR_BLUE
 .dropdown-selector
+  $dropdownSelectorHeight = 30px
   border 1px solid rgba(0, 0, 0, 0.15)
-  // border-bottom none
   border-radius 3px
-  // background-color #f8f9f7
   background-color #f6f7f9
   background-image linear-gradient(#fff, #f6f7f9)
   position relative
   width 180px
-  height 30px
+  height $dropdownSelectorHeight
   line-height @height
   cursor pointer
   &.active
@@ -134,6 +133,10 @@
     overflow hidden
     text-overflow ellipsis
     white-space nowrap
+    height $dropdownSelectorHeight
+    color #666
+    display block
+    text-decoration none
   .fa-sort-desc
     position absolute
     right 8px

@@ -9,8 +9,15 @@ class DropdownSelector extends Component {
     super(props);
     this.state = {
       active: false,
-      selected: null,
+      selected: props.selected,
     };
+  }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.items !== this.props.items) {
+      this.setState({
+        selected: null,
+      });
+    }
   }
   render() {
     const {
@@ -29,19 +36,25 @@ class DropdownSelector extends Component {
     });
     return (
       <div className={classnames(selectorCls)}>
-        <div
+        <a
+          href="javascript:;"
           className="select-value"
           /* eslint jsx-a11y/no-static-element-interactions:0 */
-          onClick={() => this.setState({
-            active: !active,
+          onFocus={() => this.setState({
+            active: true,
           })}
+          onBlur={() => _.delay(() => {
+            this.setState({
+              active: false,
+            });
+          }, 150)}
         >
           <i className="fa fa-sort-desc" aria-hidden="true" />
           { !active && !selected && placeholder }
           {
             selected && (selected.name || selected)
           }
-        </div>
+        </a>
         {
           active &&
           <Dropdown
@@ -67,6 +80,7 @@ DropdownSelector.propTypes = {
   cls: PropTypes.object,
   onSelect: PropTypes.func,
   placeholder: PropTypes.string,
+  selected: PropTypes.any,
 };
 
 export default DropdownSelector;

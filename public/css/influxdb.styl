@@ -60,5 +60,21 @@
           margin-left 3px
 .add-influx-wrapper
   margin 20px
-  .dropdown-selector
-    margin-bottom 15px
+  .config-wrapper
+    $configWrapperWidth = 200px
+    width $configWrapperWidth
+    .dropdown-selector
+      margin-bottom 15px
+      width 100%
+    .co-dropdown-selector
+      position relative
+      .dropdown-selector
+        width 100%
+      .equal
+        position absolute
+        left 50%
+        letter-spacing normal
+        margin-left -3px
+        margin-top 4px
+      
+    
