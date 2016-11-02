@@ -19,6 +19,9 @@ class DropdownSelector extends Component {
       });
     }
   }
+  componentWillUnmount() {
+    this.isUnmounted = true;
+  }
   render() {
     const {
       items,
@@ -44,6 +47,9 @@ class DropdownSelector extends Component {
             active: true,
           })}
           onBlur={() => _.delay(() => {
+            if (this.isUnmounted) {
+              return;
+            }
             this.setState({
               active: false,
             });

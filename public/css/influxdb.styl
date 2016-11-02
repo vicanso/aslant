@@ -68,8 +68,32 @@
       width 100%
     .co-dropdown-selector
       position relative
+      &:hover
+        .remove-condition
+          display block
       .dropdown-selector
         width 100%
+      .remove-condition
+        position absolute
+        left 100%
+        padding-left 5px
+        margin-left -1px
+        display none
+        a
+          display block
+          border 1px solid $COLOR_GRAY
+          height 25px
+          width 25px
+          letter-spacing normal
+          background-color #fff
+          border-radius 3px
+          text-align center
+          line-height 24px
+          color #999
+          font-size 12px
+          margin-top 3px
+          &:hover
+            color #666
       .equal
         position absolute
         left 50%

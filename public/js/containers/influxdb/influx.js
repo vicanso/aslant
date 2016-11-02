@@ -102,24 +102,45 @@ class Influx extends Component {
         });
       };
     };
-
-
+    let coSelectorCount = conditions.length;
+    const removeCondition = (index) => {
+      if (coSelectorCount <= 1) {
+        return;
+      }
+      const arr = conditions.slice(0);
+      arr.splice(index, 1);
+      this.setState({
+        conditions: arr,
+      });
+    };
     const createCoDropdownSelector = (index) => {
       const condition = conditions[index];
       const currentTag = condition && condition.tag;
+      const currentValue = condition && condition.value;
       const values = currentTag ? tagValueDict[currentTag] : [];
       const fn1 = getSelectHandler('tag', index);
       const fn2 = getSelectHandler('value', index);
       return (
         <div
           className="co-dropdown-selector pure-g"
-          key={index}
+          key={index + currentTag + currentValue}
         >
+          <div 
+            className="remove-condition"
+          >
+            <a
+              href="javascript:;"
+              onClick={e => removeCondition(index)}
+            >
+              <i className="fa fa-times" aria-hidden="true"></i>
+            </a>
+          </div>
           <span className="equal">=</span>
           <div className="pure-u-1-2"><div className="mright10">
             <DropdownSelector
               placeholder={'Tag key'}
               items={tags || []}
+              selected={currentTag}
               onSelect={(e, item) => fn1(item)}
             />
           </div></div>
@@ -127,6 +148,7 @@ class Influx extends Component {
             <DropdownSelector
               placeholder={'Tag Value'}
               items={values || []}
+              selected={currentValue}
               onSelect={(e, item) => fn2(item)}
             />
           </div></div>
@@ -135,6 +157,7 @@ class Influx extends Component {
     };
     const arr = _.map(conditions, (condition, index) => createCoDropdownSelector(index));
     if (!conditions.length || (_.last(conditions).tag && _.last(conditions).value)) {
+      coSelectorCount += 1;
       arr.push(createCoDropdownSelector(conditions.length));
     }
     return arr;
@@ -173,23 +196,6 @@ class Influx extends Component {
             onSelect={(e, item) => this.onSelectMeasurement(item)}
           />
           { this.renderTagSelectorList() }
-          <div className="co-dropdown-selector pure-g">
-            <span className="equal">=</span>
-            <div className="pure-u-1-2"><div className="mright10">
-              <DropdownSelector
-                placeholder={'Tag key'}
-                items={tags || []}
-                onSelect={(e, item) => this.onSelectTagKey(item)}
-              />
-            </div></div>
-            <div className="pure-u-1-2"><div className="mleft10">
-              <DropdownSelector
-                placeholder={'Tag Value'}
-                items={tagValueDict[tag] || []}
-                onSelect={(e, item) => this.onSelectTagValue(item)}
-              />
-            </div></div>
-          </div>
         </div>
       </div>
     )
