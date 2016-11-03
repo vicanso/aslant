@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+import * as _ from 'lodash';
 
 import FormView from '../../components/form';
 import * as influxdbAction from '../../actions/influxdb';
@@ -90,6 +91,7 @@ class Server extends FormView {
     }
     let fn;
     if (server) {
+      /* eslint no-underscore-dangle:0 */
       fn = influxdbAction.update(server._id, data, server.token);
     } else {
       fn = influxdbAction.add(data);

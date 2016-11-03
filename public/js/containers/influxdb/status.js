@@ -4,6 +4,16 @@ import * as _ from 'lodash';
 
 import * as influxdbService from '../../services/influxdb';
 
+function renderStatus(status, error) {
+  if (status === 'fetching') {
+    return <p className="tac">Loading...</p>;
+  }
+  if (status === 'error') {
+    return <p className="flash flash-error">{error}</p>;
+  }
+  return null;
+}
+
 class Status extends Component {
   constructor(props) {
     super(props);
@@ -12,32 +22,12 @@ class Status extends Component {
     } = props;
     this.state = {
       db: {
-        status: 'fetching'
+        status: 'fetching',
       },
     };
     influxdbService.showDatabases(id)
       .then(this.createSuccessHandler('db'))
       .catch(this.createErrorHandler('db'));
-  }
-  createErrorHandler(key) {
-    return (err) => {
-      const data = {};
-      data[key] = {
-        status: 'error',
-        error: _.get(err, 'response.body.message', err.message),
-      };
-      this.setState(data);
-    };
-  }
-  createSuccessHandler(key) {
-    return (items) => {
-      const data = {};
-      data[key] = {
-        status: '',
-        items,
-      };
-      this.setState(data);
-    };
   }
   getStatus(db) {
     const {
@@ -66,6 +56,26 @@ class Status extends Component {
     influxdbService.showSeries(id, db)
       .then(this.createSuccessHandler('series'))
       .catch(this.createErrorHandler('series'));
+  }
+  createErrorHandler(key) {
+    return (err) => {
+      const data = {};
+      data[key] = {
+        status: 'error',
+        error: _.get(err, 'response.body.message', err.message),
+      };
+      this.setState(data);
+    };
+  }
+  createSuccessHandler(key) {
+    return (items) => {
+      const data = {};
+      data[key] = {
+        status: '',
+        items,
+      };
+      this.setState(data);
+    };
   }
   renderDatabase() {
     const dbConfig = this.state.db;
@@ -108,7 +118,7 @@ class Status extends Component {
       >
         <h3>Databases</h3>
         {
-          this.renderStatus(status, error)
+          renderStatus(status, error)
         }
         <ul
           className="dbs"
@@ -141,16 +151,16 @@ class Status extends Component {
     const arr = _.map(items, (item) => {
       const name = item.name;
       const values = _.map(item.values, (value) => {
-        let type = null;
+        let typeDom = null;
         if (value.type) {
-          type = <td>{value.type}</td>;
+          typeDom = <td>{value.type}</td>;
         }
         return (
           <tr
             key={value.key}
           >
             <td>{value.key}</td>
-            { type }
+            { typeDom }
           </tr>
         );
       });
@@ -176,7 +186,7 @@ class Status extends Component {
       >
         <h3>{titleDict[type]}</h3>
         {
-          this.renderStatus(status, error)
+          renderStatus(status, error)
         }
         <div className="pure-g">
           { arr }
@@ -210,7 +220,7 @@ class Status extends Component {
       >
         <h3>Measurements</h3>
         {
-          this.renderStatus(status, error)
+          renderStatus(status, error)
         }
         <ul
           className="measurements"
@@ -233,23 +243,21 @@ class Status extends Component {
       error,
       items,
     } = rpsConfig;
-    const renderTable = (items) => {
-      if (!items) {
+    const renderTable = (tableItems) => {
+      if (!tableItems) {
         return null;
       }
-      const arr = _.map(items, (item, index) => {
-        return (
-          <tr
-            key={index}
-          >
-            <td>{item.name}</td>
-            <td>{item.duration}</td>
-            <td>{item.shardGroupDuration}</td>
-            <td>{item.replicaN}</td>
-            <td>{`${item.default}`}</td>
-          </tr>
-        );
-      });
+      const arr = _.map(tableItems, (item, index) => (
+        <tr
+          key={index}
+        >
+          <td>{item.name}</td>
+          <td>{item.duration}</td>
+          <td>{item.shardGroupDuration}</td>
+          <td>{item.replicaN}</td>
+          <td>{`${item.default}`}</td>
+        </tr>
+      ));
       return (
         <table className="pure-table">
           <thead><tr>
@@ -271,7 +279,7 @@ class Status extends Component {
       >
         <h3>Retention Policy</h3>
         {
-          this.renderStatus(status, error)
+          renderStatus(status, error)
         }
         { renderTable(items) }
       </div>
@@ -290,11 +298,11 @@ class Status extends Component {
       error,
       items,
     } = seriesConfig;
-    const renderTable = (items) => {
-      if (!items) {
+    const renderTable = (tableItems) => {
+      if (!tableItems) {
         return null;
       }
-      const arr = _.map(items, (item, index) => {
+      const arr = _.map(tableItems, (item, index) => {
         const tmpArr = item.split(',');
         const measurement = tmpArr.shift();
         return (
@@ -325,7 +333,7 @@ class Status extends Component {
       >
         <h3>Series</h3>
         {
-          this.renderStatus(status, error)
+          renderStatus(status, error)
         }
         {
           renderTable(items)
@@ -333,23 +341,10 @@ class Status extends Component {
       </div>
     );
   }
-  renderStatus(status, error) {
-    if (status === 'fetching') {
-      return <p className="tac">Loading...</p>;
-    }
-    if (status === 'error') {
-      return <p className="flash flash-error">{error}</p>;
-    }
-    return null;
-  }
   renderTagKeys() {
     return this.renderKeys('tagKeys');
   }
   render() {
-    const {
-      status,
-      error,
-    } = this.state;
     return (
       <div
         className="server-status-wrapper"
@@ -378,7 +373,7 @@ class Status extends Component {
 }
 
 Status.propTypes = {
-  dispatch: PropTypes.func.isRequired,
+  id: PropTypes.string.isRequired,
 };
 
 export default Status;

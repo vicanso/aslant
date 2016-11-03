@@ -85,8 +85,13 @@ export function showTagKeys(id, db, measurement) {
   return http.get(url).then(res => res.body);
 }
 
-export function showFieldKeys(id, db) {
-  const url = INFLUXDB_FIELD_KEYS.replace(':id', id).replace(':db', db);
+export function showFieldKeys(id, db, measurement) {
+  let url = INFLUXDB_FIELD_KEYS.replace(':id', id).replace(':db', db);
+  if (!measurement) {
+    url = url.replace('/:measurement', '');
+  } else {
+    url = url.replace(':measurement', measurement);
+  }
   return http.get(url).then(res => res.body);
 }
 

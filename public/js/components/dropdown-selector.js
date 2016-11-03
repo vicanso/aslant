@@ -9,7 +9,7 @@ class DropdownSelector extends Component {
     super(props);
     this.state = {
       active: false,
-      selected: props.selected,
+      selected: null,
     };
   }
   componentWillReceiveProps(nextProps) {
@@ -31,8 +31,8 @@ class DropdownSelector extends Component {
     } = this.props;
     const {
       active,
-      selected,
     } = this.state;
+    const selected = this.state.selected || this.props.selected;
     const selectorCls = _.extend({}, cls, {
       'dropdown-selector': true,
       active,

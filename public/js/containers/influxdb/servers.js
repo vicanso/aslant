@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
+import * as _ from 'lodash';
 
 import * as influxdbAction from '../../actions/influxdb';
 import {
@@ -8,9 +9,6 @@ import {
 } from '../../constants/urls';
 
 class Servers extends Component {
-  constructor(props) {
-    super(props);
-  }
   confirmToRemove(e, item) {
     const {
       confirm,
@@ -29,6 +27,7 @@ class Servers extends Component {
     const {
       dispatch,
     } = this.props;
+    /* eslint no-underscore-dangle:0 */
     dispatch(influxdbAction.remove(item._id)).then(() => {
 
     }).catch((err) => {
@@ -44,6 +43,7 @@ class Servers extends Component {
       return null;
     }
     const arr = _.map(servers, (server) => {
+      /* eslint no-underscore-dangle:0 */
       const id = server._id;
       const editHref = VIEW_EDIT_SERVER.replace(':id', id);
       const statusHref = VIEW_SERVER_STATUS.replace(':id', id);
@@ -62,19 +62,19 @@ class Servers extends Component {
               href={statusHref}
               onClick={handleLink(statusHref)}
             >
-              <i className="fa fa-server" aria-hidden="true"></i>
+              <i className="fa fa-server" aria-hidden="true" />
             </a>
             <a
               href={editHref}
               onClick={handleLink(editHref)}
             >
-              <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
+              <i className="fa fa-pencil-square-o" aria-hidden="true" />
             </a>
             <a
               href="javascript:;"
-              onClick={(e) => this.confirmToRemove(e, server)}
+              onClick={e => this.confirmToRemove(e, server)}
             >
-              <i className="fa fa-times" aria-hidden="true"></i>
+              <i className="fa fa-times" aria-hidden="true" />
             </a>
           </td>
         </tr>

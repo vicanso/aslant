@@ -17,13 +17,13 @@ module.exports = (port) => {
   app.use(localRequire('middlewares/entry')(config.appUrlPrefix, config.app));
   // health check
   app.use(localRequire('middlewares/ping')('/ping'));
-
   // http log
   /* istanbul ignore if */
   if (config.env === 'development') {
     app.use(koaLog('dev'));
   } else {
     /* istanbul ignore next */
+    koaLog.morgan.token('server', () => config.name);
     koaLog.morgan.token('request-id', ctx => ctx.get('X-Request-Id') || 'unknown');
     koaLog.morgan.token('token', ctx => ctx.get('X-Token') || 'unknown');
     app.use(koaLog(config.httpLogFormat));

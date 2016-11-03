@@ -17,7 +17,7 @@ export const INFLUXDB_DATABASES = '/api/influxdb/server/:id/dbs';
 export const INFLUXDB_RPS = '/api/influxdb/server/:id/:db/rps';
 export const INFLUXDB_MEASUREMENTS = '/api/influxdb/server/:id/:db/measurements';
 export const INFLUXDB_TAG_KEYS = '/api/influxdb/server/:id/:db/:measurement/tag-keys';
-export const INFLUXDB_FIELD_KEYS = '/api/influxdb/server/:id/:db/field-keys';
+export const INFLUXDB_FIELD_KEYS = '/api/influxdb/server/:id/:db/:measurement/field-keys';
 export const INFLUXDB_SERIES = '/api/influxdb/server/:id/:db/:measurement/series';
 export const INFLUXDB_SELECT = '/api/influxdb/select/:id/:db/:measurement';
 

@@ -1,8 +1,12 @@
+@import './common'
+
 .main-header
-  padding 10px 20px
+  $paddingTop = 10px
+  padding $paddingTop 20px
   background-color #fff
   border-bottom 1px solid #e5e5e5
-  line-height 30px
+  height $MAIN_HEADER_HEIGHT
+  line-height $MAIN_HEADER_HEIGHT - 2 * $paddingTop
   .user-infos
     .fa
       width 14px

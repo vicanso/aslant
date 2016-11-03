@@ -7,6 +7,7 @@ module.exports = {
       'classnames',
       'lodash',
       'debug',
+      'influx-ql',
       'moment',
       'node-uuid',
       'react',

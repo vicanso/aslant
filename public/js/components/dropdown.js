@@ -9,7 +9,7 @@ class Dropdown extends Component {
       onSelect,
     } = this.props;
     if (!items || !items.length) {
-      return null;
+      return <span className="mleft10">Empty...</span>;
     }
     const fn = onSelect || _.noop;
     return _.map(items, (item, index) => {

@@ -22,7 +22,7 @@
   },
   "readmeFilename": "README.md",
   "scripts": {
-    "eslint-es6": "node ./node_modules/.bin/eslint public/js/*.js public/js/*/*.js",
+    "eslint-es6": "node ./node_modules/.bin/eslint public/js/*.js public/js/*/*.js public/js/*/*/*.js",
     "eslint-node": "node ./node_modules/.bin/eslint *.js helpers/*.js middlewares/*.js router/*.js controllers/*.js models/*.js",
     "eslint": "npm run eslint-node && npm run eslint-es6",
     "coverage": "node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha test/*.js test/controllers/*.js test/helpers/*.js test/middlewares/*.js test/services/*.js --",
@@ -40,6 +40,7 @@
     "debug": "^2.2.0",
     "etcd-register": "1.0.0",
     "http-errors": "^1.5.0",
+    "influx-ql": "^1.0.3",
     "influxdb-nodejs": "^2.1.0",
     "joi": "^9.1.0",
     "jtfileimporter": "^0.4.2",

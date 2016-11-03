@@ -10,6 +10,7 @@ describe('config', () => {
       env: Joi.string().required(),
       port: Joi.number().integer().required(),
       app: Joi.string().required(),
+      name: Joi.string().required(),
       influx: Joi.string(),
       appUrlPrefix: Joi.string().required(),
       viewPath: Joi.string().required(),
