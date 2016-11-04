@@ -142,3 +142,20 @@ exports.select = (ctx) => {
     ctx.body = data;
   });
 };
+
+exports.query = (ctx) => {
+  const {
+    id,
+    db,
+  } = ctx.params;
+  const query = Joi.validateThrow(ctx.query, {
+    ql: Joi.string(),
+  });
+  console.log(query.ql);
+  return InfluxdbServer.query(id, db, query.ql).then((data) => {
+    ctx.set('Cache-Control', 'public, max-age=10');
+    /* eslint no-param-reassign:0 */
+    ctx.body = data;
+  });
+};
+

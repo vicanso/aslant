@@ -43,12 +43,12 @@ class MainHeader extends Component {
       return (
         <div className="functions">
           <a
-            className="btn"
+            className="pure-button button-secondary"
             href={VIEW_LOGIN}
             onClick={handleLink(VIEW_LOGIN)}
           >Sign In</a>
           <a
-            className="btn btn-primary"
+            className="pure-button pure-button-primary"
             href={VIEW_REGISTER}
             onClick={handleLink(VIEW_REGISTER)}
           >Sign Up</a>

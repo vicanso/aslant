@@ -1,6 +1,7 @@
 import React, { PropTypes, Component } from 'react';
 import * as _ from 'lodash';
 import InfluxQL from 'influx-ql';
+import { Line } from 'dcharts';
 
 import DropdownSelector from '../../components/dropdown-selector';
 import * as influxdbService from '../../services/influxdb';
@@ -36,6 +37,10 @@ class Influx extends Component {
       tagValueDict: {},
       conditions: [],
       cals: [],
+      time: {
+        start: '',
+        end: '',
+      },
     };
   }
   componentWillUpdate(nextProps, nextState) {
@@ -45,6 +50,7 @@ class Influx extends Component {
       conditions,
       cals,
       rp,
+      time,
     } = nextState;
     if (!db || !measurement) {
       return;
@@ -67,23 +73,29 @@ class Influx extends Component {
         cal,
         field,
       } = item;
-      if (cal && field) {
-        ql.addCalculate(cal, field);
+      if (field) {
+        if (!cal || cal === 'none') {
+          ql.addField(field);
+        } else {
+          ql.addCalculate(cal, field);
+        }
       }
     });
-    console.dir(ql.toSelect());
+    _.forEach(time, (v, k) => {
+      if (!v) {
+        return;
+      }
+      if (k === 'start') {
+        ql.start = v;
+      } else {
+        ql.end = v;
+      }
+    });
+    this.ql.value = ql.toSelect();
   }
   onSelectDatabases(db) {
     const server = this.state.server;
-    this.setState({
-      db,
-      rps: [],
-      rp: '',
-      measurements: [],
-      measurement: '',
-      tags: [],
-      fields: [],
-    });
+    this.reset('db', db);
     /* eslint no-underscore-dangle:0 */
     const args = [server._id, db];
     influxdbService.showMeasurements(...args).then(measurements => this.setState({
@@ -98,11 +110,7 @@ class Influx extends Component {
       server,
       db,
     } = this.state;
-    this.setState({
-      measurement,
-      tags: [],
-      fields: [],
-    });
+    this.reset('measurement', measurement);
     /* eslint no-underscore-dangle:0 */
     const args = [server._id, db, measurement];
     influxdbService.showSeries(...args).then((series) => {
@@ -136,27 +144,82 @@ class Influx extends Component {
     }).catch(console.error);
   }
   onSelectServer(server) {
-    this.setState({
-      dbs: [],
-      db: '',
-      rps: [],
-      rp: '',
-      measurements: [],
-      measurement: '',
-      server,
-      tags: [],
-      fields: [],
-    });
+    this.reset('server', server);
     influxdbService.showDatabases(server._id).then(dbs => this.setState({
       dbs: dbs.sort(),
     })).catch(console.error);
+  }
+  query() {
+    const {
+      server,
+      db,
+    } = this.state;
+    const ql = this.ql.value;
+    influxdbService.query(server._id, db, ql)
+      .then(data => this.renderChart(data))
+      .catch(console.error);
+  }
+  reset(type, value) {
+    let state = null;
+    switch (type) {
+      case 'server':
+        state = {
+          server: value,
+          dbs: [],
+          db: '',
+          rps: [],
+          rp: '',
+          measurements: [],
+          measurement: '',
+          tags: [],
+          fields: [],
+          tagValueDict: {},
+          conditions: [],
+          cals: [],
+        };
+        break;
+      case 'db':
+        state = {
+          db: value,
+          rps: [],
+          rp: '',
+          measurements: [],
+          measurement: '',
+          tags: [],
+          fields: [],
+          tagValueDict: {},
+          conditions: [],
+          cals: [],
+        };
+        break;
+      case 'measurement':
+        state = {
+          measurement: value,
+          tags: [],
+          fields: [],
+          tagValueDict: {},
+          conditions: [],
+          cals: [],
+        };
+        break;
+      default:
+        state = {};
+        break;
+    }
+    this.setState(state);
+  }
+  renderChart(data) {
+    const chartData = influxdbService.toChartData(data);
+    const line = new Line(this.chart);
+    line.set({
+      'xAxis.categories': chartData.categories,
+    }).render(chartData.data);
   }
   renderFieldCalSelectorList() {
     const {
       fields,
       cals,
     } = this.state;
-    console.dir(cals);
     const cloneCals = cals.slice(0);
     if (!cloneCals.length || (_.last(cloneCals).cal && _.last(cloneCals).field)) {
       cloneCals.push({});
@@ -169,7 +232,7 @@ class Influx extends Component {
         cals: arr,
       });
     };
-    const calList = 'count sum mean median min max spread stddev first last'.split(' ');
+    const calList = 'none count sum mean median min max spread stddev first last'.split(' ');
     return _.map(cloneCals, (calCondition, index) => {
       const {
         field,
@@ -282,6 +345,75 @@ class Influx extends Component {
       );
     });
   }
+  renderTimeSelector() {
+    const times = [
+      {
+        name: 'Past 5 minutes',
+        value: '-5m',
+      },
+      {
+        name: 'Past 15 minutes',
+        value: '-15m',
+      },
+      {
+        name: 'Past 30 minutes',
+        value: '-30m',
+      },
+      {
+        name: 'Past hour',
+        value: '-1h',
+      },
+      {
+        name: 'Past 6 hours',
+        value: '-6h',
+      },
+      {
+        name: 'Past 12 hours',
+        value: '-12h',
+      },
+      {
+        name: 'Past 24 hours',
+        value: '-24h',
+      },
+      {
+        name: 'Past 2 days',
+        value: '-2d',
+      },
+      {
+        name: 'Past 7 days',
+        value: '-7d',
+      },
+      {
+        name: 'Past 30 days',
+        value: '-30d',
+      },
+    ];
+    const {
+      time,
+    } = this.state;
+    const onSelect = (e, item, index) => {
+      if (index === 0) {
+        time.start = item.value;
+      } else {
+        time.end = item.value;
+      }
+      this.setState({
+        time,
+      });
+    };
+    return (
+      <div
+        className="co-dropdown-selector-wrapper"
+      >
+        <CoDropdownSelector
+          itemsList={[times, times]}
+          placeholders={['Start', 'End']}
+          onSelect={onSelect}
+          selected={[time.start, time.end]}
+        />
+      </div>
+    );
+  }
   render() {
     const {
       servers,
@@ -293,6 +425,36 @@ class Influx extends Component {
     } = this.state;
     return (
       <div className="add-influx-wrapper">
+        <div
+          className="influx-ql-wrapper clearfix"
+        >
+          <span
+            className="pull-left"
+            style={{
+              marginTop: '4px',
+            }}
+          >Influx QL</span>
+          <button
+            className="pure-button pure-button-primary pull-right"
+            onClick={() => this.query()}
+          >
+            Query
+          </button>
+          <div className="ql-input">
+            <input
+              type="text"
+              ref={(c) => {
+                this.ql = c;
+              }}
+            />
+          </div>
+        </div>
+        <div
+          className="chart-wrapper"
+          ref={(c) => {
+            this.chart = c;
+          }}
+        />
         <div className="config-wrapper">
           <h4>Influx Config</h4>
           <DropdownSelector
@@ -322,6 +484,7 @@ class Influx extends Component {
           <h5>Extract By</h5>
           { this.renderFieldCalSelectorList() }
           <h5>Time</h5>
+          { this.renderTimeSelector() }
         </div>
       </div>
     );

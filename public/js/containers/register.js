@@ -67,7 +67,7 @@ class Register extends FormView {
     });
     dispatch(userAction.register(account, password, email))
       .then(() => {
-        dispatch(navigationAction.back());
+        dispatch(navigationAction.home());
       })
       .catch((err) => {
         this.setState({

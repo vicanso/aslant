@@ -59,14 +59,27 @@
           color $COLOR_BLUE
           margin-left 3px
 .add-influx-wrapper
+  $configWrapperWidth = 300px
+  .influx-ql-wrapper
+    margin-left $configWrapperWidth
+    background-color #fff
+    padding 10px
+    border-bottom 1px solid $COLOR_LIGHT_GRAY
+    .ql-input
+      margin 0 85px 0 70px
+    input
+      width 100%
+      line-height 18px
+  .chart-wrapper
+    margin-left $configWrapperWidth
+    height 300px
   .config-wrapper
-    $configWrapperWidth = 300px
     width $configWrapperWidth
-    padding 20px 30px 20px 10px
+    padding 0 30px 20px 10px
     position fixed
     left 0
     bottom 0
-    top $MAIN_HEADER_HEIGHT + 1
+    top $MAIN_HEADER_HEIGHT
     overflow-scrolling touch
     background-color $COLOR_DARK
     color $COLOR_GRAY

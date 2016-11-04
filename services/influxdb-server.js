@@ -93,3 +93,8 @@ exports.select = (id, db, measurement, query) => {
   });
 };
 
+exports.query = (id, db, ql) => {
+  return getInfluxClient(id, db).then((client) => {
+    return client.queryRaw(ql);
+  });
+};

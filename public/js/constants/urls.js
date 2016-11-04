@@ -20,6 +20,7 @@ export const INFLUXDB_TAG_KEYS = '/api/influxdb/server/:id/:db/:measurement/tag-
 export const INFLUXDB_FIELD_KEYS = '/api/influxdb/server/:id/:db/:measurement/field-keys';
 export const INFLUXDB_SERIES = '/api/influxdb/server/:id/:db/:measurement/series';
 export const INFLUXDB_SELECT = '/api/influxdb/select/:id/:db/:measurement';
+export const INFLUXDB_QUERY = '/api/influxdb/query/:id/:db';
 
 export const VIEW_HOME = `${appUrlPrfix}/`;
 export const VIEW_LOGIN = `${appUrlPrfix}/login`;

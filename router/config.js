@@ -41,6 +41,7 @@ module.exports = [
   '[GET] [/api/influxdb/server/:id/:db/tag-keys,/api/influxdb/server/:id/:db/:measurement/tag-keys] [c.influxdb.showTagKeys]',
   '[GET] [/api/influxdb/server/:id/:db/field-keys,/api/influxdb/server/:id/:db/:measurement/field-keys] [c.influxdb.showFieldKeys]',
   '[GET] [/api/influxdb/server/:id/:db/series,/api/influxdb/server/:id/:db/:measurement/series] [c.influxdb.showSeries]',
+  '[GET] [/api/influxdb/query/:id/:db] [c.influxdb.query]',
 
   '[GET] [/api/influxdb/select/:id/:db/:measurement] [c.influxdb.select]',
 

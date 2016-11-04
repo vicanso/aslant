@@ -6,6 +6,7 @@ module.exports = {
     vendor: [
       'classnames',
       'lodash',
+      'dcharts',
       'debug',
       'influx-ql',
       'moment',

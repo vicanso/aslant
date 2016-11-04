@@ -6,6 +6,7 @@ import * as influxdbAction from '../../actions/influxdb';
 import {
   VIEW_EDIT_SERVER,
   VIEW_SERVER_STATUS,
+  VIEW_ADD_SERVER,
 } from '../../constants/urls';
 
 class Servers extends Component {
@@ -40,7 +41,17 @@ class Servers extends Component {
       handleLink,
     } = this.props;
     if (!servers || !servers.length) {
-      return null;
+      return (
+        <p
+          className="tac"
+        >
+          There is not any server, please add one atleast.
+          <a
+            href={VIEW_ADD_SERVER}
+            onClick={handleLink(VIEW_ADD_SERVER)}
+          >Add</a>
+        </p>
+      );
     }
     const arr = _.map(servers, (server) => {
       /* eslint no-underscore-dangle:0 */

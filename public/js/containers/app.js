@@ -164,11 +164,11 @@ class App extends Component {
           className="btns"
         >
           <button
-            className="btn btn-primary"
+            className="pure-button pure-button-primary"
             onClick={e => this.closeConfirmDialog(e, 'confirm')}
           >Confirm</button>
           <button
-            className="btn"
+            className="pure-button"
             onClick={e => this.closeConfirmDialog(e, 'cancel')}
           >Cancel</button>
         </div>

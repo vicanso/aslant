@@ -10,6 +10,7 @@ import {
   INFLUXDB_FIELD_KEYS,
   INFLUXDB_SERIES,
   INFLUXDB_SELECT,
+  INFLUXDB_QUERY,
 } from '../constants/urls';
 
 function toJSON(data) {
@@ -26,6 +27,9 @@ function toJSON(data) {
         _.forEach(valueList, (v, i) => {
           point[columns[i]] = v;
         });
+        if (item.tags) {
+          _.extend(point, item.tags);
+        }
         arr.push(point);
       });
       if (!result[item.name]) {
@@ -35,6 +39,41 @@ function toJSON(data) {
     });
   });
   return result;
+}
+
+export function toChartData(data) {
+  const categories = [];
+  const dict = {};
+  let fillCat = false;
+  _.forEach(data, (arr, name) => {
+    _.forEach(arr, (item) => {
+      if (!fillCat) {
+        categories.push(item.time);
+      }
+      _.forEach(item, (v, k) => {
+        if (k === 'time') {
+          return;
+        }
+        const key = `${name}-${k}`;
+        if (!dict[key]) {
+          dict[key] = [];
+        }
+        dict[key].push(v);
+      });
+    });
+    fillCat = true;
+  });
+  const result = _.map(dict, (v, k) => {
+    const name = k;
+    return {
+      name,
+      data: v,
+    };
+  });
+  return {
+    categories,
+    data: result,
+  };
 }
 
 export function list() {
@@ -105,9 +144,17 @@ export function showSeries(id, db, measurement) {
   return http.get(url).then(res => res.body);
 }
 
-export function select(id, db, measurement, query) {
+export function select(id, db, measurement, q) {
   const url = INFLUXDB_SELECT.replace(':id', id)
     .replace(':db', db)
     .replace(':measurement', measurement);
-  return http.get(url, query).then(res => toJSON(res.body));
+  return http.get(url, q).then(res => toJSON(res.body));
+}
+
+export function query(id, db, ql) {
+  const url = INFLUXDB_QUERY.replace(':id', id)
+    .replace(':db', db);
+  return http.get(url, {
+    ql,
+  }).then(res => toJSON(res.body));
 }
