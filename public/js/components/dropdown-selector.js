@@ -22,21 +22,68 @@ class DropdownSelector extends Component {
   componentWillUnmount() {
     this.isUnmounted = true;
   }
+  onSelect(e, item) {
+    const {
+      onSelect,
+      type,
+    } = this.props;
+    const multi = type === 'multi';
+    const selected = this.state.selected || [];
+    const state = {
+      selected: item,
+      active: false,
+    };
+    if (multi) {
+      const index = _.indexOf(selected, item);
+      if (index === -1) {
+        selected.push(item);
+      } else {
+        selected.splice(index, 1);
+      }
+      state.selected = selected;
+    }
+    this.setState(state);
+    if (onSelect) {
+      onSelect(e, item);
+    }
+  }
   render() {
     const {
       items,
       cls,
       placeholder,
-      onSelect,
+      type,
     } = this.props;
     const {
       active,
     } = this.state;
+    const multi = type === 'multi';
     const selected = this.state.selected || this.props.selected;
     const selectorCls = _.extend({}, cls, {
       'dropdown-selector': true,
       active,
     });
+    const selectedToString = () => {
+      if (!selected) {
+        return '';
+      }
+      if (_.isArray(selected)) {
+        return _.map(selected, item => item.name || item).join(',');
+      }
+      return selected.name || selected;
+    };
+    const isShowPlaceHolder = () => {
+      if (active) {
+        return false;
+      }
+      if (!multi && selected) {
+        return false;
+      }
+      if (multi && selected && selected.length) {
+        return false;
+      }
+      return true;
+    };
     return (
       <div className={classnames(selectorCls)}>
         <a
@@ -56,23 +103,13 @@ class DropdownSelector extends Component {
           }, 150)}
         >
           <i className="fa fa-sort-desc" aria-hidden="true" />
-          { !active && !selected && placeholder }
-          {
-            selected && (selected.name || selected)
-          }
+          { isShowPlaceHolder() && placeholder }
+          { selectedToString() }
         </a>
         {
           active &&
           <Dropdown
-            onSelect={(e, item) => {
-              this.setState({
-                selected: item,
-                active: false,
-              });
-              if (onSelect) {
-                onSelect(e, item);
-              }
-            }}
+            onSelect={(e, item) => this.onSelect(e, item)}
             items={items}
           />
         }
@@ -87,6 +124,7 @@ DropdownSelector.propTypes = {
   onSelect: PropTypes.func,
   placeholder: PropTypes.string,
   selected: PropTypes.any,
+  type: PropTypes.string,
 };
 
 export default DropdownSelector;

@@ -37,6 +37,7 @@ class Influx extends Component {
       tagValueDict: {},
       conditions: [],
       cals: [],
+      groups: {},
       time: {
         start: '',
         end: '',
@@ -51,6 +52,7 @@ class Influx extends Component {
       cals,
       rp,
       time,
+      groups,
     } = nextState;
     if (!db || !measurement) {
       return;
@@ -91,6 +93,12 @@ class Influx extends Component {
         ql.end = v;
       }
     });
+    if (groups.interval) {
+      ql.addGroup(`time(${groups.interval})`);
+    }
+    if (groups.tags && groups.tags.length) {
+      ql.addGroup(...groups.tags);
+    }
     this.ql.value = ql.toSelect();
   }
   onSelectDatabases(db) {
@@ -155,6 +163,10 @@ class Influx extends Component {
       db,
     } = this.state;
     const ql = this.ql.value;
+    if (!server || !db || !ql) {
+      console.error('server, db and ql can not be null');
+      return;
+    }
     influxdbService.query(server._id, db, ql)
       .then(data => this.renderChart(data))
       .catch(console.error);
@@ -176,6 +188,7 @@ class Influx extends Component {
           tagValueDict: {},
           conditions: [],
           cals: [],
+          groups: {},
         };
         break;
       case 'db':
@@ -190,6 +203,7 @@ class Influx extends Component {
           tagValueDict: {},
           conditions: [],
           cals: [],
+          groups: {},
         };
         break;
       case 'measurement':
@@ -200,6 +214,7 @@ class Influx extends Component {
           tagValueDict: {},
           conditions: [],
           cals: [],
+          groups: {},
         };
         break;
       default:
@@ -209,11 +224,17 @@ class Influx extends Component {
     this.setState(state);
   }
   renderChart(data) {
+    const {
+      chart,
+    } = this;
     const chartData = influxdbService.toChartData(data);
-    const line = new Line(this.chart);
+    chart.innerHTML = '<svg></svg>';
+    const line = new Line(chart.children[0]);
     line.set({
+      'xAxis.distance': 100,
       'xAxis.categories': chartData.categories,
-    }).render(chartData.data);
+    })
+    .render(chartData.data);
   }
   renderFieldCalSelectorList() {
     const {
@@ -279,6 +300,49 @@ class Influx extends Component {
         </div>
       );
     });
+  }
+  renderGroupSelectorList() {
+    const {
+      tags,
+      groups,
+    } = this.state;
+    const intervalList = '10s 30s 1m 5m 10m 15m 30m 1h 2h 6h 12h 1d 2d 7d 30d'.split(' ');
+    return (
+      <div>
+        <DropdownSelector
+          key={'group-by-interval'}
+          placeholder={'Choose group interval'}
+          items={intervalList}
+          selected={groups.interval}
+          onSelect={(e, item) => {
+            groups.interval = item;
+            this.setState({
+              groups,
+            });
+          }}
+        />
+        <DropdownSelector
+          key={'group-by-tag'}
+          placeholder={'Choose group tag'}
+          items={tags}
+          type={'multi'}
+          selected={groups.tags}
+          onSelect={(e, item) => {
+            const groupTags = groups.tags || [];
+            groups.tags = groupTags;
+            const index = _.indexOf(groupTags, item);
+            if (index === -1) {
+              groupTags.push(item);
+            } else {
+              groupTags.splice(index, 1);
+            }
+            this.setState({
+              groups,
+            });
+          }}
+        />
+      </div>
+    );
   }
   renderTagSelectorList() {
     const {
@@ -483,6 +547,8 @@ class Influx extends Component {
           { this.renderTagSelectorList() }
           <h5>Extract By</h5>
           { this.renderFieldCalSelectorList() }
+          <h5>Group By</h5>
+          { this.renderGroupSelectorList() }
           <h5>Time</h5>
           { this.renderTimeSelector() }
         </div>

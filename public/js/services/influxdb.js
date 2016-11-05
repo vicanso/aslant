@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import moment from 'moment';
 
 import * as http from '../helpers/http';
 import {
@@ -42,13 +43,13 @@ function toJSON(data) {
 }
 
 export function toChartData(data) {
-  const categories = [];
+  const times = [];
   const dict = {};
   let fillCat = false;
   _.forEach(data, (arr, name) => {
     _.forEach(arr, (item) => {
       if (!fillCat) {
-        categories.push(item.time);
+        times.push(item.time);
       }
       _.forEach(item, (v, k) => {
         if (k === 'time') {
@@ -69,6 +70,16 @@ export function toChartData(data) {
       name,
       data: v,
     };
+  });
+  const offset = Math.abs(moment(_.first(times)).valueOf() - moment(_.last(times)).valueOf());
+  const categories = [];
+  let format = 'YYYY-MM-DD HH:mm:ss';
+  if (offset < 24 * 3600 * 1000) {
+    format = 'HH:mm:ss';
+  }
+  _.forEach(times, (time) => {
+    const item = moment(time);
+    categories.push(item.format(format));
   });
   return {
     categories,
