@@ -42,7 +42,7 @@ function toJSON(data) {
   return result;
 }
 
-export function toChartData(data) {
+export function toChartData(data, tags) {
   const times = [];
   const dict = {};
   let fillCat = false;
@@ -51,15 +51,25 @@ export function toChartData(data) {
       if (!fillCat) {
         times.push(item.time);
       }
-      _.forEach(item, (v, k) => {
-        if (k === 'time') {
+      const keys = [];
+      const values = [];
+      _.forEach(_.keys(item), (key) => {
+        if (key === 'time') {
           return;
         }
-        const key = `${name}-${k}`;
+        if (_.indexOf(tags, key) === -1) {
+          values.push(key);
+        } else {
+          keys.push(`${key}=${item[key]}`);
+        }
+      });
+      const baseKey = `${name}.${keys.sort().join('.')}`;
+      _.forEach(values, (k) => {
+        const key = `${baseKey}.${k}`;
         if (!dict[key]) {
           dict[key] = [];
         }
-        dict[key].push(v);
+        dict[key].push(item[k]);
       });
     });
     fillCat = true;

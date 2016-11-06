@@ -59,7 +59,7 @@ class Influx extends Component {
     }
     const ql = new InfluxQL(db);
     ql.measurement = measurement;
-    ql.RP = rp.name;
+    ql.RP = _.get(rp, 'name', '');
     _.forEach(conditions, (item) => {
       const {
         tag,
@@ -227,7 +227,10 @@ class Influx extends Component {
     const {
       chart,
     } = this;
-    const chartData = influxdbService.toChartData(data);
+    const {
+      tags,
+    } = this.state;
+    const chartData = influxdbService.toChartData(data, tags);
     chart.innerHTML = '<svg></svg>';
     const line = new Line(chart.children[0]);
     line.set({
