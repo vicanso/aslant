@@ -98,3 +98,7 @@ exports.query = (id, db, ql) => {
     return client.queryRaw(ql);
   });
 };
+
+exports.addConfig = (data) => {
+  data.token = uuid.v4();
+};

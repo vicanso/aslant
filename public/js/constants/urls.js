@@ -21,6 +21,7 @@ export const INFLUXDB_FIELD_KEYS = '/api/influxdb/server/:id/:db/:measurement/fi
 export const INFLUXDB_SERIES = '/api/influxdb/server/:id/:db/:measurement/series';
 export const INFLUXDB_SELECT = '/api/influxdb/select/:id/:db/:measurement';
 export const INFLUXDB_QUERY = '/api/influxdb/query/:id/:db';
+export const INFLUXDB_CONFIGS = '/api/influxdb/configs';
 
 export const VIEW_HOME = `${appUrlPrfix}/`;
 export const VIEW_LOGIN = `${appUrlPrfix}/login`;

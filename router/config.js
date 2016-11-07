@@ -44,6 +44,7 @@ module.exports = [
   '[GET] [/api/influxdb/query/:id/:db] [c.influxdb.query]',
 
   '[GET] [/api/influxdb/select/:id/:db/:measurement] [c.influxdb.select]',
+  '[POST] [/api/influxdb/configs] [m.session.isLogined & m.session.read & c.influxdb.addConfig]',
 
   // stats
   '[POST] [/api/stats/ajax] [c.stats.ajax]',

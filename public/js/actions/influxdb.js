@@ -4,6 +4,7 @@ import {
   INFLUXDB_UPDATE_SERVER,
   INFLUXDB_REMOVE_SERVER,
   INFLUXDB_RESET,
+  INFLUXDB_ADD_CONFIG,
 } from '../constants/action-types';
 import * as influxdb from '../services/influxdb';
 
@@ -39,4 +40,11 @@ export function reset() {
   return {
     type: INFLUXDB_RESET,
   };
+}
+
+export function addConfig(data) {
+  return dispatch => influxdb.addConfig(data).then(data => dispatch({
+    type: INFLUXDB_ADD_CONFIG,
+    item: data,
+  }));
 }

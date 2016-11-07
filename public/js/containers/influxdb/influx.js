@@ -5,6 +5,7 @@ import { Line } from 'dcharts';
 
 import DropdownSelector from '../../components/dropdown-selector';
 import * as influxdbService from '../../services/influxdb';
+import * as influxdbAction from '../../actions/influxdb';
 import CoDropdownSelector from '../../components/co-dropdown-selector';
 
 function getClearItem(fn) {
@@ -105,7 +106,7 @@ class Influx extends Component {
     const server = this.state.server;
     this.reset('db', db);
     /* eslint no-underscore-dangle:0 */
-    const args = [server._id, db];
+    const args = [server, db];
     influxdbService.showMeasurements(...args).then(measurements => this.setState({
       measurements: measurements.sort(),
     })).catch(console.error);
@@ -120,7 +121,7 @@ class Influx extends Component {
     } = this.state;
     this.reset('measurement', measurement);
     /* eslint no-underscore-dangle:0 */
-    const args = [server._id, db, measurement];
+    const args = [server, db, measurement];
     influxdbService.showSeries(...args).then((series) => {
       const tags = [];
       const tagValueDict = {};
@@ -152,8 +153,9 @@ class Influx extends Component {
     }).catch(console.error);
   }
   onSelectServer(server) {
-    this.reset('server', server);
-    influxdbService.showDatabases(server._id).then(dbs => this.setState({
+    const id = server._id;
+    this.reset('server', id);
+    influxdbService.showDatabases(id).then(dbs => this.setState({
       dbs: dbs.sort(),
     })).catch(console.error);
   }
@@ -167,7 +169,7 @@ class Influx extends Component {
       console.error('server, db and ql can not be null');
       return;
     }
-    influxdbService.query(server._id, db, ql)
+    influxdbService.query(server, db, ql)
       .then(data => this.renderChart(data))
       .catch(console.error);
   }
@@ -223,14 +225,25 @@ class Influx extends Component {
     }
     this.setState(state);
   }
+  saveInfluxConfig() {
+    const {
+      dispatch,
+    } = this.props;
+    const keys = 'server db rp measurement conditions cals groups time'.split(' ');
+    const data = _.pick(this.state, keys);
+    dispatch(influxdbAction.addConfig(data)).then((data) => {
+
+    }).catch(console.error);
+  }
   renderChart(data) {
     const {
       chart,
     } = this;
     const {
       tags,
+      cals,
     } = this.state;
-    const chartData = influxdbService.toChartData(data, tags);
+    const chartData = influxdbService.toChartData(data, tags, cals);
     chart.innerHTML = '<svg></svg>';
     const line = new Line(chart.children[0]);
     line.set({
@@ -492,36 +505,48 @@ class Influx extends Component {
     } = this.state;
     return (
       <div className="add-influx-wrapper">
-        <div
-          className="influx-ql-wrapper clearfix"
-        >
-          <span
-            className="pull-left"
-            style={{
-              marginTop: '4px',
-            }}
-          >Influx QL</span>
-          <button
-            className="pure-button pure-button-primary pull-right"
-            onClick={() => this.query()}
+        <div className="influx-content-wrapper">
+          <div
+            className="influx-ql-wrapper clearfix"
           >
-            Query
-          </button>
-          <div className="ql-input">
-            <input
-              type="text"
-              ref={(c) => {
-                this.ql = c;
+            <span
+              className="pull-left"
+              style={{
+                marginTop: '4px',
               }}
-            />
+            >Influx QL</span>
+            <button
+              className="pure-button pure-button-primary pull-right"
+              onClick={() => this.query()}
+            >
+              Query
+            </button>
+            <div className="ql-input">
+              <input
+                type="text"
+                ref={(c) => {
+                  this.ql = c;
+                }}
+              />
+            </div>
+          </div>
+          <div
+            className="chart-wrapper"
+            ref={(c) => {
+              this.chart = c;
+            }}
+          />
+          <div
+            className="chart-config-wrapper"
+          >
+            <label>Name:</label>
+            <input type="text" />
+            <button
+              className="pure-button pure-button-primary pure-button-block save"
+              onClick={e => this.saveInfluxConfig()}
+            >Save</button>
           </div>
         </div>
-        <div
-          className="chart-wrapper"
-          ref={(c) => {
-            this.chart = c;
-          }}
-        />
         <div className="config-wrapper">
           <h4>Influx Config</h4>
           <DropdownSelector

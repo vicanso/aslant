@@ -12,6 +12,7 @@ import {
   INFLUXDB_SERIES,
   INFLUXDB_SELECT,
   INFLUXDB_QUERY,
+  INFLUXDB_CONFIGS,
 } from '../constants/urls';
 
 function toJSON(data) {
@@ -42,9 +43,25 @@ function toJSON(data) {
   return result;
 }
 
-export function toChartData(data, tags) {
+export function toChartData(data, tags, cals) {
   const times = [];
   const dict = {};
+  const calsDict = {};
+  _.forEach(cals, (item) => {
+    const {
+      cal,
+      field,
+    } = item;
+    if (!cal || !field) {
+      return;
+    }
+    if (!calsDict[cal]) {
+      calsDict[cal] = [field];
+      return;
+    }
+    const index = _.sortedIndex(calsDict[cal], field);
+    calsDict[cal].splice(index, 0, field);
+  });
   let fillCat = false;
   _.forEach(data, (arr, name) => {
     _.forEach(arr, (item) => {
@@ -63,9 +80,23 @@ export function toChartData(data, tags) {
           keys.push(`${key}=${item[key]}`);
         }
       });
-      const baseKey = `${name}.${keys.sort().join('.')}`;
+      const sortKeys = keys.sort();
+      sortKeys.unshift(name);
+      const baseKey = sortKeys.join('.');
       _.forEach(values, (k) => {
-        const key = `${baseKey}.${k}`;
+        const reg = /_(\d)*$/gi;
+        const result = reg.exec(k);
+        let convertKey = k;
+        let key = `${baseKey}.${k}`;
+        let index = 0;
+        if (result) {
+          convertKey = k.substring(0, k.length - result[0].length);
+          index = parseInt(result[1], 10);
+        }
+        if (calsDict[convertKey]) {
+          key = `${baseKey}.${calsDict[convertKey][index]}`;
+        }
+        
         if (!dict[key]) {
           dict[key] = [];
         }
@@ -178,4 +209,9 @@ export function query(id, db, ql) {
   return http.get(url, {
     ql,
   }).then(res => toJSON(res.body));
+}
+
+export function addConfig(data) {
+  return http.post(INFLUXDB_CONFIGS, data)
+    .then(res => res.body);
 }

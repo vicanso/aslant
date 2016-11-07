@@ -159,3 +159,30 @@ exports.query = (ctx) => {
   });
 };
 
+exports.addConfig = (ctx) => {
+  const data = Joi.validateThrow(ctx.request.body, {
+    name: Joi.string().required(),
+    server: Joi.string().required(),
+    db: Joi.string().required(),
+    rp: Joi.string().empty('').optional(),
+    measurement: Joi.string().required(),
+    conditions: Joi.array().items(Joi.object().keys({
+      tag: Joi.string().empty('').optional(),
+      value: Joi.string().empty('').optional(),
+    })).optional(),
+    cals: Joi.array().items(Joi.object().keys({
+      field: Joi.string().empty('').optional(),
+      cal: Joi.string().empty('').optional(),
+    })).optional(),
+    groups: Joi.object().keys({
+      interval: Joi.string().optional(),
+      tags: Joi.array().items(Joi.string()).optional(),
+    }),
+    time: Joi.object().keys({
+      start: Joi.string().empty('').optional(),
+      end: Joi.string().empty('').optional(),
+    }).optional(),
+  });
+  const account = ctx.session.user.account;
+  console.dir(data);
+};
