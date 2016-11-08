@@ -5,6 +5,7 @@ import {
   INFLUXDB_REMOVE_SERVER,
   INFLUXDB_RESET,
   INFLUXDB_ADD_CONFIG,
+  INFLUXDB_LIST_CONFIG,
 } from '../constants/action-types';
 import * as influxdb from '../services/influxdb';
 
@@ -42,9 +43,16 @@ export function reset() {
   };
 }
 
-export function addConfig(data) {
-  return dispatch => influxdb.addConfig(data).then(data => dispatch({
+export function addConfig(config) {
+  return dispatch => influxdb.addConfig(config).then(data => dispatch({
     type: INFLUXDB_ADD_CONFIG,
     item: data,
+  }));
+}
+
+export function listConfig() {
+  return dispatch => influxdb.listConfig().then(data => dispatch({
+    type: INFLUXDB_LIST_CONFIG,
+    items: data,
   }));
 }

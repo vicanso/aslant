@@ -5,6 +5,10 @@ const Influx = require('influxdb-nodejs');
 const Models = localRequire('models');
 const errors = localRequire('helpers/errors');
 
+function docsToJSON(docs) {
+  return _.map(docs, item => item.toJSON());
+}
+
 function getInfluxClient(id, db = '_internal') {
   const InfluxdbServer = Models.get('Influxdb-server');
   return InfluxdbServer.findById(id).then((doc) => {
@@ -30,10 +34,9 @@ exports.add = (data) => {
 
 exports.list = (conditon) => {
   const InfluxdbServer = Models.get('Influxdb-server');
-  const convert = items => _.map(items, item => item.toJSON());
   return InfluxdbServer.find(conditon).sort({
     updatedAt: -1,
-  }).then(convert);
+  }).then(docsToJSON);
 };
 
 exports.update = (conditon, data) => {
@@ -100,5 +103,17 @@ exports.query = (id, db, ql) => {
 };
 
 exports.addConfig = (data) => {
+  const InfluxConfig = Models.get('Influx-config');
+  const date = (new Date()).toISOString();
+  data.createdAt = date;
+  data.updatedAt = date;
   data.token = uuid.v4();
+  return (new InfluxConfig(data)).save().then(doc => doc.toJSON());
+};
+
+exports.listConfig = (conditions) => {
+  const InfluxConfig = Models.get('Influx-config');
+  return InfluxConfig.find(conditions).sort({
+    updatedAt: -1,
+  }).then(docsToJSON);
 };

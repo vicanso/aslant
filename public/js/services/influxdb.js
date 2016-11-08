@@ -96,7 +96,7 @@ export function toChartData(data, tags, cals) {
         if (calsDict[convertKey]) {
           key = `${baseKey}.${calsDict[convertKey][index]}`;
         }
-        
+
         if (!dict[key]) {
           dict[key] = [];
         }
@@ -213,5 +213,10 @@ export function query(id, db, ql) {
 
 export function addConfig(data) {
   return http.post(INFLUXDB_CONFIGS, data)
+    .then(res => res.body);
+}
+
+export function listConfig() {
+  return http.get(INFLUXDB_CONFIGS)
     .then(res => res.body);
 }

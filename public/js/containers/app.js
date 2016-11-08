@@ -13,6 +13,8 @@ import {
   VIEW_SERVERS,
   VIEW_SERVER_STATUS,
   VIEW_ADD_INFLUX,
+  VIEW_EDIT_INFLUX,
+  VIEW_INFLUX_CONFIGS,
 } from '../constants/urls';
 
 import Login from './login';
@@ -22,6 +24,7 @@ import ServerView from './influxdb/server';
 import ServersView from './influxdb/servers';
 import ServerStatusView from './influxdb/status';
 import InfluxView from './influxdb/influx';
+import InfluxConfigsView from './influxdb/configs';
 
 import * as navigationAction from '../actions/navigation';
 import * as userAction from '../actions/user';
@@ -47,7 +50,6 @@ class App extends Component {
       this.setState({
         isFetchingUserInfo: false,
       });
-      // dispatch(influxdbAction.list());
     }).catch((err) => {
       this.setState({
         isFetchingUserInfo: false,
@@ -65,6 +67,7 @@ class App extends Component {
     const nextAccount = _.get(nextProps, 'user.account');
     if (currentAccount !== nextAccount) {
       if (nextAccount) {
+        dispatch(influxdbAction.listConfig());
         dispatch(influxdbAction.list());
       } else {
         dispatch(influxdbAction.reset());
@@ -175,6 +178,17 @@ class App extends Component {
       </div>
     );
   }
+  renderEditInflux({ params: { id } }) {
+    const {
+      dispatch,
+    } = this.props;
+    return (
+      <InfluxView
+        dispatch={dispatch}
+        id={id}
+      />
+    );
+  }
   renderEditServer({ params: { id } }) {
     const {
       dispatch,
@@ -189,6 +203,19 @@ class App extends Component {
       <ServerView
         dispatch={dispatch}
         server={server}
+      />
+    );
+  }
+  renderInfluxConfigs() {
+    const {
+      dispatch,
+      influxdb,
+    } = this.props;
+    return (
+      <InfluxConfigsView
+        dispatch={dispatch}
+        configs={influxdb.configs}
+        handleLink={this.handleLink}
       />
     );
   }
@@ -282,6 +309,14 @@ class App extends Component {
           <Route
             path={VIEW_ADD_INFLUX}
             component={() => this.renderAddInflux()}
+          />
+          <Route
+            path={VIEW_EDIT_INFLUX}
+            component={arg => this.renderEditInflux(arg)}
+          />
+          <Route
+            path={VIEW_INFLUX_CONFIGS}
+            component={() => this.renderInfluxConfigs()}
           />
         </Router>
       </div>

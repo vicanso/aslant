@@ -9,6 +9,7 @@ import {
   VIEW_ADD_SERVER,
   VIEW_SERVERS,
   VIEW_ADD_INFLUX,
+  VIEW_INFLUX_CONFIGS,
 } from '../constants/urls';
 import * as userAction from '../actions/user';
 import * as navigationAction from '../actions/navigation';
@@ -64,9 +65,14 @@ class MainHeader extends Component {
         type: 'divider',
       },
       {
-        name: 'Add Influx',
+        name: 'Add Influx Config',
         action: 'redirect',
         href: VIEW_ADD_INFLUX,
+      },
+      {
+        name: 'Influx Configs',
+        action: 'redirect',
+        href: VIEW_INFLUX_CONFIGS,
       },
       {
         name: 'Add Server',

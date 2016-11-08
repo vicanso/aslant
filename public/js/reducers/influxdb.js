@@ -6,10 +6,13 @@ import {
   INFLUXDB_UPDATE_SERVER,
   INFLUXDB_REMOVE_SERVER,
   INFLUXDB_RESET,
+  INFLUXDB_LIST_CONFIG,
+  INFLUXDB_ADD_CONFIG,
 } from '../constants/action-types';
 
 const defaultStates = {
   servers: [],
+  configs: [],
 };
 
 export default function influxdb(state = defaultStates, action) {
@@ -49,6 +52,19 @@ export default function influxdb(state = defaultStates, action) {
     case INFLUXDB_RESET: {
       return Object.assign({}, state, {
         servers: [],
+      });
+    }
+    case INFLUXDB_LIST_CONFIG: {
+      const configs = action.items.slice(0);
+      return Object.assign({}, state, {
+        configs,
+      });
+    }
+    case INFLUXDB_ADD_CONFIG: {
+      const configs = state.configs.slice(0);
+      configs.unshift(action.item);
+      return Object.assign({}, state, {
+        configs,
       });
     }
     default:

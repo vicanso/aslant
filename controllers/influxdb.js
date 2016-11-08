@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const _ = require('lodash');
 
 const InfluxdbServer = localRequire('services/influxdb-server');
 
@@ -159,11 +160,16 @@ exports.query = (ctx) => {
   });
 };
 
+function pickInfluxConfig(data) {
+  const keys = '_id name updatedAt token'.split(' ');
+  return _.pick(data, keys);
+}
+
 exports.addConfig = (ctx) => {
   const data = Joi.validateThrow(ctx.request.body, {
     name: Joi.string().required(),
     server: Joi.string().required(),
-    db: Joi.string().required(),
+    database: Joi.string().required(),
     rp: Joi.string().empty('').optional(),
     measurement: Joi.string().required(),
     conditions: Joi.array().items(Joi.object().keys({
@@ -184,5 +190,19 @@ exports.addConfig = (ctx) => {
     }).optional(),
   });
   const account = ctx.session.user.account;
-  console.dir(data);
+  data.account = account;
+  return InfluxdbServer.addConfig(data).then((doc) => {
+    /* eslint no-param-reassign:0 */
+    ctx.body = pickInfluxConfig(doc);
+  });
+};
+
+exports.listConfig = (ctx) => {
+  const account = ctx.session.user.account;
+  return InfluxdbServer.listConfig({
+    account,
+  }).then((data) => {
+    /* eslint no-param-reassign:0 */
+    ctx.body = _.map(data, pickInfluxConfig);
+  });
 };

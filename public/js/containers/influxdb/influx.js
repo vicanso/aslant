@@ -6,7 +6,11 @@ import { Line } from 'dcharts';
 import DropdownSelector from '../../components/dropdown-selector';
 import * as influxdbService from '../../services/influxdb';
 import * as influxdbAction from '../../actions/influxdb';
+import * as navigationAction from '../../actions/navigation';
 import CoDropdownSelector from '../../components/co-dropdown-selector';
+import {
+  VIEW_INFLUX_CONFIGS,
+} from '../../constants/urls';
 
 function getClearItem(fn) {
   return (
@@ -28,7 +32,7 @@ class Influx extends Component {
     super(props);
     this.state = {
       dbs: [],
-      db: '',
+      database: '',
       rps: [],
       rp: '',
       measurements: [],
@@ -47,7 +51,7 @@ class Influx extends Component {
   }
   componentWillUpdate(nextProps, nextState) {
     const {
-      db,
+      database,
       measurement,
       conditions,
       cals,
@@ -55,10 +59,10 @@ class Influx extends Component {
       time,
       groups,
     } = nextState;
-    if (!db || !measurement) {
+    if (!database || !measurement) {
       return;
     }
-    const ql = new InfluxQL(db);
+    const ql = new InfluxQL(database);
     ql.measurement = measurement;
     ql.RP = _.get(rp, 'name', '');
     _.forEach(conditions, (item) => {
@@ -102,11 +106,11 @@ class Influx extends Component {
     }
     this.ql.value = ql.toSelect();
   }
-  onSelectDatabases(db) {
+  onSelectDatabases(database) {
     const server = this.state.server;
-    this.reset('db', db);
+    this.reset('database', database);
     /* eslint no-underscore-dangle:0 */
-    const args = [server, db];
+    const args = [server, database];
     influxdbService.showMeasurements(...args).then(measurements => this.setState({
       measurements: measurements.sort(),
     })).catch(console.error);
@@ -117,11 +121,11 @@ class Influx extends Component {
   onSelectMeasurement(measurement) {
     const {
       server,
-      db,
+      database,
     } = this.state;
     this.reset('measurement', measurement);
     /* eslint no-underscore-dangle:0 */
-    const args = [server, db, measurement];
+    const args = [server, database, measurement];
     influxdbService.showSeries(...args).then((series) => {
       const tags = [];
       const tagValueDict = {};
@@ -162,14 +166,14 @@ class Influx extends Component {
   query() {
     const {
       server,
-      db,
+      database,
     } = this.state;
     const ql = this.ql.value;
-    if (!server || !db || !ql) {
-      console.error('server, db and ql can not be null');
+    if (!server || !database || !ql) {
+      console.error('server, database and ql can not be null');
       return;
     }
-    influxdbService.query(server, db, ql)
+    influxdbService.query(server, database, ql)
       .then(data => this.renderChart(data))
       .catch(console.error);
   }
@@ -180,7 +184,7 @@ class Influx extends Component {
         state = {
           server: value,
           dbs: [],
-          db: '',
+          database: '',
           rps: [],
           rp: '',
           measurements: [],
@@ -193,9 +197,9 @@ class Influx extends Component {
           groups: {},
         };
         break;
-      case 'db':
+      case 'database':
         state = {
-          db: value,
+          database: value,
           rps: [],
           rp: '',
           measurements: [],
@@ -229,11 +233,19 @@ class Influx extends Component {
     const {
       dispatch,
     } = this.props;
-    const keys = 'server db rp measurement conditions cals groups time'.split(' ');
+    const keys = 'server database rp measurement conditions cals groups time'.split(' ');
     const data = _.pick(this.state, keys);
-    dispatch(influxdbAction.addConfig(data)).then((data) => {
 
-    }).catch(console.error);
+    const name = this.influxName.value;
+    data.name = name;
+    const emptyKeys = _.filter('name server database measurement'.split(' '), key => !data[key]);
+    if (emptyKeys.length) {
+      console.error(`${emptyKeys.join(',')} can not be null`);
+      return;
+    }
+    dispatch(influxdbAction.addConfig(data))
+      .then(() => dispatch(navigationAction.to(VIEW_INFLUX_CONFIGS)))
+      .catch(console.error);
   }
   renderChart(data) {
     const {
@@ -497,12 +509,16 @@ class Influx extends Component {
   render() {
     const {
       servers,
+      id,
     } = this.props;
     const {
       dbs,
       rps,
       measurements,
     } = this.state;
+    if (!servers && id) {
+      return <p className="tac">正在加载中，请稍候...</p>;
+    }
     return (
       <div className="add-influx-wrapper">
         <div className="influx-content-wrapper">
@@ -539,15 +555,22 @@ class Influx extends Component {
           <div
             className="chart-config-wrapper"
           >
-            <label>Name:</label>
-            <input type="text" />
             <button
               className="pure-button pure-button-primary pure-button-block save"
-              onClick={e => this.saveInfluxConfig()}
+              onClick={() => this.saveInfluxConfig()}
             >Save</button>
           </div>
         </div>
         <div className="config-wrapper">
+          <h4>Visualization Name</h4>
+          <input
+            className="visualization-name"
+            type="text"
+            placeholder="Pleace input visualization's name"
+            ref={(c) => {
+              this.influxName = c;
+            }}
+          />
           <h4>Influx Config</h4>
           <DropdownSelector
             placeholder={'Choose Server'}
@@ -587,7 +610,8 @@ class Influx extends Component {
 
 Influx.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  servers: PropTypes.array.isRequired,
+  servers: PropTypes.array,
+  id: PropTypes.string,
 };
 
 export default Influx;
