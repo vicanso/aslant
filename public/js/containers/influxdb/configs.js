@@ -7,6 +7,10 @@ import {
 } from '../../constants/urls';
 
 class Configs extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
   render() {
     const {
       configs,

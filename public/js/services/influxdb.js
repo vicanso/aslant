@@ -220,3 +220,8 @@ export function listConfig() {
   return http.get(INFLUXDB_CONFIGS)
     .then(res => res.body);
 }
+
+export function getConfig(id) {
+  return http.get(`${INFLUXDB_CONFIGS}/${id}`)
+    .then(res => res.body);
+}

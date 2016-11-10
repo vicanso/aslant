@@ -206,3 +206,11 @@ exports.listConfig = (ctx) => {
     ctx.body = _.map(data, pickInfluxConfig);
   });
 };
+
+exports.getConfig = (ctx) => {
+  const id = ctx.params.id;
+  return InfluxdbServer.getConfig(id).then((data) => {
+    /* eslint no-param-reassign:0 */
+    ctx.body = data;
+  });
+};

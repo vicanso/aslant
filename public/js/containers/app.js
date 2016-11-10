@@ -114,6 +114,9 @@ class App extends Component {
       influxdb,
     } = this.props;
     const servers = _.sortBy(influxdb.servers, item => item.name);
+    if (!servers.length) {
+      return null;
+    }
     return (
       <InfluxView
         dispatch={dispatch}
@@ -181,10 +184,16 @@ class App extends Component {
   renderEditInflux({ params: { id } }) {
     const {
       dispatch,
+      influxdb,
     } = this.props;
+    const servers = _.sortBy(influxdb.servers, item => item.name);
+    if (!servers.length) {
+      return null;
+    }
     return (
       <InfluxView
         dispatch={dispatch}
+        servers={servers}
         id={id}
       />
     );

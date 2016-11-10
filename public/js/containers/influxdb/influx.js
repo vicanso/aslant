@@ -31,6 +31,7 @@ class Influx extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      server: '',
       dbs: [],
       database: '',
       rps: [],
@@ -59,7 +60,7 @@ class Influx extends Component {
       time,
       groups,
     } = nextState;
-    if (!database || !measurement) {
+    if (!database || !measurement || !this.ql) {
       return;
     }
     const ql = new InfluxQL(database);
@@ -228,6 +229,21 @@ class Influx extends Component {
         break;
     }
     this.setState(state);
+  }
+  restore(id) {
+    const {
+      servers,
+    } = this.props;
+    influxdbService.getConfig(id).then((data) => {
+      const result = {};
+      _.forEach(this.state, (v, k) => {
+        if (data[k] && data[k] !== v) {
+          result[k] = data[k];
+        }
+      });
+      result.server = _.find(servers, item => item._id === data.server);
+      this.setState(result);
+    }).catch(console.error);
   }
   saveInfluxConfig() {
     const {
@@ -512,11 +528,16 @@ class Influx extends Component {
       id,
     } = this.props;
     const {
+      server,
       dbs,
+      db,
       rps,
+      rp,
       measurements,
+      measurement,
     } = this.state;
-    if (!servers && id) {
+    if (!server && id) {
+      this.restore(id);
       return <p className="tac">正在加载中，请稍候...</p>;
     }
     return (
@@ -575,16 +596,19 @@ class Influx extends Component {
           <DropdownSelector
             placeholder={'Choose Server'}
             items={servers}
+            selected={server}
             onSelect={(e, item) => this.onSelectServer(item)}
           />
           <DropdownSelector
             placeholder={'Choose Database'}
             items={dbs}
+            selected={db}
             onSelect={(e, item) => this.onSelectDatabases(item)}
           />
           <DropdownSelector
             placeholder={'Choose RP'}
             items={rps}
+            selected={rp}
             onSelect={(e, item) => this.setState({
               rp: item,
             })}
@@ -592,6 +616,7 @@ class Influx extends Component {
           <DropdownSelector
             placeholder={'Choose Measurement'}
             items={measurements}
+            selected={measurement}
             onSelect={(e, item) => this.onSelectMeasurement(item)}
           />
           <h5>Filter By</h5>
@@ -610,7 +635,7 @@ class Influx extends Component {
 
 Influx.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  servers: PropTypes.array,
+  servers: PropTypes.array.isRequired,
   id: PropTypes.string,
 };
 

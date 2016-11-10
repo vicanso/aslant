@@ -117,3 +117,7 @@ exports.listConfig = (conditions) => {
     updatedAt: -1,
   }).then(docsToJSON);
 };
+
+exports.getConfig = (id) => {
+  return Models.get('Influx-config').findById(id).then(doc => doc.toJSON());
+};
