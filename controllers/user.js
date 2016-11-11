@@ -3,7 +3,7 @@ const Joi = require('joi');
 const _ = require('lodash');
 
 const errors = localRequire('helpers/errors');
-const UserService = localRequire('services/user');
+const userService = localRequire('services/user');
 
 const pickUserInfo = (data) => {
   const keys = 'account lastLoginedAt loginCount'.split(' ');
@@ -44,7 +44,7 @@ exports.login = (ctx) => {
     throw errors.get(102);
   }
   const { account, password } = ctx.request.body;
-  return UserService.get(account, password, token).then((doc) => {
+  return userService.get(account, password, token).then((doc) => {
     const user = pickUserInfo(doc);
     const ip = ctx.ip;
     user.token = uuid.v4();
@@ -54,12 +54,12 @@ exports.login = (ctx) => {
     /* eslint no-param-reassign:0 */
     ctx.body = user;
     /* eslint no-underscore-dangle:0 */
-    UserService.update(doc._id, {
+    userService.update(doc._id, {
       lastLoginedAt: (new Date()).toISOString(),
       loginCount: user.loginCount,
       ip,
     });
-    UserService.addLoginRecord({
+    userService.addLoginRecord({
       account: user.account,
       token: user.token,
       userAgent: ctx.get('User-Agent'),
@@ -79,14 +79,14 @@ exports.register = (ctx) => {
   }
   const ip = ctx.ip;
   data.ip = ip;
-  return UserService.add(data).then((doc) => {
+  return userService.add(data).then((doc) => {
     const user = pickUserInfo(doc);
     user.token = uuid.v4();
     /* eslint no-param-reassign:0 */
     ctx.session.user = user;
     /* eslint no-param-reassign:0 */
     ctx.body = user;
-    UserService.addLoginRecord({
+    userService.addLoginRecord({
       account: user.account,
       token: user.token,
       userAgent: ctx.get('User-Agent'),

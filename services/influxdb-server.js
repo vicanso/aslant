@@ -121,3 +121,18 @@ exports.listConfig = (conditions) => {
 exports.getConfig = (id) => {
   return Models.get('Influx-config').findById(id).then(doc => doc.toJSON());
 };
+
+
+exports.updateConfig = (conditon, data) => {
+  data.token = uuid.v4();
+  data.updatedAt = (new Date()).toISOString();
+  const InfluxConfig = Models.get('Influx-config');
+  return InfluxConfig.findOneAndUpdate(conditon, data, {
+    new: true,
+  }).then((doc) => {
+    if (!doc) {
+      throw errors.get(4);
+    }
+    return doc.toJSON();
+  });
+};

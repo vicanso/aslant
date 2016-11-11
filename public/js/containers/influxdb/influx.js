@@ -27,6 +27,30 @@ function getClearItem(fn) {
   );
 }
 
+function formatSeries(series) {
+  const tags = [];
+  const tagValueDict = {};
+  _.forEach(series, (str) => {
+    _.forEach(str.split(',').slice(1), (item) => {
+      const [tag, value] = item.split('=');
+      if (_.indexOf(tags, tag) === -1) {
+        tags.push(tag);
+        tagValueDict[tag] = [];
+      }
+      if (_.indexOf(tagValueDict[tag], value) === -1) {
+        tagValueDict[tag].push(value);
+      }
+    });
+  });
+  _.forEach(tagValueDict, (values, tag) => {
+    tagValueDict[tag] = values.sort();
+  });
+  return {
+    tags,
+    tagValueDict,
+  };
+}
+
 class Influx extends Component {
   constructor(props) {
     super(props);
@@ -128,27 +152,8 @@ class Influx extends Component {
     /* eslint no-underscore-dangle:0 */
     const args = [server, database, measurement];
     influxdbService.showSeries(...args).then((series) => {
-      const tags = [];
-      const tagValueDict = {};
-      _.forEach(series, (str) => {
-        _.forEach(str.split(',').slice(1), (item) => {
-          const [tag, value] = item.split('=');
-          if (_.indexOf(tags, tag) === -1) {
-            tags.push(tag);
-            tagValueDict[tag] = [];
-          }
-          if (_.indexOf(tagValueDict[tag], value) === -1) {
-            tagValueDict[tag].push(value);
-          }
-        });
-      });
-      _.forEach(tagValueDict, (values, tag) => {
-        tagValueDict[tag] = values.sort();
-      });
-      this.setState({
-        tags,
-        tagValueDict,
-      });
+      const data = formatSeries(series);
+      this.setState(data);
     }).catch(console.error);
     influxdbService.showFieldKeys(...args).then((data) => {
       const fields = _.map(_.get(data, '[0].values'), item => item.key);
@@ -231,23 +236,26 @@ class Influx extends Component {
     this.setState(state);
   }
   restore(id) {
-    const {
-      servers,
-    } = this.props;
-    influxdbService.getConfig(id).then((data) => {
-      const result = {};
+    influxdbService.getConfig(id, {
+      fill: true,
+    }).then((data) => {
+      const result = _.pick(data, 'name token'.split(' '));
       _.forEach(this.state, (v, k) => {
         if (data[k] && data[k] !== v) {
           result[k] = data[k];
         }
       });
-      result.server = _.find(servers, item => item._id === data.server);
+      if (data.series) {
+        _.extend(result, formatSeries(data.series));
+      }
+      result.name = data.name;
       this.setState(result);
     }).catch(console.error);
   }
   saveInfluxConfig() {
     const {
       dispatch,
+      id,
     } = this.props;
     const keys = 'server database rp measurement conditions cals groups time'.split(' ');
     const data = _.pick(this.state, keys);
@@ -259,7 +267,13 @@ class Influx extends Component {
       console.error(`${emptyKeys.join(',')} can not be null`);
       return;
     }
-    dispatch(influxdbAction.addConfig(data))
+    let fn;
+    if (id) {
+      fn = influxdbAction.updateConfig(id, this.state.token, data);
+    } else {
+      fn = influxdbAction.addConfig(data);
+    }
+    dispatch(fn)
       .then(() => dispatch(navigationAction.to(VIEW_INFLUX_CONFIGS)))
       .catch(console.error);
   }
@@ -528,9 +542,10 @@ class Influx extends Component {
       id,
     } = this.props;
     const {
+      name,
       server,
       dbs,
-      db,
+      database,
       rps,
       rp,
       measurements,
@@ -540,6 +555,11 @@ class Influx extends Component {
       this.restore(id);
       return <p className="tac">正在加载中，请稍候...</p>;
     }
+    let selectedServer = server;
+    if (_.isString(selectedServer)) {
+      selectedServer = _.find(servers, item => item._id === server);
+    }
+
     return (
       <div className="add-influx-wrapper">
         <div className="influx-content-wrapper">
@@ -588,6 +608,7 @@ class Influx extends Component {
             className="visualization-name"
             type="text"
             placeholder="Pleace input visualization's name"
+            defaultValue={name}
             ref={(c) => {
               this.influxName = c;
             }}
@@ -596,13 +617,13 @@ class Influx extends Component {
           <DropdownSelector
             placeholder={'Choose Server'}
             items={servers}
-            selected={server}
+            selected={selectedServer}
             onSelect={(e, item) => this.onSelectServer(item)}
           />
           <DropdownSelector
             placeholder={'Choose Database'}
             items={dbs}
-            selected={db}
+            selected={database}
             onSelect={(e, item) => this.onSelectDatabases(item)}
           />
           <DropdownSelector

@@ -216,12 +216,19 @@ export function addConfig(data) {
     .then(res => res.body);
 }
 
+export function updateConfig(id, token, config) {
+  return http.put(`${INFLUXDB_CONFIGS}/${id}`)
+    .set('X-Access-Token', token)
+    .send(config)
+    .then(res => res.body);
+}
+
 export function listConfig() {
   return http.get(INFLUXDB_CONFIGS)
     .then(res => res.body);
 }
 
-export function getConfig(id) {
-  return http.get(`${INFLUXDB_CONFIGS}/${id}`)
+export function getConfig(id, params) {
+  return http.get(`${INFLUXDB_CONFIGS}/${id}`, params)
     .then(res => res.body);
 }
