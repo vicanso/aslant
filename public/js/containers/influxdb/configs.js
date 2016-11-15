@@ -1,15 +1,22 @@
-import React, { Component, PropTypes } from 'react';
+import React, { PropTypes } from 'react';
 import moment from 'moment';
 import * as _ from 'lodash';
 
+import InfluxTable from '../../components/influx-table';
+import * as influxdbAction from '../../actions/influxdb';
 import {
   VIEW_EDIT_INFLUX,
 } from '../../constants/urls';
 
-class Configs extends Component {
+class Configs extends InfluxTable {
   constructor(props) {
     super(props);
     this.state = {};
+  }
+  remove(item) {
+    /* eslint no-underscore-dangle:0 */
+    const fn = influxdbAction.removeConfig(item._id);
+    super.remove(fn);
   }
   render() {
     const {
@@ -26,12 +33,20 @@ class Configs extends Component {
         >
           <td>{item.name}</td>
           <td>{moment(item.updatedAt).format('YYYY-MM-DD HH:mm:ss')}</td>
-          <td>
+          <td
+            className="op"
+          >
             <a
               href={url}
               onClick={handleLink(url)}
             >
-              <i className="fa fa-pencil-square-o" aria-hidden="true" />
+              <span className="pt-icon-standard pt-icon-edit" />
+            </a>
+            <a
+              href="javascript:;"
+              onClick={e => this.confirmToRemove(e, item)}
+            >
+              <span className="pt-icon-standard pt-icon-remove" />
             </a>
           </td>
         </tr>
@@ -39,7 +54,7 @@ class Configs extends Component {
     });
     return (
       <div className="influx-configs-wrapper">
-        <table className="pure-table">
+        <table className="table">
           <thead>
             <tr>
               <th>Name</th>
@@ -51,6 +66,8 @@ class Configs extends Component {
             { arr }
           </tbody>
         </table>
+        { this.renderAlert() }
+        { this.renderToaster() }
       </div>
     );
   }

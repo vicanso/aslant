@@ -1,7 +1,11 @@
-import React, { Component, PropTypes } from 'react';
+import React, { PropTypes } from 'react';
 import moment from 'moment';
 import * as _ from 'lodash';
+import {
+  Switch,
+} from '@blueprintjs/core';
 
+import InfluxTable from '../../components/influx-table';
 import * as influxdbAction from '../../actions/influxdb';
 import {
   VIEW_EDIT_SERVER,
@@ -9,31 +13,15 @@ import {
   VIEW_ADD_SERVER,
 } from '../../constants/urls';
 
-class Servers extends Component {
-  confirmToRemove(e, item) {
-    const {
-      confirm,
-    } = this.props;
-    e.preventDefault();
-
-    confirm({
-      content: `<p>Confirm to remove the server's config?(${item.name})</p>`,
-    }, (type) => {
-      if (type === 'confirm') {
-        this.remove(item);
-      }
-    });
+class Servers extends InfluxTable {
+  constructor(props) {
+    super(props);
+    this.state = {};
   }
   remove(item) {
-    const {
-      dispatch,
-    } = this.props;
     /* eslint no-underscore-dangle:0 */
-    dispatch(influxdbAction.remove(item._id)).then(() => {
-
-    }).catch((err) => {
-      console.error(err);
-    });
+    const fn = influxdbAction.remove(item._id);
+    super.remove(fn);
   }
   renderServers() {
     const {
@@ -64,7 +52,14 @@ class Servers extends Component {
           <td>{server.name}</td>
           <td>{server.host}</td>
           <td>{server.port}</td>
-          <td>{server.ssl}</td>
+          <td
+            className="switch-wrapper"
+          >
+            <Switch
+              readOnly
+              checked={server.ssl}
+            />
+          </td>
           <td>{server.username || '--'}</td>
           <td>{server.password || '--'}</td>
           <td>{updatedAt}</td>
@@ -73,26 +68,26 @@ class Servers extends Component {
               href={statusHref}
               onClick={handleLink(statusHref)}
             >
-              <i className="fa fa-server" aria-hidden="true" />
+              <span className="pt-icon-standard pt-icon-database" />
             </a>
             <a
               href={editHref}
               onClick={handleLink(editHref)}
             >
-              <i className="fa fa-pencil-square-o" aria-hidden="true" />
+              <span className="pt-icon-standard pt-icon-edit" />
             </a>
             <a
               href="javascript:;"
               onClick={e => this.confirmToRemove(e, server)}
             >
-              <i className="fa fa-times" aria-hidden="true" />
+              <span className="pt-icon-standard pt-icon-remove" />
             </a>
           </td>
         </tr>
       );
     });
     return (
-      <table className="pure-table">
+      <table className="table">
         <thead>
           <tr>
             <th>Nick name</th>
@@ -115,6 +110,8 @@ class Servers extends Component {
     return (
       <div className="influxdb-servers-wrapper">
         { this.renderServers() }
+        { this.renderAlert() }
+        { this.renderToaster() }
       </div>
     );
   }

@@ -2,6 +2,10 @@ import React, { Component, PropTypes } from 'react';
 import { Router, Route } from 'react-enroute';
 import * as ReactRedux from 'react-redux';
 import * as _ from 'lodash';
+import {
+  Toaster,
+  FocusStyleManager,
+} from '@blueprintjs/core';
 
 import * as globals from '../helpers/globals';
 
@@ -33,6 +37,7 @@ import * as influxdbAction from '../actions/influxdb';
 class App extends Component {
   constructor(props) {
     super(props);
+    FocusStyleManager.onlyShowFocusOnTabs();
     const dispatch = props.dispatch;
     globals.set('onpopstate', () => {
       dispatch(navigationAction.back());
@@ -54,7 +59,7 @@ class App extends Component {
       this.setState({
         isFetchingUserInfo: false,
       });
-      console.error(err);
+      this.showError(err.response.body.message);
     });
     this.handleLink = this.handleLink.bind(this);
     this.confirm = this.confirm.bind(this);
@@ -73,6 +78,12 @@ class App extends Component {
         dispatch(influxdbAction.reset());
       }
     }
+  }
+  showError(message) {
+    this.toaster.show({
+      message,
+      className: 'pt-intent-warning',
+    });
   }
   confirm(options, handler) {
     const {
@@ -328,6 +339,11 @@ class App extends Component {
             component={() => this.renderInfluxConfigs()}
           />
         </Router>
+        <Toaster
+          ref={(c) => {
+            this.toaster = c;
+          }}
+        />
       </div>
     );
   }

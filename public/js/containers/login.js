@@ -58,9 +58,7 @@ class Login extends FormView {
       error = 'Account catn\'t be less than 4 character!';
     }
     if (error) {
-      this.setState({
-        error,
-      });
+      this.showError(error);
       return;
     }
     this.setState({
@@ -71,10 +69,7 @@ class Login extends FormView {
         dispatch(navigationAction.back());
       })
       .catch((err) => {
-        this.setState({
-          status: '',
-          error: err.response.body.message,
-        });
+        this.showError(err.response.body.message);
       });
   }
   render() {
@@ -82,9 +77,6 @@ class Login extends FormView {
     return (
       <div className="login-register-container">
         <h3 className="tac">Sign in to Aslant</h3>
-        {
-          this.renderError()
-        }
         {
           super.render()
         }

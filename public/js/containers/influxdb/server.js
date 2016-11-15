@@ -32,7 +32,7 @@ class Server extends FormView {
       },
       {
         label: 'Use SSL',
-        type: 'checkbox',
+        type: 'switch',
         id: 'ssl',
       },
       {
@@ -101,17 +101,14 @@ class Server extends FormView {
     }).catch((err) => {
       this.setState({
         status: '',
-        error: err.response.body.message,
       });
+      this.showError(err.response.body.message);
     });
   }
   render() {
     return (
       <div className="login-register-container">
         <h3 className="tac">Add Influxdb Server</h3>
-        {
-          this.renderError()
-        }
         {
           super.render()
         }

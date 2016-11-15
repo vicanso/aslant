@@ -44,6 +44,36 @@ function version(opts) {
   return through.obj(addVersion);
 }
 
+gulp.task('bootstrap', [
+  'copy-blueprintjs/core/css',
+  'copy-blueprintjs/core/font',
+  'copy-blueprintjs/table/css',
+  'copy-blueprintjs/datetime/css',
+]);
+
+gulp.task('copy-blueprintjs/core/css', () => gulp.src('node_modules/@blueprintjs/core/dist/blueprint.css')
+  .pipe(through.obj((file, encoding, cb) => {
+    const css = file.contents.toString();
+    const reg = /assets/gi;
+    const buf = new Buffer(css.replace(reg, '../fonts'));
+    fs.writeFile('public/css/blueprint.css', buf, cb);
+  })));
+gulp.task('copy-blueprintjs/core/font', () => gulp.src('node_modules/@blueprintjs/core/dist/assets/*')
+  .pipe(copy('public/fonts', {
+    prefix: 5,
+  })));
+
+gulp.task('copy-blueprintjs/table/css', () => gulp.src('node_modules/@blueprintjs/table/dist/table.css')
+  .pipe(copy('public/css', {
+    prefix: 4,
+  })));
+
+gulp.task('copy-blueprintjs/datetime/css', () => gulp.src('node_modules/@blueprintjs/datetime/dist/blueprint-datetime.css')
+  .pipe(copy('public/css', {
+    prefix: 4,
+  })));
+
+
 gulp.task('del:assets', () => del([assetsPath]));
 
 gulp.task('del:build', () => del(['build', 'public/bundle']));

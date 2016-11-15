@@ -1,4 +1,8 @@
 import React, { Component } from 'react';
+import {
+  Toaster,
+  Switch,
+} from '@blueprintjs/core';
 import classnames from 'classnames';
 import * as _ from 'lodash';
 
@@ -20,7 +24,9 @@ class Form extends Component {
       const key = field.id;
       const ref = inputs[key];
       const value = ref.value || '';
-      if (field.type === 'checkbox' || field.type === 'radio') {
+      if (field.type === 'switch') {
+        data[key] = ref;
+      } else if (field.type === 'checkbox' || field.type === 'radio') {
         data[key] = ref.checked;
       } else if (value) {
         data[key] = value;
@@ -30,9 +36,7 @@ class Form extends Component {
       }
     });
     if (errors.length) {
-      this.setState({
-        error: errors.join(','),
-      });
+      this.showError(errors.join(','));
       return null;
     }
     return data;
@@ -46,28 +50,11 @@ class Form extends Component {
     }
     return 'Submit';
   }
-  handleChange() {
-    const state = this.state;
-    if (state.error) {
-      this.setState({
-        error: '',
-      });
-    }
-  }
-  renderError() {
-    const {
-      error,
-    } = this.state;
-    if (!error) {
-      return null;
-    }
-    return (
-      <div
-        className="flash flash-error"
-      >
-        {error}
-      </div>
-    );
+  showError(message) {
+    this.toaster.show({
+      message,
+      className: 'pt-intent-warning',
+    });
   }
   render() {
     const {
@@ -78,46 +65,65 @@ class Form extends Component {
     const submitOptions = {
       value: this.getSubmitText(),
       cls: {
-        'pure-button': true,
-        'pure-button-primary': true,
-        'pure-button-block': true,
+        'pt-button': true,
+        'pt-intent-primary': true,
+        'pt-fill': true,
         disabled: status === 'submitting',
       },
     };
     const fieldsList = _.map(fields, (field, index) => {
       const id = field.id;
+      if (field.type === 'switch') {
+        this.inputs[id] = field.value;
+        return (
+          <Switch
+            style={{
+              marginTop: '15px',
+            }}
+            defaultChecked={this.inputs[id]}
+            label={field.label}
+            key={id}
+            onChange={() => {
+              this.inputs[id] = !this.inputs[id];
+            }}
+          />
+        );
+      }
       return (
         <div
-          className="pure-control-group"
           key={id}
         >
-          <label htmlFor={id}>{field.label}</label>
-          <input
-            id={id}
-            autoCapitalize="off"
-            autoCorrect="off"
-            autoFocus={field.autoFocus || false}
-            defaultValue={field.value}
-            defaultChecked={field.value}
-            type={field.type || 'text'}
-            tabIndex={index + 1}
-            ref={(c) => {
-              this.inputs[id] = c;
-            }}
-            onChange={() => this.handleChange()}
-          />
+          <label
+            className="pt-label"
+            htmlFor={id}
+          >
+            {field.label}
+            <input
+              className="pt-input"
+              id={id}
+              autoCapitalize="off"
+              autoCorrect="off"
+              autoFocus={field.autoFocus || false}
+              defaultValue={field.value}
+              defaultChecked={field.value}
+              type={field.type || 'text'}
+              tabIndex={index + 1}
+              ref={(c) => {
+                this.inputs[id] = c;
+              }}
+            />
+          </label>
         </div>
       );
     });
 
     return (
       <form
-        className="pure-form pure-form-aligned"
         onSubmit={e => this.handleSubmit(e)}
       >
         <fieldset>
           {fieldsList}
-          <div className="pure-control-group">
+          <div>
             <input
               type="submit"
               className={classnames(submitOptions.cls)}
@@ -126,6 +132,11 @@ class Form extends Component {
             />
           </div>
         </fieldset>
+        <Toaster
+          ref={(c) => {
+            this.toaster = c;
+          }}
+        />
       </form>
     );
   }

@@ -171,7 +171,7 @@ class Status extends Component {
         >
           <div className="keys">
             <h4>{name}</h4>
-            <table className="pure-table">
+            <table className="table">
               <tbody>
                 { values }
               </tbody>
@@ -259,7 +259,7 @@ class Status extends Component {
         </tr>
       ));
       return (
-        <table className="pure-table">
+        <table className="table">
           <thead><tr>
             <th>name</th>
             <th>duration</th>
@@ -316,7 +316,7 @@ class Status extends Component {
       });
 
       return (
-        <table className="pure-table">
+        <table className="table">
           <thead><tr>
             <th>measurement</th>
             <th>series</th>

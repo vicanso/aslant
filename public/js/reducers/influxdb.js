@@ -9,6 +9,7 @@ import {
   INFLUXDB_LIST_CONFIG,
   INFLUXDB_ADD_CONFIG,
   INFLUXDB_UPDATE_CONFIG,
+  INFLUXDB_REMOVE_CONFIG,
 } from '../constants/action-types';
 
 const defaultStates = {
@@ -74,6 +75,13 @@ export default function influxdb(state = defaultStates, action) {
       const index = _.findIndex(configs, item => item._id === id);
       configs.splice(index, 1);
       configs.unshift(action.item);
+      return Object.assign({}, state, {
+        configs,
+      });
+    }
+    case INFLUXDB_REMOVE_CONFIG: {
+      const id = action.id;
+      const configs = _.filter(state.configs, item => item._id !== id);
       return Object.assign({}, state, {
         configs,
       });

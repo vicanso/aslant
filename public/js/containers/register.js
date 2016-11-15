@@ -14,15 +14,18 @@ class Register extends FormView {
         label: 'Username',
         id: 'account',
         autoFocus: true,
+        required: true,
       },
       {
         label: 'Email Address',
         id: 'email',
+        required: true,
       },
       {
         label: 'Password',
         id: 'password',
         type: 'password',
+        required: true,
       },
     ];
   }
@@ -44,7 +47,11 @@ class Register extends FormView {
       return;
     }
     const { dispatch } = this.props;
-    const { account, password, email } = this.getData();
+    const data = this.getData();
+    if (!data) {
+      return;
+    }
+    const { account, password, email } = data;
     let error = '';
     if (!account || !password || !email) {
       error = 'Account Password and Email can\'t be empty';
@@ -57,9 +64,7 @@ class Register extends FormView {
       }
     }
     if (error) {
-      this.setState({
-        error,
-      });
+      this.showError(error);
       return;
     }
     this.setState({
@@ -70,10 +75,7 @@ class Register extends FormView {
         dispatch(navigationAction.home());
       })
       .catch((err) => {
-        this.setState({
-          status: '',
-          error: err.response.body.message,
-        });
+        this.showError(err.response.body.message);
       });
   }
   render() {
@@ -81,9 +83,6 @@ class Register extends FormView {
     return (
       <div className="login-register-container">
         <h3 className="tac">Join Aslant</h3>
-        {
-          this.renderError()
-        }
         {
           super.render()
         }

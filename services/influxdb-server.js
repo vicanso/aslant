@@ -136,3 +136,13 @@ exports.updateConfig = (conditon, data) => {
     return doc.toJSON();
   });
 };
+
+exports.removeConfig = (conditon) => {
+  const InfluxConfig = Models.get('Influx-config');
+  return InfluxConfig.findOneAndRemove(conditon).then((doc) => {
+    if (!doc) {
+      throw errors.get(5);
+    }
+    return null;
+  });
+};

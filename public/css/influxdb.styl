@@ -1,14 +1,21 @@
 @import './common'
 
+.influx-configs-wrapper, .influxdb-servers-wrapper
+  margin 15px 0
+  .op
+    a
+      margin 0 5px
+
 .influxdb-servers-wrapper
-  margin 20px
-  table
-    width 100%
-    .op
-      a
-        display inline-block
-        width 20px
-        text-align center
+  .switch-wrapper
+    position relative
+    .pt-switch
+      position absolute
+      top 50%
+      left 50%
+      margin-top -5px
+      margin-left -15px     
+
 .server-status-wrapper
   .server-status
     border-bottom 1px solid $COLOR_GRAY
@@ -162,7 +169,3 @@
         margin-left -3px
         margin-top 4px
       
-.influx-configs-wrapper
-  margin 15px
-  table
-    width 100%   

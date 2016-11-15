@@ -1,5 +1,12 @@
 import React, { PropTypes, Component } from 'react';
 import * as _ from 'lodash';
+import {
+  Menu,
+  MenuItem,
+  MenuDivider,
+  Popover,
+  Position,
+} from '@blueprintjs/core';
 
 import {
   VIEW_HOME,
@@ -13,25 +20,18 @@ import {
 } from '../constants/urls';
 import * as userAction from '../actions/user';
 import * as navigationAction from '../actions/navigation';
-import Dropdown from '../components/dropdown';
 
 class MainHeader extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      showUserNav: false,
-    };
+    this.state = {};
   }
   renderUserInfo() {
     const {
       user,
       isFetchingUserInfo,
-      dispatch,
       handleLink,
     } = this.props;
-    const {
-      showUserNav,
-    } = this.state;
     if (isFetchingUserInfo) {
       return (
         <span>
@@ -44,12 +44,12 @@ class MainHeader extends Component {
       return (
         <div className="functions">
           <a
-            className="pure-button button-secondary"
+            className="pt-button"
             href={VIEW_LOGIN}
             onClick={handleLink(VIEW_LOGIN)}
           >Sign In</a>
           <a
-            className="pure-button pure-button-primary"
+            className="pt-button pt-intent-primary"
             href={VIEW_REGISTER}
             onClick={handleLink(VIEW_REGISTER)}
           >Sign Up</a>
@@ -58,34 +58,28 @@ class MainHeader extends Component {
     }
     const userNavItems = [
       {
-        name: `Signed in as ${user.account}`,
-        type: 'label',
-      },
-      {
-        type: 'divider',
-      },
-      {
+        icon: 'pt-icon-add-to-artifact',
         name: 'Add Influx Config',
         action: 'redirect',
         href: VIEW_ADD_INFLUX,
       },
       {
+        icon: 'pt-icon-horizontal-bar-chart',
         name: 'Influx Configs',
         action: 'redirect',
         href: VIEW_INFLUX_CONFIGS,
       },
       {
+        icon: 'pt-icon-add',
         name: 'Add Server',
         action: 'redirect',
         href: VIEW_ADD_SERVER,
       },
       {
+        icon: 'pt-icon-duplicate',
         name: 'Servers',
         action: 'redirect',
         href: VIEW_SERVERS,
-      },
-      {
-        name: 'Help',
       },
       {
         type: 'divider',
@@ -104,6 +98,28 @@ class MainHeader extends Component {
         action: 'showToken',
       },
     ];
+    return (
+      <ul>
+        <li className="account">
+          <Popover
+            content={this.renderMenu(userNavItems)}
+            position={Position.BOTTOM_RIGHT}
+          >
+            <a
+              href="javascript:;"
+            >
+              <span className="pt-icon-standard pt-icon-user mright5" />
+              { user.account }
+            </a>
+          </Popover>
+        </li>
+      </ul>
+    );
+  }
+  renderMenu(items) {
+    const {
+      dispatch,
+    } = this.props;
     const onSelect = (e, item) => {
       e.preventDefault();
       if (item.action === 'redirect') {
@@ -112,33 +128,29 @@ class MainHeader extends Component {
         dispatch(userAction.logout());
       }
     };
+    const arr = _.map(items, (item, index) => {
+      if (item.type === 'divider') {
+        return (
+          <MenuDivider
+            key={index}
+          />
+        );
+      }
+      return (
+        <MenuItem
+          iconName={item.icon}
+          key={index}
+          text={item.name}
+          onClick={e => onSelect(e, item)}
+        />
+      );
+    });
     return (
-      <ul>
-        <li className="account">
-          <a
-            onFocus={() => this.setState({
-              showUserNav: true,
-            })}
-            onBlur={() => _.delay(() => {
-              this.setState({
-                showUserNav: false,
-              });
-            }, 150)}
-            href="javascript:;"
-          >
-            {user.account}
-          </a>
-          { showUserNav &&
-            <Dropdown
-              items={userNavItems}
-              cls={{
-                sw: true,
-              }}
-              onSelect={onSelect}
-            />
-          }
-        </li>
-      </ul>
+      <Menu
+        className="functions pt-elevation-1"
+      >
+        { arr }
+      </Menu>
     );
   }
   render() {

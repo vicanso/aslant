@@ -4,6 +4,9 @@ const webpack = require('webpack');
 module.exports = {
   entry: {
     vendor: [
+      '@blueprintjs/core',
+      '@blueprintjs/datetime',
+      '@blueprintjs/table',
       'classnames',
       'lodash',
       'dcharts',
@@ -22,7 +25,7 @@ module.exports = {
     ],
     app: './public/js/bootstrap.js',
   },
-  devtool: 'source-map',
+  // devtool: 'source-map',
   output: {
     path: __dirname + '/public/bundle',
     filename: '[name].js',

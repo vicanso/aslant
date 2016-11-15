@@ -232,3 +232,8 @@ export function getConfig(id, params) {
   return http.get(`${INFLUXDB_CONFIGS}/${id}`, params)
     .then(res => res.body);
 }
+
+export function removeConfig(id) {
+  return http.del(`${INFLUXDB_CONFIGS}/${id}`)
+    .then(res => res.body);
+}

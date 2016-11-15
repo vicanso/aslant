@@ -274,3 +274,14 @@ exports.updateConfig = (ctx) => {
     ctx.body = pickInfluxConfig(doc);
   });
 };
+
+exports.removeConfig = (ctx) => {
+  const account = ctx.session.user.account;
+  const id = ctx.params.id;
+  return influxdbService.removeConfig({
+    _id: id,
+    account,
+  }).then(() => {
+    ctx.body = null;
+  });
+};
