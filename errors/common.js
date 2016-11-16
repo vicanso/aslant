@@ -13,10 +13,14 @@ module.exports = {
   },
   4: {
     en: 'Token is expired',
-    status: 400,
+    status: 409,
   },
   5: {
     en: 'Data is not exists',
-    status: 404,
+    status: 410,
+  },
+  6: {
+    en: 'Request should be set no-cache',
+    status: 406,
   },
 };

@@ -87,10 +87,10 @@ class Status extends Component {
     } = dbConfig;
     const arr = _.map(items, (db) => {
       const cls = {
-        active: false,
+        'pt-tag': true,
       };
       if (current === db) {
-        cls.active = true;
+        cls['pt-intent-success'] = true;
       }
       return (
         <li

@@ -580,6 +580,7 @@ class Influx extends Component {
             </button>
             <div className="ql-input">
               <input
+                className="pt-input"
                 type="text"
                 ref={(c) => {
                   this.ql = c;
@@ -605,7 +606,7 @@ class Influx extends Component {
         <div className="config-wrapper">
           <h4>Visualization Name</h4>
           <input
-            className="visualization-name"
+            className="visualization-name pt-input"
             type="text"
             placeholder="Pleace input visualization's name"
             defaultValue={name}

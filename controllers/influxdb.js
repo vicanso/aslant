@@ -143,7 +143,7 @@ exports.showSeries = (ctx) => {
   return influxdbService.showSeries(id, db, measurement).then((data) => {
     ctx.set('Cache-Control', 'public, max-age=60');
     /* eslint no-param-reassign:0 */
-    ctx.body = data;
+    ctx.body = _.sortedUniq(_.compact(data).sort());
   });
 };
 

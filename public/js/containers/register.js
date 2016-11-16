@@ -75,6 +75,9 @@ class Register extends FormView {
         dispatch(navigationAction.home());
       })
       .catch((err) => {
+        this.setState({
+          status: '',
+        });
         this.showError(err.response.body.message);
       });
   }

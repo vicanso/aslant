@@ -19,7 +19,10 @@ const sessionMiddleware = session({
   },
 });
 
-const normal = exports.normal = (ctx, next) => {
+const normal = (ctx, next) => {
+  if (ctx.get('Cache-Control') !== 'no-cache' && ctx.query.cache !== 'false') {
+    throw errors.get(6);
+  }
   const startAt = process.hrtime();
   return sessionMiddleware(ctx, () => {
     const diff = process.hrtime(startAt);
@@ -29,6 +32,8 @@ const normal = exports.normal = (ctx, next) => {
     return next();
   });
 };
+
+exports.writable = normal;
 
 exports.readonly = (ctx, next) => normal(ctx, () => {
   Object.freeze(ctx.session);

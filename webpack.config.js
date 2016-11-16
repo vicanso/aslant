@@ -51,5 +51,10 @@ module.exports = {
       // (with more entries, this ensures that no other module
       //  goes into the vendor chunk)
     }),
+    new webpack.SourceMapDevToolPlugin({
+      test: /\.js$/,
+      exclude: /vendor.js/,
+      filename: '[name].map',
+    }),
   ],
 };

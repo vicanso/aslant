@@ -23,10 +23,12 @@ class Form extends Component {
       const required = field.required;
       const key = field.id;
       const ref = inputs[key];
-      const value = ref.value || '';
       if (field.type === 'switch') {
         data[key] = ref;
-      } else if (field.type === 'checkbox' || field.type === 'radio') {
+        return;
+      }
+      const value = ref.value || '';
+      if (field.type === 'checkbox' || field.type === 'radio') {
         data[key] = ref.checked;
       } else if (value) {
         data[key] = value;

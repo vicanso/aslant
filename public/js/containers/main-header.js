@@ -6,6 +6,7 @@ import {
   MenuDivider,
   Popover,
   Position,
+  Toaster,
 } from '@blueprintjs/core';
 
 import {
@@ -25,6 +26,12 @@ class MainHeader extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+  }
+  showError(message) {
+    this.toaster.show({
+      message,
+      className: 'pt-intent-warning',
+    });
   }
   renderUserInfo() {
     const {
@@ -125,7 +132,9 @@ class MainHeader extends Component {
       if (item.action === 'redirect') {
         dispatch(navigationAction.to(item.href));
       } else if (item.action === 'logout') {
-        dispatch(userAction.logout());
+        dispatch(userAction.logout()).catch((err) => {
+          this.showError(err.response.body.message);
+        });
       }
     };
     const arr = _.map(items, (item, index) => {
@@ -170,6 +179,11 @@ class MainHeader extends Component {
         >
           { this.renderUserInfo() }
         </div>
+        <Toaster
+          ref={(c) => {
+            this.toaster = c;
+          }}
+        />
       </header>
     );
   }

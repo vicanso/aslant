@@ -69,6 +69,9 @@ class Login extends FormView {
         dispatch(navigationAction.back());
       })
       .catch((err) => {
+        this.setState({
+          status: '',
+        });
         this.showError(err.response.body.message);
       });
   }
