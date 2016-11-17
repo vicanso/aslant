@@ -103,7 +103,12 @@
       color $COLOR_LIGHT_BLACK
     .dropdown-selector
       margin-bottom 15px
-      width 100%
+      position relative
+      .pt-popover-target
+        width 100%
+        display block
+        .pt-input
+          width 100%
     .co-dropdown-selector-wrapper
       position relative
       &:hover
@@ -158,7 +163,7 @@
           margin-top 3px
           &:hover
             color #666
-      .equal
+      .relation
         position absolute
         left 50%
         letter-spacing normal

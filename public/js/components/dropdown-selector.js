@@ -1,6 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import classnames from 'classnames';
 import * as _ from 'lodash';
+import {
+  Menu,
+  MenuItem,
+  Popover,
+  Position,
+} from '@blueprintjs/core';
 
 import Dropdown from './dropdown';
 
@@ -8,8 +14,7 @@ class DropdownSelector extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      active: false,
-      selected: null,
+      selected: props.selected,
     };
   }
   componentWillReceiveProps(nextProps) {
@@ -31,7 +36,6 @@ class DropdownSelector extends Component {
     const selected = this.state.selected || [];
     const state = {
       selected: item,
-      active: false,
     };
     if (multi) {
       const index = _.indexOf(selected, item);
@@ -48,6 +52,58 @@ class DropdownSelector extends Component {
     }
   }
   render() {
+    const {
+      items,
+      cls,
+      placeholder,
+      type,
+    } = this.props;
+
+    const multi = type === 'multi';
+    const selected = this.state.selected;
+    const selectedToString = () => {
+      if (!selected) {
+        return '';
+      }
+      if (_.isArray(selected)) {
+        return _.map(selected, item => item.name || item).join(',');
+      }
+      return selected.name || selected;
+    };
+
+    const arr = _.map(items, (item) => {
+      const name = item.name || item;
+      return (
+        <MenuItem
+          key={name}
+          text={name}
+          onClick={(e) => this.onSelect(e, item)}
+        />
+      );
+    });
+    const menu = (
+      <Menu>
+        { arr }
+      </Menu>
+    );
+    return (
+      <div 
+        className="dropdown-selector"
+      >
+        <Popover
+          content={menu}
+        >
+          <input
+            type="text"
+            placeholder={placeholder}
+            className="pt-input"
+            value={selectedToString()}
+          />
+        </Popover>
+      </div>
+    );
+  }
+  _render() {
     const {
       items,
       cls,

@@ -72,8 +72,12 @@ class App extends Component {
     const nextAccount = _.get(nextProps, 'user.account');
     if (currentAccount !== nextAccount) {
       if (nextAccount) {
-        dispatch(influxdbAction.listConfig());
-        dispatch(influxdbAction.list());
+        dispatch(influxdbAction.listConfig()).catch((err) => {
+          this.showError(err.response.body.message);
+        });
+        dispatch(influxdbAction.list()).catch((err) => {
+          this.showError(err.response.body.message);
+        });
       } else {
         dispatch(influxdbAction.reset());
       }

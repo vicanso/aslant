@@ -13,7 +13,6 @@ module.exports = {
       'debug',
       'influx-ql',
       'moment',
-      'node-uuid',
       'react',
       'react-dom',
       'react-enroute',

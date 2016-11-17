@@ -12,6 +12,9 @@ function docsToJSON(docs) {
 function getInfluxClient(id, db = '_internal') {
   const InfluxdbServer = Models.get('Influxdb-server');
   return InfluxdbServer.findById(id).then((doc) => {
+    if (!doc) {
+      throw errors.get(201);
+    }
     const config = doc.toJSON();
     const arr = [];
     arr.push(config.ssl? 'https://' : 'http://');
@@ -53,9 +56,11 @@ exports.update = (conditon, data) => {
   });
 };
 
-exports.remove = (conditon) => {
+exports.disabled = (conditon) => {
   const InfluxdbServer = Models.get('Influxdb-server');
-  return InfluxdbServer.findOneAndRemove(conditon).then((doc) => {
+  return InfluxdbServer.findOneAndUpdate(conditon, {
+    enabled: false,
+  }).then((doc) => {
     if (!doc) {
       throw errors.get(5);
     }
@@ -119,7 +124,12 @@ exports.listConfig = (conditions) => {
 };
 
 exports.getConfig = (id) => {
-  return Models.get('Influx-config').findById(id).then(doc => doc.toJSON());
+  return Models.get('Influx-config').findById(id).then((doc) => {
+    if (!doc) {
+      return null;
+    }
+    return doc.toJSON();
+  });
 };
 
 

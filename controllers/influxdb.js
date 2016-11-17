@@ -2,6 +2,7 @@ const Joi = require('joi');
 const _ = require('lodash');
 
 const influxdbService = localRequire('services/influxdb-server');
+const errors = localRequire('helpers/errors');
 
 function validateServer(data) {
   return Joi.validateThrow(data, {
@@ -53,6 +54,7 @@ exports.list = (ctx) => {
   const account = ctx.session.user.account;
   return influxdbService.list({
     account,
+    enabled: true,
   }).then((data) => {
     /* eslint no-param-reassign:0 */
     ctx.body = data;
@@ -77,7 +79,7 @@ exports.update = (ctx) => {
 exports.remove = (ctx) => {
   const account = ctx.session.user.account;
   const id = ctx.params.id;
-  return influxdbService.remove({
+  return influxdbService.disabled({
     _id: id,
     account,
   }).then(() => {
@@ -217,6 +219,9 @@ exports.getConfig = (ctx) => {
   const fill = query.fill;
   const id = ctx.params.id;
   return influxdbService.getConfig(id).then((doc) => {
+    if (!doc) {
+      throw errors.get(5);
+    }
     if (!fill || !doc.server) {
       return Promise.resolve(doc);
     }

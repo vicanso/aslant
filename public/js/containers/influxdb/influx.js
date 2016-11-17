@@ -2,6 +2,9 @@ import React, { PropTypes, Component } from 'react';
 import * as _ from 'lodash';
 import InfluxQL from 'influx-ql';
 import { Line } from 'dcharts';
+import {
+  Toaster,
+} from '@blueprintjs/core';
 
 import DropdownSelector from '../../components/dropdown-selector';
 import * as influxdbService from '../../services/influxdb';
@@ -131,6 +134,12 @@ class Influx extends Component {
     }
     this.ql.value = ql.toSelect();
   }
+  showError(message) {
+    this.toaster.show({
+      message,
+      className: 'pt-intent-warning',
+    });
+  }
   onSelectDatabases(database) {
     const server = this.state.server;
     this.reset('database', database);
@@ -250,7 +259,9 @@ class Influx extends Component {
       }
       result.name = data.name;
       this.setState(result);
-    }).catch(console.error);
+    }).catch((err) => {
+      this.showError(err.response.body.message);
+    });
   }
   saveInfluxConfig() {
     const {
@@ -553,7 +564,16 @@ class Influx extends Component {
     } = this.state;
     if (!server && id) {
       this.restore(id);
-      return <p className="tac">正在加载中，请稍候...</p>;
+      return (
+        <div>
+          <Toaster
+            ref={(c) => {
+              this.toaster = c;
+            }}
+          />
+          <p className="tac">正在加载中，请稍候...</p>
+        </div>
+      );
     }
     let selectedServer = server;
     if (_.isString(selectedServer)) {
@@ -650,6 +670,11 @@ class Influx extends Component {
           <h5>Time</h5>
           { this.renderTimeSelector() }
         </div>
+        <Toaster
+          ref={(c) => {
+            this.toaster = c;
+          }}
+        />
       </div>
     );
   }

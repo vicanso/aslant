@@ -130,17 +130,20 @@ export function toChartData(data, tags, cals) {
 
 export function list() {
   return http.get(INFLUXDB_SERVER)
+    .set('Cache-Control', 'no-cache')
     .then(res => res.body);
 }
 
 export function add(data) {
   return http.post(INFLUXDB_SERVER)
+    .set('Cache-Control', 'no-cache')
     .send(data)
     .then(res => res.body);
 }
 
 export function update(id, data, token) {
   return http.put(`${INFLUXDB_SERVER}/${id}`)
+    .set('Cache-Control', 'no-cache')
     .set('X-Access-Token', token)
     .send(data)
     .then(res => res.body);
@@ -148,6 +151,7 @@ export function update(id, data, token) {
 
 export function remove(id) {
   return http.del(`${INFLUXDB_SERVER}/${id}`)
+    .set('Cache-Control', 'no-cache')
     .then(res => res.body);
 }
 
@@ -225,6 +229,7 @@ export function updateConfig(id, token, config) {
 
 export function listConfig() {
   return http.get(INFLUXDB_CONFIGS)
+    .set('Cache-Control', 'no-cache')
     .then(res => res.body);
 }
 
@@ -235,5 +240,6 @@ export function getConfig(id, params) {
 
 export function removeConfig(id) {
   return http.del(`${INFLUXDB_CONFIGS}/${id}`)
+    .set('Cache-Control', 'no-cache')
     .then(res => res.body);
 }
