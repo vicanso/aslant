@@ -8,13 +8,11 @@ import {
   Position,
 } from '@blueprintjs/core';
 
-import Dropdown from './dropdown';
-
 class DropdownSelector extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selected: props.selected,
+      selected: null,
     };
   }
   componentWillReceiveProps(nextProps) {
@@ -60,7 +58,7 @@ class DropdownSelector extends Component {
     } = this.props;
 
     const multi = type === 'multi';
-    const selected = this.state.selected;
+    const selected = this.state.selected || this.props.selected;
     const selectedToString = () => {
       if (!selected) {
         return '';
@@ -100,75 +98,6 @@ class DropdownSelector extends Component {
             value={selectedToString()}
           />
         </Popover>
-      </div>
-    );
-  }
-  _render() {
-    const {
-      items,
-      cls,
-      placeholder,
-      type,
-    } = this.props;
-    const {
-      active,
-    } = this.state;
-    const multi = type === 'multi';
-    const selected = this.state.selected || this.props.selected;
-    const selectorCls = _.extend({}, cls, {
-      'dropdown-selector': true,
-      active,
-    });
-    const selectedToString = () => {
-      if (!selected) {
-        return '';
-      }
-      if (_.isArray(selected)) {
-        return _.map(selected, item => item.name || item).join(',');
-      }
-      return selected.name || selected;
-    };
-    const isShowPlaceHolder = () => {
-      if (active) {
-        return false;
-      }
-      if (!multi && selected) {
-        return false;
-      }
-      if (multi && selected && selected.length) {
-        return false;
-      }
-      return true;
-    };
-    return (
-      <div className={classnames(selectorCls)}>
-        <a
-          href="javascript:;"
-          className="select-value"
-          /* eslint jsx-a11y/no-static-element-interactions:0 */
-          onFocus={() => this.setState({
-            active: true,
-          })}
-          onBlur={() => _.delay(() => {
-            if (this.isUnmounted) {
-              return;
-            }
-            this.setState({
-              active: false,
-            });
-          }, 150)}
-        >
-          <i className="fa fa-sort-desc" aria-hidden="true" />
-          { isShowPlaceHolder() && placeholder }
-          { selectedToString() }
-        </a>
-        {
-          active &&
-          <Dropdown
-            onSelect={(e, item) => this.onSelect(e, item)}
-            items={items}
-          />
-        }
       </div>
     );
   }

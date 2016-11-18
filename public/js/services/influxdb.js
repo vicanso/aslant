@@ -144,7 +144,7 @@ export function add(data) {
 export function update(id, data, token) {
   return http.put(`${INFLUXDB_SERVER}/${id}`)
     .set('Cache-Control', 'no-cache')
-    .set('X-Access-Token', token)
+    .set('X-Token', token)
     .send(data)
     .then(res => res.body);
 }
@@ -217,12 +217,14 @@ export function query(id, db, ql) {
 
 export function addConfig(data) {
   return http.post(INFLUXDB_CONFIGS, data)
+    .set('Cache-Control', 'no-cache')
     .then(res => res.body);
 }
 
 export function updateConfig(id, token, config) {
   return http.put(`${INFLUXDB_CONFIGS}/${id}`)
-    .set('X-Access-Token', token)
+    .set('X-Token', token)
+    .set('Cache-Control', 'no-cache')
     .send(config)
     .then(res => res.body);
 }

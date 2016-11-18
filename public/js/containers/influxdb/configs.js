@@ -48,6 +48,11 @@ class Configs extends InfluxTable {
             >
               <span className="pt-icon-standard pt-icon-remove" />
             </a>
+            <a
+              href="javascript:;"
+            >
+              <span className="pt-icon-standard pt-icon-chart" />
+            </a>
           </td>
         </tr>
       );

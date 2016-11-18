@@ -24,7 +24,7 @@ function getClearItem(fn) {
         href="javascript:;"
         onClick={() => fn()}
       >
-        <i className="fa fa-times" aria-hidden="true" />
+        <span className="pt-icon-standard pt-icon-cross" />
       </a>
     </div>
   );
@@ -77,7 +77,7 @@ class Influx extends Component {
       },
     };
   }
-  componentWillUpdate(nextProps, nextState) {
+  getInfluxQL(state) {
     const {
       database,
       measurement,
@@ -86,8 +86,8 @@ class Influx extends Component {
       rp,
       time,
       groups,
-    } = nextState;
-    if (!database || !measurement || !this.ql) {
+    } = state;
+    if (!database || !measurement) {
       return;
     }
     const ql = new InfluxQL(database);
@@ -132,7 +132,13 @@ class Influx extends Component {
     if (groups.tags && groups.tags.length) {
       ql.addGroup(...groups.tags);
     }
-    this.ql.value = ql.toSelect();
+    return ql.toSelect();
+  }
+  componentWillUpdate(nextProps, nextState) {
+    const influxQL = this.getInfluxQL(nextState);
+    if (influxQL && this.ql) {
+      this.ql.value = influxQL;
+    }
   }
   showError(message) {
     this.toaster.show({
@@ -147,10 +153,14 @@ class Influx extends Component {
     const args = [server, database];
     influxdbService.showMeasurements(...args).then(measurements => this.setState({
       measurements: measurements.sort(),
-    })).catch(console.error);
+    })).catch((err) => {
+      this.showError(err.response.body.message);
+    });
     influxdbService.showRps(...args).then(rps => this.setState({
       rps: rps.sort(),
-    })).catch(console.error);
+    })).catch((err) => {
+      this.showError(err.response.body.message);
+    });
   }
   onSelectMeasurement(measurement) {
     const {
@@ -163,20 +173,26 @@ class Influx extends Component {
     influxdbService.showSeries(...args).then((series) => {
       const data = formatSeries(series);
       this.setState(data);
-    }).catch(console.error);
+    }).catch((err) => {
+      this.showError(err.response.body.message);
+    });
     influxdbService.showFieldKeys(...args).then((data) => {
       const fields = _.map(_.get(data, '[0].values'), item => item.key);
       this.setState({
         fields,
       });
-    }).catch(console.error);
+    }).catch((err) => {
+      this.showError(err.response.body.message);
+    });
   }
   onSelectServer(server) {
     const id = server._id;
     this.reset('server', id);
     influxdbService.showDatabases(id).then(dbs => this.setState({
       dbs: dbs.sort(),
-    })).catch(console.error);
+    })).catch((err) => {
+      this.showError(err.response.body.message);
+    });
   }
   query() {
     const {
@@ -190,7 +206,9 @@ class Influx extends Component {
     }
     influxdbService.query(server, database, ql)
       .then(data => this.renderChart(data))
-      .catch(console.error);
+      .catch((err) => {
+        this.showError(err.response.body.message);
+      });
   }
   reset(type, value) {
     let state = null;
@@ -275,7 +293,7 @@ class Influx extends Component {
     data.name = name;
     const emptyKeys = _.filter('name server database measurement'.split(' '), key => !data[key]);
     if (emptyKeys.length) {
-      console.error(`${emptyKeys.join(',')} can not be null`);
+      this.showError(`${emptyKeys.join(',')} can not be null`);
       return;
     }
     let fn;
@@ -286,7 +304,9 @@ class Influx extends Component {
     }
     dispatch(fn)
       .then(() => dispatch(navigationAction.to(VIEW_INFLUX_CONFIGS)))
-      .catch(console.error);
+      .catch((err) => {
+        this.showError(err.response.body.message);
+      });
   }
   renderChart(data) {
     const {
@@ -579,6 +599,10 @@ class Influx extends Component {
     if (_.isString(selectedServer)) {
       selectedServer = _.find(servers, item => item._id === server);
     }
+    let influxQL = '';
+    if (id) {
+      influxQL = this.getInfluxQL(this.state);
+    }
 
     return (
       <div className="add-influx-wrapper">
@@ -593,7 +617,7 @@ class Influx extends Component {
               }}
             >Influx QL</span>
             <button
-              className="pure-button pure-button-primary pull-right"
+              className="pt-button pt-intent-primary pull-right"
               onClick={() => this.query()}
             >
               Query
@@ -602,6 +626,7 @@ class Influx extends Component {
               <input
                 className="pt-input"
                 type="text"
+                defaultValue={influxQL}
                 ref={(c) => {
                   this.ql = c;
                 }}
@@ -618,7 +643,7 @@ class Influx extends Component {
             className="chart-config-wrapper"
           >
             <button
-              className="pure-button pure-button-primary pure-button-block save"
+              className="pt-button pt-intent-primary pt-button-block save"
               onClick={() => this.saveInfluxConfig()}
             >Save</button>
           </div>

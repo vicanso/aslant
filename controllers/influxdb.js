@@ -62,7 +62,7 @@ exports.list = (ctx) => {
 };
 
 exports.update = (ctx) => {
-  const token = ctx.get('X-Access-Token');
+  const token = ctx.get('X-Token');
   const account = ctx.session.user.account;
   const id = ctx.params.id;
   const data = validateServer(ctx.request.body);
@@ -266,7 +266,7 @@ exports.getConfig = (ctx) => {
 };
 
 exports.updateConfig = (ctx) => {
-  const token = ctx.get('X-Access-Token');
+  const token = ctx.get('X-Token');
   const account = ctx.session.user.account;
   const id = ctx.params.id;
   const data = validateConfig(ctx.request.body);

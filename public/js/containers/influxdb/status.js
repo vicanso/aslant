@@ -1,6 +1,9 @@
 import React, { PropTypes, Component } from 'react';
 import classnames from 'classnames';
 import * as _ from 'lodash';
+import {
+  Switch,
+} from '@blueprintjs/core';
 
 import * as influxdbService from '../../services/influxdb';
 
@@ -255,7 +258,17 @@ class Status extends Component {
           <td>{item.duration}</td>
           <td>{item.shardGroupDuration}</td>
           <td>{item.replicaN}</td>
-          <td>{`${item.default}`}</td>
+          <td
+            className="switch-wrapper"
+          >
+            <Switch
+              checked={item.default}
+              onChange={(e, item) => {
+                console.dir(e, item);
+              }}
+            />
+          </td>
+          <td> -- </td>
         </tr>
       ));
       return (
@@ -266,6 +279,7 @@ class Status extends Component {
             <th>shardGroupDuration</th>
             <th>replicaN</th>
             <th>default</th>
+            <th>OP</th>
           </tr></thead>
           <tbody>
             { arr }
