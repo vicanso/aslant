@@ -5,6 +5,7 @@ import * as _ from 'lodash';
 import {
   Toaster,
   FocusStyleManager,
+  Alert,
 } from '@blueprintjs/core';
 
 import * as globals from '../helpers/globals';
@@ -62,7 +63,8 @@ class App extends Component {
       this.showError(err.response.body.message);
     });
     this.handleLink = this.handleLink.bind(this);
-    this.confirm = this.confirm.bind(this);
+    this.showError = this.showError.bind(this);
+    this.alert = this.alert.bind(this);
   }
   componentWillReceiveProps(nextProps) {
     const {
@@ -80,38 +82,26 @@ class App extends Component {
         });
       } else {
         dispatch(influxdbAction.reset());
+        dispatch(navigationAction.home());
       }
     }
   }
-  showError(message) {
+  alert(content, cb) {
+    this.setState({
+      alert: {
+        content,
+        cb,
+      }
+    });
+  }
+  showError(err) {
+    let message = err;
+    if (_.isObject(err)) {
+      message = _.get(err, 'response.body.message', err.message);
+    }
     this.toaster.show({
       message,
       className: 'pt-intent-warning',
-    });
-  }
-  confirm(options, handler) {
-    const {
-      confirmDialogConfig,
-    } = this.state;
-    const data = _.extend({}, confirmDialogConfig, options);
-    data.handler = handler;
-    data.shown = true;
-    this.setState({
-      confirmDialogConfig: data,
-    });
-  }
-  closeConfirmDialog(e, type) {
-    e.preventDefault();
-    const {
-      handler,
-    } = this.state.confirmDialogConfig;
-    if (_.isFunction(handler)) {
-      handler(type);
-    }
-    this.setState({
-      confirmDialogConfig: {
-        shown: false,
-      },
     });
   }
   handleLink(url) {
@@ -122,6 +112,35 @@ class App extends Component {
       e.preventDefault();
       dispatch(navigationAction.to(url));
     };
+  }
+  renderAlert() {
+    const {
+      alert,
+    } = this.state;
+    if (!alert) {
+      return null;
+    }
+    const {
+      content,
+      cb,
+    } = alert;
+    const fn = (type) => {
+      this.setState({
+        alert: null,
+      });
+      cb(type);
+    };
+    return (
+      <Alert
+        isOpen
+        confirmButtonText="Confirm"
+        cancelButtonText="Cancel"
+        onConfirm={() => fn('confirm')}
+        onCancel={() => fn('cancel')}
+      >
+        <p>{ content }</p>
+      </Alert>
+    );
   }
   renderAddInflux() {
     const {
@@ -147,53 +166,6 @@ class App extends Component {
       <ServerView
         dispatch={dispatch}
       />
-    );
-  }
-  renderConfirmDialog() {
-    const {
-      shown,
-      content,
-      title,
-    } = this.state.confirmDialogConfig;
-    if (!shown) {
-      return null;
-    }
-    return (
-      <div
-        className="dialog"
-      >
-        <div className="title">
-          <a
-            href="javascript:;"
-            className="close pull-right"
-            onClick={e => this.closeConfirmDialog(e, 'close')}
-          >
-            <i className="fa fa-times" aria-hidden="true" />
-          </a>
-          { title || 'Confirm' }
-        </div>
-        <div className="content">
-          {
-            React.createElement('div', {
-              dangerouslySetInnerHTML: {
-                __html: content,
-              },
-            })
-          }
-        </div>
-        <div
-          className="btns"
-        >
-          <button
-            className="pure-button pure-button-primary"
-            onClick={e => this.closeConfirmDialog(e, 'confirm')}
-          >Confirm</button>
-          <button
-            className="pure-button"
-            onClick={e => this.closeConfirmDialog(e, 'cancel')}
-          >Cancel</button>
-        </div>
-      </div>
     );
   }
   renderEditInflux({ params: { id } }) {
@@ -266,7 +238,6 @@ class App extends Component {
     } = this.props;
     return (
       <ServersView
-        confirm={this.confirm}
         dispatch={dispatch}
         servers={influxdb.servers}
         handleLink={this.handleLink}
@@ -280,6 +251,8 @@ class App extends Component {
     return (
       <ServerStatusView
         dispatch={dispatch}
+        showError={this.showError}
+        alert={this.alert}
         id={id}
       />
     );
@@ -302,9 +275,6 @@ class App extends Component {
           handleLink={handleLink}
           dispatch={dispatch}
         />
-        {
-          this.renderConfirmDialog()
-        }
         <Router {...navigation}>
           <Route
             path={VIEW_LOGIN}
@@ -348,6 +318,9 @@ class App extends Component {
             this.toaster = c;
           }}
         />
+        {
+          this.renderAlert()
+        }
       </div>
     );
   }

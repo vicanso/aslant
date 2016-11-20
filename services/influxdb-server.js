@@ -35,6 +35,11 @@ exports.add = (data) => {
   return (new InfluxdbServer(data)).save().then(doc => doc.toJSON());
 };
 
+exports.getById = (id) => {
+  const InfluxdbServer = Models.get('Influxdb-server');
+  return InfluxdbServer.findById(id).then(doc => doc.toJSON());
+};
+
 exports.list = (conditon) => {
   const InfluxdbServer = Models.get('Influxdb-server');
   return InfluxdbServer.find(conditon).sort({
@@ -71,6 +76,25 @@ exports.disabled = (conditon) => {
 exports.showDatabases = id => getInfluxClient(id).then(client => client.showDatabases());
 
 exports.showRetentionPolicies = (id, db) => getInfluxClient(id, db).then(client => client.showRetentionPolicies());
+
+exports.addRetentionPolicy = (id, db, data) => {
+  return getInfluxClient(id, db).then((client) => {
+    return client.createRetentionPolicy(data.name, data.duration, data.replication, data.default);
+  });
+};
+
+exports.dropRetentionPolicy = (id, db, rp) => {
+  return getInfluxClient(id, db).then((client) => {
+    return client.dropRetentionPolicy(rp);
+  });
+};
+
+exports.updateRetentionPolicy = (id, db, data) => {
+  return getInfluxClient(id, db).then((client) => {
+    return client.updateRetentionPolicy(data.name, data.duration, data.replication, data.shardDuration, data.default);
+  });
+};
+
 
 exports.showMeasurements = (id, db) => getInfluxClient(id, db).then(client => client.showMeasurements());
 

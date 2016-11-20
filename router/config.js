@@ -36,7 +36,12 @@ module.exports = [
   '[PUT] [/api/influxdb/servers/:id] [m.validateAccessToken & m.session.isLogined & m.session.read & c.influxdb.update]',
   '[DELETE] [/api/influxdb/servers/:id] [m.session.isLogined & m.session.read & c.influxdb.remove]',
   '[GET] [/api/influxdb/server/:id/dbs] [c.influxdb.showDatabases]',
+
   '[GET] [/api/influxdb/server/:id/:db/rps] [c.influxdb.showRetentionPolicies]',
+  '[POST] [/api/influxdb/server/:id/:db/rps] [m.session.isLogined & m.session.read & c.influxdb.addRetentionPolicy]',
+  '[DELETE] [/api/influxdb/server/:id/:db/rps/:rp] [m.session.isLogined & m.session.read & c.influxdb.removeRetentionPolicy]',
+  '[PUT] [/api/influxdb/server/:id/:db/rps/:rp] [m.session.isLogined & m.session.read & c.influxdb.updateRetentionPolicy]',
+
   '[GET] [/api/influxdb/server/:id/:db/measurements] [c.influxdb.showMeasurements]',
   '[GET] [/api/influxdb/server/:id/:db/tag-keys,/api/influxdb/server/:id/:db/:measurement/tag-keys] [c.influxdb.showTagKeys]',
   '[GET] [/api/influxdb/server/:id/:db/field-keys,/api/influxdb/server/:id/:db/:measurement/field-keys] [c.influxdb.showFieldKeys]',

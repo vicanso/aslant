@@ -162,7 +162,30 @@ export function showDatabases(id) {
 
 export function showRps(id, db) {
   const url = INFLUXDB_RPS.replace(':id', id).replace(':db', db);
-  return http.get(url).then(res => res.body);
+  return http.get(url).then(res => res.body)
+}
+
+export function addRP(id, db, data) {
+  const url = INFLUXDB_RPS.replace(':id', id).replace(':db', db);
+  return http.post(url)
+    .set('Cache-Control', 'no-cache')
+    .send(data)
+    .then(res => res.body);
+}
+
+export function removeRP(id, db, rp) {
+  const url = INFLUXDB_RPS.replace(':id', id).replace(':db', db);
+  return http.del(`${url}/${rp}`)
+    .set('Cache-Control', 'no-cache')
+    .then(res => res.body);
+}
+
+export function updateRP(id, db, data) {
+  const url = INFLUXDB_RPS.replace(':id', id).replace(':db', db);
+  return http.put(url)
+    .set('Cache-Control', 'no-cache')
+    .send(data)
+    .then(res => res.body);
 }
 
 export function showMeasurements(id, db) {

@@ -27,6 +27,7 @@ class Status extends Component {
       db: {
         status: 'fetching',
       },
+      rpConfigs: null,
     };
     influxdbService.showDatabases(id)
       .then(this.createSuccessHandler('db'))
@@ -60,6 +61,62 @@ class Status extends Component {
       .then(this.createSuccessHandler('series'))
       .catch(this.createErrorHandler('series'));
   }
+  addRP() {
+    const {
+      showError,
+      id,
+    } = this.props;
+    const {
+      db,
+      rpConfigs,
+    } = this.state;
+    const name = rpConfigs.name.value;
+    const duration = rpConfigs.duration.value;
+    const replicaN = rpConfigs.replicaN.value;
+    if (!name || !duration || !replicaN) {
+      showError('name duration and replicaN can not be empty');
+      return;
+    }
+    const data = {
+      name,
+      duration,
+      replicaN,
+      default: rpConfigs.isDefault || false,
+    };
+    influxdbService.addRP(id, db.current, data).then(() => {
+      this.setState({
+        rpConfigs: null,
+      });
+      influxdbService.showRps(id, db.current)
+        .then(this.createSuccessHandler('rps'))
+        .catch(this.createErrorHandler('rps'));
+    }).catch(showError);
+  }
+  updateRP() {
+    const {
+      showError,
+      id,
+    } = this.props;
+    const {
+      updateItem,
+    } = this.state;
+    const name = updateItem.name;
+    const duration = updateItem.duration.value;
+    const shardDuration = updateItem.shardDuration.value;
+    const replicaN = updateItem.replicaN.value;
+    if (!name || !duration || !replicaN) {
+      showError('name duration and replicaN can not be empty');
+      return;
+    }
+    const data = {
+      name,
+      duration,
+      replicaN,
+      shardDuration,
+      default: updateItem.isDefault || false,
+    };
+    console.dir(data);
+  }
   createErrorHandler(key) {
     return (err) => {
       const data = {};
@@ -79,6 +136,27 @@ class Status extends Component {
       };
       this.setState(data);
     };
+  }
+  removeRP(item) {
+    const {
+      showError,
+      id,
+      alert,
+    } = this.props;
+    const {
+      db,
+    } = this.state;
+    const content = `Confirm to remove the retention policy?(${item.name})`;
+    alert(content, (type) => {
+      if (type !== 'confirm') {
+        return;
+      }
+      influxdbService.removeRP(id, db.current, item.name).then(() => {
+        influxdbService.showRps(id, db.current)
+          .then(this.createSuccessHandler('rps'))
+          .catch(this.createErrorHandler('rps'));
+      }).catch(showError);
+    });
   }
   renderDatabase() {
     const dbConfig = this.state.db;
@@ -107,6 +185,7 @@ class Status extends Component {
               dbConfig.current = db;
               this.setState({
                 db: dbConfig,
+                rpConfigs: null,
               });
               this.getStatus(db);
             }}
@@ -155,12 +234,13 @@ class Status extends Component {
       const name = item.name;
       const values = _.map(item.values, (value) => {
         let typeDom = null;
+        const key = `${value.type}-${value.key}`;
         if (value.type) {
           typeDom = <td>{value.type}</td>;
         }
         return (
           <tr
-            key={value.key}
+            key={key}
           >
             <td>{value.key}</td>
             { typeDom }
@@ -237,22 +317,87 @@ class Status extends Component {
     if (!_.get(this.state, 'db.current')) {
       return null;
     }
-    const rpsConfig = this.state.rps;
-    if (!rpsConfig) {
+    const {
+      showError,
+      alert,
+    } = this.props;
+    const {
+      rps,
+      rpConfigs,
+      updateItem,
+    } = this.state;
+    if (!rps) {
       return null;
     }
     const {
       status,
       error,
       items,
-    } = rpsConfig;
+    } = rps;
+
+    const renderInputs = () => (
+      <tr
+        key="rpConfigs"
+      >
+        <td>
+          <input
+            ref={(c) => {
+              rpConfigs.name = c;
+            }}
+            type="text"
+            placeholder="RP Name"
+            className="pt-input"
+          />
+        </td>
+        <td>
+          <input
+            ref={(c) => {
+              rpConfigs.duration = c;
+            }}
+            type="text"
+            placeholder="eg:2h,3d,4w"
+            className="pt-input"
+          />
+        </td>
+        <td>--</td>
+        <td>
+          <input
+            ref={(c) => {
+              rpConfigs.replicaN = c;
+            }}
+            defaultValue="1"
+            type="number"
+            className="pt-input"
+          />
+        </td>
+        <td
+          className="switch-wrapper"
+        >
+          <Switch
+            onChange={() => {
+              rpConfigs.isDefault = !rpConfigs.isDefault;
+            }}
+          />
+        </td>
+        <td>
+          <a
+            href="javascript:;"
+            onClick={() => {
+              this.addRP();
+            }}
+          >
+            <span className="pt-icon-standard pt-icon-confirm mright5" />
+          </a>
+        </td>
+      </tr>
+    );
     const renderTable = (tableItems) => {
       if (!tableItems) {
         return null;
       }
-      const arr = _.map(tableItems, (item, index) => (
+      const noramlItem = item => (
         <tr
-          key={index}
+          key={item.name}
         >
           <td>{item.name}</td>
           <td>{item.duration}</td>
@@ -262,15 +407,106 @@ class Status extends Component {
             className="switch-wrapper"
           >
             <Switch
+              readOnly
               checked={item.default}
-              onChange={(e, item) => {
-                console.dir(e, item);
+            />
+          </td>
+          <td>
+            <a
+              href="javascript:;"
+              onClick={() => this.setState({
+                updateItem: {
+                  name: item.name,
+                },
+              })}
+            >
+              <span className="pt-icon-standard pt-icon-edit" />
+            </a>
+            <a
+              href="javascript:;"
+              onClick={() => this.removeRP(item)}
+            >
+              <span className="pt-icon-standard pt-icon-cross" />
+            </a>
+          </td>
+        </tr>
+      );
+      const modifyItem = item => (
+        <tr
+          key={item.name}
+        >
+          <td>{item.name}</td>
+          <td>
+            <input
+              defaultValue={item.duration}
+              ref={(c) => {
+                updateItem.duration = c;
+              }}
+              type="text"
+              placeholder="eg:2h,3d,4w"
+              className="pt-input"
+            />
+          </td>
+          <td>
+            <input
+              defaultValue={item.shardGroupDuration}
+              ref={(c) => {
+                updateItem.shardDuration = c;
+              }}
+              type="text"
+              placeholder="eg:2h,3d,4w"
+              className="pt-input"
+            />
+          </td>
+          <td>
+            <input
+              defaultValue={item.replicaN}
+              ref={(c) => {
+                updateItem.replicaN = c;
+              }}
+              defaultValue="1"
+              type="number"
+              className="pt-input"
+            />
+          </td>
+          <td
+            className="switch-wrapper"
+          >
+            <Switch
+              defaultValue={item.default}
+              onChange={() => {
+                updateItem.isDefault = !updateItem.isDefault;
               }}
             />
           </td>
-          <td> -- </td>
+          <td>
+            <a
+              href="javascript:;"
+              onClick={() => this.updateRP()}
+            >
+              <span className="pt-icon-standard pt-icon-confirm" />
+            </a>
+            <a
+              href="javascript:;"
+              onClick={() => this.setState({
+                updateItem: null,
+              })}
+            >
+              <span className="pt-icon-standard pt-icon-disable" />
+            </a>
+          </td>
         </tr>
-      ));
+      );
+      const arr = _.map(tableItems, (item) => {
+        if (updateItem && item.name === updateItem.name) {
+          updateItem.isDefault = item.default;
+          return modifyItem(item);
+        }
+        return noramlItem(item);
+      });
+      if (rpConfigs) {
+        arr.push(renderInputs());
+      }
       return (
         <table className="table">
           <thead><tr>
@@ -287,6 +523,23 @@ class Status extends Component {
         </table>
       );
     };
+    let addBtn = null;
+    if (!rpConfigs) {
+      addBtn = (
+        <a
+          href="javascript:;"
+          onClick={() => {
+            this.setState({
+              rpConfigs: {},
+            });
+          }}
+          style={{
+            marginTop: '20px',
+          }}
+          className="pt-button pt-intent-primary pt-fill"
+        >Add Retention Policy</a>
+      );
+    }
     return (
       <div
         className="server-status"
@@ -296,6 +549,7 @@ class Status extends Component {
           renderStatus(status, error)
         }
         { renderTable(items) }
+        { addBtn }
       </div>
     );
   }
@@ -316,12 +570,12 @@ class Status extends Component {
       if (!tableItems) {
         return null;
       }
-      const arr = _.map(tableItems, (item, index) => {
+      const arr = _.map(tableItems, (item) => {
         const tmpArr = item.split(',');
         const measurement = tmpArr.shift();
         return (
           <tr
-            key={index}
+            key={item}
           >
             <td>{measurement}</td>
             <td>{tmpArr.join()}</td>
@@ -388,6 +642,8 @@ class Status extends Component {
 
 Status.propTypes = {
   id: PropTypes.string.isRequired,
+  showError: PropTypes.func.isRequired,
+  alert: PropTypes.func.isRequired,
 };
 
 export default Status;

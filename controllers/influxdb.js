@@ -41,6 +41,17 @@ function validateConfig(data) {
   });
 }
 
+function validateRetentionPolicy(data) {
+  return Joi.validateThrow(data, {
+    name: Joi.string().required(),
+    duration: Joi.string().required(),
+    shardDuration: Joi.string().optional(),
+    replicaN: Joi.number().integer().min(1).default(1)
+      .required(),
+    default: Joi.boolean().default(false).required(),
+  });
+}
+
 exports.add = (ctx) => {
   const data = validateServer(ctx.request.body);
   data.account = ctx.session.user.account;
@@ -100,9 +111,60 @@ exports.showRetentionPolicies = (ctx) => {
   const id = ctx.params.id;
   const db = ctx.params.db;
   return influxdbService.showRetentionPolicies(id, db).then((data) => {
-    ctx.set('Cache-Control', 'public, max-age=60');
+    ctx.set('Cache-Control', 'public, max-age=5');
     /* eslint no-param-reassign:0 */
     ctx.body = data;
+  });
+};
+
+exports.addRetentionPolicy = (ctx) => {
+  const data = validateRetentionPolicy(ctx.request.body);
+  const account = ctx.session.user.account;
+  const {
+    id,
+    db,
+  } = ctx.params;
+  return influxdbService.getById(id).then((doc) => {
+    if (doc.account !== account) {
+      throw errors.get(108);
+    }
+    return influxdbService.addRetentionPolicy(id, db, data);
+  }).then(() => {
+    ctx.status = 201;
+  });
+};
+
+exports.removeRetentionPolicy = (ctx) => {
+  const account = ctx.session.user.account;
+  const {
+    id,
+    db,
+    rp,
+  } = ctx.params;
+  return influxdbService.getById(id).then((doc) => {
+    if (doc.account !== account) {
+      throw errors.get(108);
+    }
+    return influxdbService.dropRetentionPolicy(id, db, rp);
+  }).then(() => {
+    ctx.body = null;
+  });
+};
+
+exports.updateRetentionPolicy = (ctx) => {
+  const data = validateRetentionPolicy(ctx.request.body);
+  const account = ctx.session.user.account;
+  const {
+    id,
+    db,
+  } = ctx.params;
+  return influxdbService.getById(id).then((doc) => {
+    if (doc.account !== account) {
+      throw errors.get(108);
+    }
+    return influxdbService.updateRetentionPolicy(id, db, data);
+  }).then(() => {
+    ctx.status = 201;
   });
 };
 

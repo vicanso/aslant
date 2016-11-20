@@ -54,6 +54,64 @@ function formatSeries(series) {
   };
 }
 
+function getInfluxQL(state) {
+  const {
+    database,
+    measurement,
+    conditions,
+    cals,
+    rp,
+    time,
+    groups,
+  } = state;
+  if (!database || !measurement) {
+    return '';
+  }
+  const ql = new InfluxQL(database);
+  ql.measurement = measurement;
+  ql.RP = _.get(rp, 'name', '');
+  _.forEach(conditions, (item) => {
+    const {
+      tag,
+      value,
+    } = item;
+    if (_.isUndefined(tag) || _.isUndefined(value)) {
+      return;
+    }
+    ql.condition(tag, value);
+  });
+  _.forEach(cals, (item) => {
+    const {
+      cal,
+      field,
+    } = item;
+    if (field) {
+      if (!cal || cal === 'none') {
+        ql.addField(field);
+      } else {
+        ql.addCalculate(cal, field);
+      }
+    }
+  });
+  _.forEach(time, (v, k) => {
+    if (!v) {
+      return;
+    }
+    if (k === 'start') {
+      ql.start = v;
+    } else {
+      ql.end = v;
+    }
+  });
+  if (groups.interval) {
+    ql.addGroup(`time(${groups.interval})`);
+  }
+  if (groups.tags && groups.tags.length) {
+    ql.addGroup(...groups.tags);
+  }
+  return ql.toSelect();
+}
+
 class Influx extends Component {
   constructor(props) {
     super(props);
@@ -77,74 +135,12 @@ class Influx extends Component {
       },
     };
   }
-  getInfluxQL(state) {
-    const {
-      database,
-      measurement,
-      conditions,
-      cals,
-      rp,
-      time,
-      groups,
-    } = state;
-    if (!database || !measurement) {
-      return;
-    }
-    const ql = new InfluxQL(database);
-    ql.measurement = measurement;
-    ql.RP = _.get(rp, 'name', '');
-    _.forEach(conditions, (item) => {
-      const {
-        tag,
-        value,
-      } = item;
-      if (_.isUndefined(tag) || _.isUndefined(value)) {
-        return;
-      }
-      ql.condition(tag, value);
-    });
-    _.forEach(cals, (item) => {
-      const {
-        cal,
-        field,
-      } = item;
-      if (field) {
-        if (!cal || cal === 'none') {
-          ql.addField(field);
-        } else {
-          ql.addCalculate(cal, field);
-        }
-      }
-    });
-    _.forEach(time, (v, k) => {
-      if (!v) {
-        return;
-      }
-      if (k === 'start') {
-        ql.start = v;
-      } else {
-        ql.end = v;
-      }
-    });
-    if (groups.interval) {
-      ql.addGroup(`time(${groups.interval})`);
-    }
-    if (groups.tags && groups.tags.length) {
-      ql.addGroup(...groups.tags);
-    }
-    return ql.toSelect();
-  }
+
   componentWillUpdate(nextProps, nextState) {
-    const influxQL = this.getInfluxQL(nextState);
+    const influxQL = getInfluxQL(nextState);
     if (influxQL && this.ql) {
       this.ql.value = influxQL;
     }
-  }
-  showError(message) {
-    this.toaster.show({
-      message,
-      className: 'pt-intent-warning',
-    });
   }
   onSelectDatabases(database) {
     const server = this.state.server;
@@ -192,6 +188,12 @@ class Influx extends Component {
       dbs: dbs.sort(),
     })).catch((err) => {
       this.showError(err.response.body.message);
+    });
+  }
+  showError(message) {
+    this.toaster.show({
+      message,
+      className: 'pt-intent-warning',
     });
   }
   query() {
@@ -601,7 +603,7 @@ class Influx extends Component {
     }
     let influxQL = '';
     if (id) {
-      influxQL = this.getInfluxQL(this.state);
+      influxQL = getInfluxQL(this.state);
     }
 
     return (

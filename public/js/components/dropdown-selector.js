@@ -1,11 +1,9 @@
 import React, { Component, PropTypes } from 'react';
-import classnames from 'classnames';
 import * as _ from 'lodash';
 import {
   Menu,
   MenuItem,
   Popover,
-  Position,
 } from '@blueprintjs/core';
 
 class DropdownSelector extends Component {
@@ -52,7 +50,6 @@ class DropdownSelector extends Component {
   render() {
     const {
       items,
-      cls,
       placeholder,
       type,
     } = this.props;
@@ -75,7 +72,7 @@ class DropdownSelector extends Component {
         <MenuItem
           key={name}
           text={name}
-          onClick={(e) => this.onSelect(e, item)}
+          onClick={e => this.onSelect(e, item)}
         />
       );
     });
@@ -85,7 +82,7 @@ class DropdownSelector extends Component {
       </Menu>
     );
     return (
-      <div 
+      <div
         className="dropdown-selector"
       >
         <Popover

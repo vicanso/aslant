@@ -38,7 +38,7 @@ class InfluxTable extends Component {
     if (!removeItem) {
       return null;
     }
-    const content = `Confirm to remove the server's config?(${removeItem.name})`;
+    const content = `Confirm to remove the config?(${removeItem.name})`;
     return (
       <Alert
         isOpen

@@ -27,4 +27,8 @@ module.exports = {
     en: 'Please sign in first',
     status: 401,
   },
+  108: {
+    en: 'It is not allow to accessed',
+    status: 403,
+  },
 };
