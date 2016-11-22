@@ -2,18 +2,8 @@ const Joi = require('joi');
 const _ = require('lodash');
 
 const influxdbService = localRequire('services/influxdb-server');
+const serverService = localRequire('services/server');
 const errors = localRequire('helpers/errors');
-
-function validateServer(data) {
-  return Joi.validateThrow(data, {
-    name: Joi.string().required(),
-    host: Joi.string().required(),
-    port: Joi.number().integer().required(),
-    ssl: Joi.boolean().optional(),
-    username: Joi.string(),
-    password: Joi.string(),
-  });
-}
 
 function validateConfig(data) {
   return Joi.validateThrow(data, {
@@ -40,52 +30,6 @@ function validateConfig(data) {
     }).optional(),
   });
 }
-
-exports.add = (ctx) => {
-  const data = validateServer(ctx.request.body);
-  data.account = ctx.session.user.account;
-  return influxdbService.add(data).then((doc) => {
-    /* eslint no-param-reassign:0 */
-    ctx.body = doc;
-  });
-};
-
-exports.list = (ctx) => {
-  const account = ctx.session.user.account;
-  return influxdbService.list({
-    account,
-    enabled: true,
-  }).then((data) => {
-    /* eslint no-param-reassign:0 */
-    ctx.body = data;
-  });
-};
-
-exports.update = (ctx) => {
-  const token = ctx.get('X-Token');
-  const account = ctx.session.user.account;
-  const id = ctx.params.id;
-  const data = validateServer(ctx.request.body);
-  return influxdbService.update({
-    _id: id,
-    account,
-    token,
-  }, data).then((doc) => {
-    /* eslint no-param-reassign:0 */
-    ctx.body = doc;
-  });
-};
-
-exports.remove = (ctx) => {
-  const account = ctx.session.user.account;
-  const id = ctx.params.id;
-  return influxdbService.disabled({
-    _id: id,
-    account,
-  }).then(() => {
-    ctx.body = null;
-  });
-};
 
 exports.showDatabases = (ctx) => {
   const id = ctx.params.id;
@@ -120,7 +64,7 @@ exports.addRetentionPolicy = (ctx) => {
     id,
     db,
   } = ctx.params;
-  return influxdbService.getById(id).then((doc) => {
+  return serverService.getById(id).then((doc) => {
     if (doc.account !== account) {
       throw errors.get(108);
     }
@@ -137,7 +81,7 @@ exports.removeRetentionPolicy = (ctx) => {
     db,
     rp,
   } = ctx.params;
-  return influxdbService.getById(id).then((doc) => {
+  return serverService.getById(id).then((doc) => {
     if (doc.account !== account) {
       throw errors.get(108);
     }
@@ -161,7 +105,7 @@ exports.updateRetentionPolicy = (ctx) => {
     db,
   } = ctx.params;
   data.name = ctx.params.rp;
-  return influxdbService.getById(id).then((doc) => {
+  return serverService.getById(id).then((doc) => {
     if (doc.account !== account) {
       throw errors.get(108);
     }

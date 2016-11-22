@@ -1,3 +1,7 @@
+const {
+  findOneAndUpdate,
+} = localRequire('helpers/hooks');
+
 module.exports = {
   schema: {
     account: {
@@ -46,4 +50,9 @@ module.exports = {
       account: 1,
     },
   ],
+  pre: {
+    findOneAndUpdate: [
+      findOneAndUpdate,
+    ],
+  },
 };

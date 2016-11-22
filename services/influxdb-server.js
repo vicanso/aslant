@@ -10,7 +10,7 @@ function docsToJSON(docs) {
 }
 
 function getInfluxClient(id, db = '_internal') {
-  const InfluxdbServer = Models.get('Influxdb-server');
+  const InfluxdbServer = Models.get('Server');
   return InfluxdbServer.findById(id).then((doc) => {
     if (!doc) {
       throw errors.get(201);
@@ -26,52 +26,7 @@ function getInfluxClient(id, db = '_internal') {
   });
 }
 
-exports.add = (data) => {
-  const InfluxdbServer = Models.get('Influxdb-server');
-  const date = (new Date()).toISOString();
-  data.createdAt = date;
-  data.updatedAt = date;
-  data.token = uuid.v4();
-  return (new InfluxdbServer(data)).save().then(doc => doc.toJSON());
-};
 
-exports.getById = (id) => {
-  const InfluxdbServer = Models.get('Influxdb-server');
-  return InfluxdbServer.findById(id).then(doc => doc.toJSON());
-};
-
-exports.list = (conditon) => {
-  const InfluxdbServer = Models.get('Influxdb-server');
-  return InfluxdbServer.find(conditon).sort({
-    updatedAt: -1,
-  }).then(docsToJSON);
-};
-
-exports.update = (conditon, data) => {
-  data.token = uuid.v4();
-  data.updatedAt = (new Date()).toISOString();
-  const InfluxdbServer = Models.get('Influxdb-server');
-  return InfluxdbServer.findOneAndUpdate(conditon, data, {
-    new: true,
-  }).then((doc) => {
-    if (!doc) {
-      throw errors.get(4);
-    }
-    return doc.toJSON();
-  });
-};
-
-exports.disabled = (conditon) => {
-  const InfluxdbServer = Models.get('Influxdb-server');
-  return InfluxdbServer.findOneAndUpdate(conditon, {
-    enabled: false,
-  }).then((doc) => {
-    if (!doc) {
-      throw errors.get(5);
-    }
-    return null;
-  });
-};
 
 exports.showDatabases = id => getInfluxClient(id).then(client => client.showDatabases());
 

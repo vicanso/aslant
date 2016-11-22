@@ -30,11 +30,13 @@ module.exports = [
     ],
   },
 
-  // influxdb
-  '[GET] [/api/influxdb/servers] [m.session.isLogined & m.session.read & c.influxdb.list]',
-  '[POST] [/api/influxdb/servers] [m.session.isLogined & m.session.read & c.influxdb.add]',
-  '[PUT] [/api/influxdb/servers/:id] [m.validateAccessToken & m.session.isLogined & m.session.read & c.influxdb.update]',
-  '[DELETE] [/api/influxdb/servers/:id] [m.session.isLogined & m.session.read & c.influxdb.remove]',
+  // influxdb server route configs
+  '[GET] [/api/influxdb/servers] [m.session.isLogined & m.session.read & c.server.list]',
+  '[POST] [/api/influxdb/servers] [m.session.isLogined & m.session.read & c.server.add]',
+  '[PUT] [/api/influxdb/servers/:id] [m.validateAccessToken & m.session.isLogined & m.session.read & c.server.update]',
+  '[DELETE] [/api/influxdb/servers/:id] [m.session.isLogined & m.session.read & c.server.remove]',
+
+
   '[GET] [/api/influxdb/server/:id/dbs] [c.influxdb.showDatabases]',
 
   '[GET] [/api/influxdb/server/:id/:db/rps] [c.influxdb.showRetentionPolicies]',
