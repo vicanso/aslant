@@ -95,7 +95,6 @@ exports.updateRetentionPolicy = (id, db, data) => {
   });
 };
 
-
 exports.showMeasurements = (id, db) => getInfluxClient(id, db).then(client => client.showMeasurements());
 
 exports.showTagKeys = (id, db, measurement) => getInfluxClient(id, db).then(client => client.showTagKeys(measurement));
@@ -103,7 +102,6 @@ exports.showTagKeys = (id, db, measurement) => getInfluxClient(id, db).then(clie
 exports.showFieldKeys = (id, db, measurement) => getInfluxClient(id, db).then(client => client.showFieldKeys(measurement));
 
 exports.showSeries = (id, db, measurement) => getInfluxClient(id, db).then(client => client.showSeries(measurement));
-
 
 exports.select = (id, db, measurement, query) => {
   return getInfluxClient(id, db).then((client) => {
@@ -155,7 +153,6 @@ exports.getConfig = (id) => {
     return doc.toJSON();
   });
 };
-
 
 exports.updateConfig = (conditon, data) => {
   data.token = uuid.v4();

@@ -41,17 +41,6 @@ function validateConfig(data) {
   });
 }
 
-function validateRetentionPolicy(data) {
-  return Joi.validateThrow(data, {
-    name: Joi.string().required(),
-    duration: Joi.string().required(),
-    shardDuration: Joi.string().optional(),
-    replicaN: Joi.number().integer().min(1).default(1)
-      .required(),
-    default: Joi.boolean().default(false).required(),
-  });
-}
-
 exports.add = (ctx) => {
   const data = validateServer(ctx.request.body);
   data.account = ctx.session.user.account;
@@ -118,7 +107,14 @@ exports.showRetentionPolicies = (ctx) => {
 };
 
 exports.addRetentionPolicy = (ctx) => {
-  const data = validateRetentionPolicy(ctx.request.body);
+  const data = Joi.validateThrow(ctx.request.body, {
+    name: Joi.string().required(),
+    duration: Joi.string().required(),
+    shardDuration: Joi.string().optional(),
+    replicaN: Joi.number().integer().min(1).default(1)
+      .required(),
+    default: Joi.boolean().default(false).required(),
+  });
   const account = ctx.session.user.account;
   const {
     id,
@@ -152,12 +148,19 @@ exports.removeRetentionPolicy = (ctx) => {
 };
 
 exports.updateRetentionPolicy = (ctx) => {
-  const data = validateRetentionPolicy(ctx.request.body);
+  const data = Joi.validateThrow(ctx.request.body, {
+    duration: Joi.string().optional(),
+    shardDuration: Joi.string().optional(),
+    replicaN: Joi.number().integer().min(1).default(1)
+      .optional(),
+    default: Joi.boolean().default(false).optional(),
+  });
   const account = ctx.session.user.account;
   const {
     id,
     db,
   } = ctx.params;
+  data.name = ctx.params.rp;
   return influxdbService.getById(id).then((doc) => {
     if (doc.account !== account) {
       throw errors.get(108);

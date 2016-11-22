@@ -17,6 +17,38 @@ function renderStatus(status, error) {
   return null;
 }
 
+function formatTime(str) {
+  const times = [
+    {
+      unit: 'h',
+      value: 3600,
+    },
+    {
+      unit: 'm',
+      value: 60,
+    },
+    {
+      unit: 's',
+      value: 1,
+    },
+  ];
+  let formatStr = str;
+  let result = 0;
+  _.forEach(times, (item) => {
+    const {
+      unit,
+      value,
+    } = item;
+    const index = formatStr.indexOf(unit);
+    if (index !== -1) {
+      const v = parseInt(formatStr.substring(0, index), 10);
+      result += (v * value);
+      formatStr = formatStr.substring(index + 1);
+    }
+  });
+  return `${result}s`;
+}
+
 class Status extends Component {
   constructor(props) {
     super(props);
@@ -98,6 +130,7 @@ class Status extends Component {
       id,
     } = this.props;
     const {
+      db,
       updateItem,
     } = this.state;
     const name = updateItem.name;
@@ -109,13 +142,22 @@ class Status extends Component {
       return;
     }
     const data = {
-      name,
-      duration,
+      duration: formatTime(duration),
       replicaN,
-      shardDuration,
+      shardDuration: formatTime(shardDuration),
       default: updateItem.isDefault || false,
     };
-    console.dir(data);
+    if (duration === '0') {
+      delete data.duration;
+    }
+    influxdbService.updateRP(id, db.current, name, data).then(() => {
+      this.setState({
+        updateItem: null,
+      });
+      influxdbService.showRps(id, db.current)
+        .then(this.createSuccessHandler('rps'))
+        .catch(this.createErrorHandler('rps'));
+    }).catch(showError);
   }
   createErrorHandler(key) {
     return (err) => {
@@ -318,10 +360,6 @@ class Status extends Component {
       return null;
     }
     const {
-      showError,
-      alert,
-    } = this.props;
-    const {
       rps,
       rpConfigs,
       updateItem,
@@ -387,6 +425,14 @@ class Status extends Component {
             }}
           >
             <span className="pt-icon-standard pt-icon-confirm mright5" />
+          </a>
+          <a
+            href="javascript:;"
+            onClick={() => this.setState({
+              rpConfigs: null,
+            })}
+          >
+            <span className="pt-icon-standard pt-icon-cross" />
           </a>
         </td>
       </tr>
@@ -464,7 +510,6 @@ class Status extends Component {
               ref={(c) => {
                 updateItem.replicaN = c;
               }}
-              defaultValue="1"
               type="number"
               className="pt-input"
             />

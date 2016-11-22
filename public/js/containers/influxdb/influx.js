@@ -607,8 +607,57 @@ class Influx extends Component {
     }
 
     return (
-      <div className="add-influx-wrapper">
-        <div className="influx-content-wrapper">
+      <div className="add-influx-wrapper pure-g">
+        <div className="pure-u-1-5">
+          <div className="config-wrapper">
+            <h4>Visualization Name</h4>
+            <input
+              className="visualization-name pt-input"
+              type="text"
+              placeholder="Pleace input visualization's name"
+              defaultValue={name}
+              ref={(c) => {
+                this.influxName = c;
+              }}
+            />
+            <h4>Influx Config</h4>
+            <DropdownSelector
+              placeholder={'Choose Server'}
+              items={servers}
+              selected={selectedServer}
+              onSelect={(e, item) => this.onSelectServer(item)}
+            />
+            <DropdownSelector
+              placeholder={'Choose Database'}
+              items={dbs}
+              selected={database}
+              onSelect={(e, item) => this.onSelectDatabases(item)}
+            />
+            <DropdownSelector
+              placeholder={'Choose RP'}
+              items={rps}
+              selected={rp}
+              onSelect={(e, item) => this.setState({
+                rp: item,
+              })}
+            />
+            <DropdownSelector
+              placeholder={'Choose Measurement'}
+              items={measurements}
+              selected={measurement}
+              onSelect={(e, item) => this.onSelectMeasurement(item)}
+            />
+            <h5>Filter By</h5>
+            { this.renderTagSelectorList() }
+            <h5>Extract By</h5>
+            { this.renderFieldCalSelectorList() }
+            <h5>Group By</h5>
+            { this.renderGroupSelectorList() }
+            <h5>Time</h5>
+            { this.renderTimeSelector() }
+          </div>
+        </div>
+        <div className="influx-content-wrapper pure-u-4-5">
           <div
             className="influx-ql-wrapper clearfix"
           >
@@ -649,53 +698,6 @@ class Influx extends Component {
               onClick={() => this.saveInfluxConfig()}
             >Save</button>
           </div>
-        </div>
-        <div className="config-wrapper">
-          <h4>Visualization Name</h4>
-          <input
-            className="visualization-name pt-input"
-            type="text"
-            placeholder="Pleace input visualization's name"
-            defaultValue={name}
-            ref={(c) => {
-              this.influxName = c;
-            }}
-          />
-          <h4>Influx Config</h4>
-          <DropdownSelector
-            placeholder={'Choose Server'}
-            items={servers}
-            selected={selectedServer}
-            onSelect={(e, item) => this.onSelectServer(item)}
-          />
-          <DropdownSelector
-            placeholder={'Choose Database'}
-            items={dbs}
-            selected={database}
-            onSelect={(e, item) => this.onSelectDatabases(item)}
-          />
-          <DropdownSelector
-            placeholder={'Choose RP'}
-            items={rps}
-            selected={rp}
-            onSelect={(e, item) => this.setState({
-              rp: item,
-            })}
-          />
-          <DropdownSelector
-            placeholder={'Choose Measurement'}
-            items={measurements}
-            selected={measurement}
-            onSelect={(e, item) => this.onSelectMeasurement(item)}
-          />
-          <h5>Filter By</h5>
-          { this.renderTagSelectorList() }
-          <h5>Extract By</h5>
-          { this.renderFieldCalSelectorList() }
-          <h5>Group By</h5>
-          { this.renderGroupSelectorList() }
-          <h5>Time</h5>
-          { this.renderTimeSelector() }
         </div>
         <Toaster
           ref={(c) => {

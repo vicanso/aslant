@@ -91,7 +91,7 @@ class App extends Component {
       alert: {
         content,
         cb,
-      }
+      },
     });
   }
   showError(err) {

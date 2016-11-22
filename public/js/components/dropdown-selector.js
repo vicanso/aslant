@@ -51,10 +51,9 @@ class DropdownSelector extends Component {
     const {
       items,
       placeholder,
-      type,
     } = this.props;
 
-    const multi = type === 'multi';
+    // const multi = type === 'multi';
     const selected = this.state.selected || this.props.selected;
     const selectedToString = () => {
       if (!selected) {
@@ -102,7 +101,6 @@ class DropdownSelector extends Component {
 
 DropdownSelector.propTypes = {
   items: PropTypes.array.isRequired,
-  cls: PropTypes.object,
   onSelect: PropTypes.func,
   placeholder: PropTypes.string,
   selected: PropTypes.any,
