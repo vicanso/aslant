@@ -26,8 +26,6 @@ exports.list = (conditon) => {
 };
 
 exports.update = (conditon, data) => {
-  // data.token = uuid.v4();
-  // data.updatedAt = (new Date()).toISOString();
   const Server = Models.get('Server');
   return Server.findOneAndUpdate(conditon, data, {
     new: true,

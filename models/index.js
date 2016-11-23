@@ -23,9 +23,20 @@ const initModels = (client, modelPath) => {
     });
 
     // add static hook functions
-    _.forEach(hooks.statistics, (fn, hookName) => {
-      const stats = fn(name);
-      _.forEach(stats, (hookFn, hookType) => schema[hookType](hookName, hookFn));
+    const statisticsHooks = hooks.getStatisticsHooks(name);
+    _.forEach(statisticsHooks, (hooksInfos, hookName) => {
+      const {
+        pre,
+        post,
+      } = hooksInfos;
+      if (_.isFunction(pre)) {
+        // pre hook
+        schema.pre(hookName, pre);
+      }
+      if (_.isFunction(post)) {
+        // post hook
+        schema.post(hookName, post);
+      }
     });
 
     client.model(name, schema);

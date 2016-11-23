@@ -6,7 +6,7 @@ import {
 } from '@blueprintjs/core';
 
 import InfluxTable from '../../components/influx-table';
-import * as influxdbAction from '../../actions/influxdb';
+import * as serverAction from '../../actions/server';
 import {
   VIEW_EDIT_SERVER,
   VIEW_SERVER_STATUS,
@@ -20,7 +20,7 @@ class Servers extends InfluxTable {
   }
   remove(item) {
     /* eslint no-underscore-dangle:0 */
-    const fn = influxdbAction.remove(item._id);
+    const fn = serverAction.remove(item._id);
     super.remove(fn);
   }
   renderServers() {
@@ -121,7 +121,6 @@ Servers.propTypes = {
   dispatch: PropTypes.func.isRequired,
   servers: PropTypes.array.isRequired,
   handleLink: PropTypes.func.isRequired,
-  confirm: PropTypes.func.isRequired,
 };
 
 export default Servers;

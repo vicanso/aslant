@@ -1,5 +1,5 @@
 const {
-  findOneAndUpdate,
+  createUpdateHook,
 } = localRequire('helpers/hooks');
 
 module.exports = {
@@ -52,7 +52,10 @@ module.exports = {
   ],
   pre: {
     findOneAndUpdate: [
-      findOneAndUpdate,
+      createUpdateHook({
+        updatedAt: 'date',
+        token: 'uuid',
+      }),
     ],
   },
 };

@@ -1,40 +1,120 @@
 const uuid = require('node-uuid');
+const _ = require('lodash');
 
+const influx = localRequire('helpers/influx');
 
+function writeStats(f, t) {
+  const fields = f;
+  const tags = t;
+  const spdy = _.sortedIndex([30, 100, 300, 600, 1000], fields.use);
+  tags.spdy = `${spdy}`;
+  fields.use = `${fields.use}i`;
+  influx.write('mongoose', fields, tags);
+}
+
+// mongoose save stats
 function createSaveStats(name) {
   return {
-    pre: function prevSave(next) {
+    pre: function preSave(next) {
       if (!this.startedAt) {
         this.startedAt = Date.now();
       }
       next();
     },
-    post: function postSave(doc) {
+    post: function postSave() {
       /* eslint no-underscore-dangle:0 */
-      const id = doc._id.toString();
-      const use = Date.now() - doc.startedAt;
-      console.info(`${name} save ${id} success, use:${use}ms`);
+      const id = this._id.toString();
+      const use = Date.now() - this.startedAt;
+      const tags = {
+        collection: name,
+        op: 'save',
+      };
+      const fields = {
+        use,
+        id,
+      };
+      writeStats(fields, tags);
     },
   };
 }
 
-function findOneAndUpdate(next) {
-  /* eslint no-underscore-dangle:0 */
-  const data = this._update;
-  data.updatedAt = (new Date()).toISOString();
-  data.token = uuid.v4();
-  if (data.$inc) {
-    data.$inc.__v = 1;
-  } else {
-    data.$inc = {
-      __v: 1,
-    };
-  }
-  next();
+// normal mongoose stats: collection, use, op
+function createNormalStats(name) {
+  return {
+    pre: function pre(next) {
+      if (!this.startedAt) {
+        this.startedAt = Date.now();
+      }
+      next();
+    },
+    post: function post() {
+      const use = Date.now() - this.startedAt;
+      const tags = {
+        collection: name,
+        op: this.op,
+      };
+      const fields = {
+        use,
+      };
+      writeStats(fields, tags);
+    },
+  };
 }
 
-exports.findOneAndUpdate = findOneAndUpdate;
+function fillData(opts, data) {
+  const result = data;
+  _.forEach(opts, (type, key) => {
+    if (data[key]) {
+      return;
+    }
+    switch (type) {
+      case 'date':
+        result[key] = new Date().toISOString();
+        break;
+      case 'uuid':
+        result[key] = uuid.v4();
+        break;
+      default:
+        return;
+    }
+  });
+}
 
-exports.statistics = {
-  save: createSaveStats,
+function createUpdateHook(opts) {
+  return function updateHook(next) {
+    /* eslint no-underscore-dangle:0 */
+    const data = this._update;
+    fillData(opts, data);
+    if (data.$inc) {
+      data.$inc.__v = 1;
+    } else {
+      data.$inc = {
+        __v: 1,
+      };
+    }
+    next();
+  };
+}
+
+function createValidateHook(opts) {
+  return function validateHook(next) {
+    fillData(opts, this);
+    next();
+  };
+}
+
+exports.getStatisticsHooks = (name) => {
+  const saveHoook = createSaveStats(name);
+  const normalHook = createNormalStats(name);
+  return {
+    save: saveHoook,
+    findOne: normalHook,
+    findOneAndUpdate: normalHook,
+    findOneAndRemove: normalHook,
+    count: normalHook,
+    find: normalHook,
+  };
 };
+
+exports.createUpdateHook = createUpdateHook;
+exports.createValidateHook = createValidateHook;

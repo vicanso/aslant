@@ -34,6 +34,7 @@ import InfluxConfigsView from './influxdb/configs';
 import * as navigationAction from '../actions/navigation';
 import * as userAction from '../actions/user';
 import * as influxdbAction from '../actions/influxdb';
+import * as serverActions from '../actions/server';
 
 class App extends Component {
   constructor(props) {
@@ -77,11 +78,11 @@ class App extends Component {
         dispatch(influxdbAction.listConfig()).catch((err) => {
           this.showError(err.response.body.message);
         });
-        dispatch(influxdbAction.list()).catch((err) => {
+        dispatch(serverActions.list()).catch((err) => {
           this.showError(err.response.body.message);
         });
       } else {
-        dispatch(influxdbAction.reset());
+        dispatch(serverActions.reset());
         dispatch(navigationAction.home());
       }
     }
@@ -145,16 +146,16 @@ class App extends Component {
   renderAddInflux() {
     const {
       dispatch,
-      influxdb,
+      servers,
     } = this.props;
-    const servers = _.sortBy(influxdb.servers, item => item.name);
-    if (!servers.length) {
+    const result = _.sortBy(servers, item => item.name);
+    if (!result.length) {
       return null;
     }
     return (
       <InfluxView
         dispatch={dispatch}
-        servers={servers}
+        servers={result}
       />
     );
   }
@@ -171,16 +172,16 @@ class App extends Component {
   renderEditInflux({ params: { id } }) {
     const {
       dispatch,
-      influxdb,
+      servers,
     } = this.props;
-    const servers = _.sortBy(influxdb.servers, item => item.name);
-    if (!servers.length) {
+    const result = _.sortBy(servers, item => item.name);
+    if (!result.length) {
       return null;
     }
     return (
       <InfluxView
         dispatch={dispatch}
-        servers={servers}
+        servers={result}
         id={id}
       />
     );
@@ -188,17 +189,17 @@ class App extends Component {
   renderEditServer({ params: { id } }) {
     const {
       dispatch,
-      influxdb,
+      servers,
     } = this.props;
     /* eslint no-underscore-dangle:0 */
-    const server = _.find(influxdb.servers, item => item._id === id);
-    if (!server) {
+    const result = _.find(servers, item => item._id === id);
+    if (!result) {
       return null;
     }
     return (
       <ServerView
         dispatch={dispatch}
-        server={server}
+        server={result}
       />
     );
   }
@@ -234,12 +235,12 @@ class App extends Component {
   renderServers() {
     const {
       dispatch,
-      influxdb,
+      servers,
     } = this.props;
     return (
       <ServersView
         dispatch={dispatch}
-        servers={influxdb.servers}
+        servers={servers}
         handleLink={this.handleLink}
       />
     );
@@ -268,51 +269,53 @@ class App extends Component {
     } = this.props;
     const handleLink = this.handleLink;
     return (
-      <div>
+      <div className="fix-height">
         <MainHeader
           user={user}
           isFetchingUserInfo={isFetchingUserInfo}
           handleLink={handleLink}
           dispatch={dispatch}
         />
-        <Router {...navigation}>
-          <Route
-            path={VIEW_LOGIN}
-            component={() => this.renderLogin()}
-          />
-          <Route
-            path={VIEW_REGISTER}
-            component={() => this.renderRegister()}
-          />
-          <Route
-            path={VIEW_ADD_SERVER}
-            component={() => this.renderAddServer()}
-          />
-          <Route
-            path={VIEW_EDIT_SERVER}
-            component={arg => this.renderEditServer(arg)}
-          />
-          <Route
-            path={VIEW_SERVERS}
-            component={() => this.renderServers()}
-          />
-          <Route
-            path={VIEW_SERVER_STATUS}
-            component={arg => this.renderServerStatus(arg)}
-          />
-          <Route
-            path={VIEW_ADD_INFLUX}
-            component={() => this.renderAddInflux()}
-          />
-          <Route
-            path={VIEW_EDIT_INFLUX}
-            component={arg => this.renderEditInflux(arg)}
-          />
-          <Route
-            path={VIEW_INFLUX_CONFIGS}
-            component={() => this.renderInfluxConfigs()}
-          />
-        </Router>
+        <div className="content-wrapper">
+          <Router {...navigation}>
+            <Route
+              path={VIEW_LOGIN}
+              component={() => this.renderLogin()}
+            />
+            <Route
+              path={VIEW_REGISTER}
+              component={() => this.renderRegister()}
+            />
+            <Route
+              path={VIEW_ADD_SERVER}
+              component={() => this.renderAddServer()}
+            />
+            <Route
+              path={VIEW_EDIT_SERVER}
+              component={arg => this.renderEditServer(arg)}
+            />
+            <Route
+              path={VIEW_SERVERS}
+              component={() => this.renderServers()}
+            />
+            <Route
+              path={VIEW_SERVER_STATUS}
+              component={arg => this.renderServerStatus(arg)}
+            />
+            <Route
+              path={VIEW_ADD_INFLUX}
+              component={() => this.renderAddInflux()}
+            />
+            <Route
+              path={VIEW_EDIT_INFLUX}
+              component={arg => this.renderEditInflux(arg)}
+            />
+            <Route
+              path={VIEW_INFLUX_CONFIGS}
+              component={() => this.renderInfluxConfigs()}
+            />
+          </Router>
+        </div>
         <Toaster
           ref={(c) => {
             this.toaster = c;
@@ -330,6 +333,7 @@ App.propTypes = {
   user: PropTypes.object.isRequired,
   navigation: PropTypes.object.isRequired,
   influxdb: PropTypes.object.isRequired,
+  servers: PropTypes.array.isRequired,
   dispatch: PropTypes.func.isRequired,
 };
 
@@ -338,6 +342,7 @@ function mapStateToProps(state) {
     user: state.user,
     navigation: state.navigation,
     influxdb: state.influxdb,
+    servers: state.server,
   };
 }
 

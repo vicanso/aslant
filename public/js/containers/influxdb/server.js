@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import * as _ from 'lodash';
 
 import FormView from '../../components/form';
-import * as influxdbAction from '../../actions/influxdb';
+import * as serverAction from '../../actions/server';
 import * as navigationAction from '../../actions/navigation';
 import {
   VIEW_SERVERS,
@@ -92,9 +92,9 @@ class Server extends FormView {
     let fn;
     if (server) {
       /* eslint no-underscore-dangle:0 */
-      fn = influxdbAction.update(server._id, data, server.token);
+      fn = serverAction.update(server._id, data, server.token);
     } else {
-      fn = influxdbAction.add(data);
+      fn = serverAction.add(data);
     }
     dispatch(fn).then(() => {
       dispatch(navigationAction.to(VIEW_SERVERS));

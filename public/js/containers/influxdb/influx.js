@@ -607,8 +607,8 @@ class Influx extends Component {
     }
 
     return (
-      <div className="add-influx-wrapper pure-g">
-        <div className="pure-u-1-5">
+      <div className="add-influx-wrapper pure-g fix-height">
+        <div className="pure-u-1-5 fix-height">
           <div className="config-wrapper">
             <h4>Visualization Name</h4>
             <input
@@ -657,7 +657,7 @@ class Influx extends Component {
             { this.renderTimeSelector() }
           </div>
         </div>
-        <div className="influx-content-wrapper pure-u-4-5">
+        <div className="influx-content-wrapper pure-u-4-5 fix-height">
           <div
             className="influx-ql-wrapper clearfix"
           >
@@ -692,9 +692,10 @@ class Influx extends Component {
           />
           <div
             className="chart-config-wrapper"
-          >
+          />
+          <div className="save">
             <button
-              className="pt-button pt-intent-primary pt-button-block save"
+              className="pt-button pt-intent-primary pt-fill"
               onClick={() => this.saveInfluxConfig()}
             >Save</button>
           </div>

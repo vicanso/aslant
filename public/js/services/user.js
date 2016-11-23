@@ -20,7 +20,9 @@ export function add(account, password, email) {
     account,
     password: code,
     email,
-  }).then(res => res.body);
+  })
+  .set('Cache-Control', 'no-cache')
+  .then(res => res.body);
 }
 
 export function login(account, password) {
