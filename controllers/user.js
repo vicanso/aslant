@@ -3,6 +3,7 @@ const _ = require('lodash');
 
 const errors = localRequire('helpers/errors');
 const userService = localRequire('services/user');
+const config = localRequire('config');
 const {
   randomToken,
 } = localRequire('helpers/utils');
@@ -67,6 +68,21 @@ exports.login = (ctx) => {
       userAgent: ctx.get('User-Agent'),
       ip,
     });
+  });
+};
+// refresh cookie max-age and session ttl
+exports.refreshSession = (ctx) => {
+  const {
+    ttl,
+    maxAge,
+  } = config.session;
+  return ctx.refreshSessionTTL(ttl).then(() => {
+    const cookies = ctx.cookies;
+    const name = config.app;
+    cookies.set(name, cookies.get(name), {
+      maxAge,
+    });
+    ctx.body = null;
   });
 };
 

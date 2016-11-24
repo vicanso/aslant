@@ -15,10 +15,11 @@ module.exports = [
   '[GET] [/,/login,/register,/influxdb/*] [v.home & c.home]',
 
   // user
-  '[GET] [/api/users/me] [m.noCache & m.session.read & c.user.me]',
+  '[GET] [/api/users/me] [m.session.read & c.user.me]',
   '[DELETE] [/api/users/logout] [m.session & c.user.logout]',
   '[GET,POST] [/api/users/login] [m.session & c.user.login]',
   '[POST] [/api/users/register] [m.session & c.user.register]',
+  '[PUT] [/api/users/me] [m.session & c.user.refreshSession]',
   {
     methods: ['POST'],
     urls: ['/api/users/like'],

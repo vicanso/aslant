@@ -1,4 +1,4 @@
-const uuid = require('node-uuid');
+const uuid = require('uuid');
 const _ = require('lodash');
 
 const Models = localRequire('models');
@@ -9,7 +9,7 @@ exports.add = (data) => {
   const date = (new Date()).toISOString();
   data.createdAt = date;
   data.updatedAt = date;
-  data.token = uuid.v4();
+  data.token = uuid();
   return (new Server(data)).save().then(doc => doc.toJSON());
 };
 

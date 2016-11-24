@@ -1,4 +1,4 @@
-const uuid = require('node-uuid');
+const uuid = require('uuid');
 const _ = require('lodash');
 const Influx = require('influxdb-nodejs');
 
@@ -89,7 +89,7 @@ exports.addConfig = (data) => {
   const date = (new Date()).toISOString();
   data.createdAt = date;
   data.updatedAt = date;
-  data.token = uuid.v4();
+  data.token = uuid();
   return (new InfluxConfig(data)).save().then(doc => doc.toJSON());
 };
 
@@ -110,7 +110,7 @@ exports.getConfig = (id) => {
 };
 
 exports.updateConfig = (conditon, data) => {
-  data.token = uuid.v4();
+  data.token = uuid();
   data.updatedAt = (new Date()).toISOString();
   const InfluxConfig = Models.get('Influx-config');
   return InfluxConfig.findOneAndUpdate(conditon, data, {

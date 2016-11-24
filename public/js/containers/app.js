@@ -269,7 +269,7 @@ class App extends Component {
     } = this.props;
     const handleLink = this.handleLink;
     return (
-      <div className="fix-height">
+      <div>
         <MainHeader
           user={user}
           isFetchingUserInfo={isFetchingUserInfo}
