@@ -76,10 +76,10 @@ class App extends Component {
     if (currentAccount !== nextAccount) {
       if (nextAccount) {
         dispatch(influxdbAction.listConfig()).catch((err) => {
-          this.showError(err.response.body.message);
+          this.showError(err);
         });
         dispatch(serverActions.list()).catch((err) => {
-          this.showError(err.response.body.message);
+          this.showError(err);
         });
       } else {
         dispatch(serverActions.reset());

@@ -28,6 +28,10 @@ function validateConfig(data) {
       start: Joi.string().empty('').optional(),
       end: Joi.string().empty('').optional(),
     }).optional(),
+    view: Joi.object().keys({
+      width: Joi.string().required(),
+      type: Joi.string().required(),
+    }).required(),
   });
 }
 
@@ -197,7 +201,7 @@ exports.query = (ctx) => {
 };
 
 function pickInfluxConfig(data) {
-  const keys = '_id name updatedAt token'.split(' ');
+  const keys = '_id name updatedAt token view'.split(' ');
   return _.pick(data, keys);
 }
 

@@ -2,8 +2,10 @@ import React, { PropTypes, Component } from 'react';
 import * as _ from 'lodash';
 import InfluxQL from 'influx-ql';
 import { Line } from 'dcharts';
+import classnames from 'classnames';
 import {
   Toaster,
+  Position,
 } from '@blueprintjs/core';
 
 import DropdownSelector from '../../components/dropdown-selector';
@@ -132,6 +134,10 @@ class Influx extends Component {
       time: {
         start: '',
         end: '',
+      },
+      view: {
+        type: 'line',
+        width: '20%',
       },
     };
   }
@@ -288,7 +294,7 @@ class Influx extends Component {
       dispatch,
       id,
     } = this.props;
-    const keys = 'server database rp measurement conditions cals groups time'.split(' ');
+    const keys = 'server database rp measurement conditions cals groups time view'.split(' ');
     const data = _.pick(this.state, keys);
 
     const name = this.influxName.value;
@@ -391,6 +397,119 @@ class Influx extends Component {
         </div>
       );
     });
+  }
+  renderChartTypes() {
+    const {
+      view,
+    } = this.state;
+    const items = [
+      {
+        type: 'line',
+        icon: 'pt-icon-chart',
+        title: 'line chart',
+      },
+      {
+        type: 'bar',
+        icon: 'pt-icon-timeline-bar-chart',
+        title: 'bar chart',
+      },
+      {
+        type: 'table',
+        icon: 'pt-icon-th',
+        title: 'table view',
+      },
+    ];
+    const arr = _.map(items, (item) => {
+      const cls = {
+        'pt-button': true,
+      };
+      if (item.type === view.type) {
+        cls['pt-intent-primary'] = true;
+      }
+      return (
+        <a
+          href="javascript:;"
+          key={item.type}
+          className={classnames(cls)}
+          title={item.title}
+          onClick={() => {
+            view.type = item.type;
+            this.setState({
+              view,
+            });
+          }}
+        >
+          <span
+            style={{
+              marginRight: 0,
+            }}
+            className={`pt-icon-standard ${item.icon}`}
+          />
+        </a>
+      );
+    });
+    return (
+      <div className="pt-button-group pt-fill">
+        { arr }
+      </div>
+    );
+  }
+  renderChartWidth() {
+    const {
+      view,
+    } = this.state;
+    const items = [
+      {
+        width: '20%',
+        title: '20% view',
+      },
+      {
+        width: '40%',
+        title: '40% view',
+      },
+      {
+        width: '60%',
+        title: '60% view',
+      },
+      {
+        width: '80%',
+        title: '80% view',
+      },
+      {
+        width: '100%',
+        title: '100% view',
+      },
+    ];
+    const arr = _.map(items, (item) => {
+      const cls = {
+        'pt-button': true,
+      };
+      if (item.width === view.width) {
+        cls['pt-intent-primary'] = true;
+      }
+      return (
+        <a
+          href="javascript:;"
+          key={item.width}
+          title={item.title}
+          className={classnames(cls)}
+          onClick={() => {
+            view.width = item.width;
+            this.setState({
+              view,
+            });
+          }}
+        >
+          { item.width }
+        </a>
+      );
+    });
+
+    return (
+      <div className="pt-button-group pt-fill">
+        { arr }
+      </div>
+    );
   }
   renderGroupSelectorList() {
     const {
@@ -563,6 +682,7 @@ class Influx extends Component {
         <CoDropdownSelector
           itemsList={[times, times]}
           placeholders={['Start', 'End']}
+          positions={[Position.RIGHT_BOTTOM, Position.RIGHT_BOTTOM]}
           onSelect={onSelect}
           selected={[time.start, time.end]}
         />
@@ -655,6 +775,10 @@ class Influx extends Component {
             { this.renderGroupSelectorList() }
             <h5>Time</h5>
             { this.renderTimeSelector() }
+            <h5>Chart Type</h5>
+            { this.renderChartTypes() }
+            <h5>Chart Width</h5>
+            { this.renderChartWidth() }
           </div>
         </div>
         <div className="influx-content-wrapper pure-u-4-5">
@@ -684,21 +808,18 @@ class Influx extends Component {
               />
             </div>
           </div>
-          <div
-            className="chart-wrapper"
-            ref={(c) => {
-              this.chart = c;
-            }}
-          />
-          <div
-            className="chart-config-wrapper"
-          />
           <div className="save">
             <button
               className="pt-button pt-intent-primary pt-fill"
               onClick={() => this.saveInfluxConfig()}
             >Save</button>
           </div>
+          <div
+            className="chart-wrapper"
+            ref={(c) => {
+              this.chart = c;
+            }}
+          />
         </div>
         <Toaster
           ref={(c) => {

@@ -33,6 +33,8 @@ class Configs extends InfluxTable {
         >
           <td>{item.name}</td>
           <td>{moment(item.updatedAt).format('YYYY-MM-DD HH:mm:ss')}</td>
+          <td>{item.view.type}</td>
+          <td>{item.view.width}</td>
           <td
             className="op"
           >
@@ -64,6 +66,8 @@ class Configs extends InfluxTable {
             <tr>
               <th>Name</th>
               <th>UpdatedAt</th>
+              <th>Type</th>
+              <th>Width</th>
               <th>OP</th>
             </tr>
           </thead>

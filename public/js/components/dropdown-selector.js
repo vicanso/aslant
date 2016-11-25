@@ -4,6 +4,7 @@ import {
   Menu,
   MenuItem,
   Popover,
+  Position,
 } from '@blueprintjs/core';
 
 class DropdownSelector extends Component {
@@ -80,15 +81,24 @@ class DropdownSelector extends Component {
         { arr }
       </Menu>
     );
+    let fixPosition = this.props.position;
+    if (_.isUndefined(this.props.position)) {
+      fixPosition = Position.RIGHT;
+      if (items.length > 20) {
+        fixPosition = Position.BOTTOM;
+      }
+    }
     return (
       <div
         className="dropdown-selector"
       >
         <Popover
           content={menu}
+          position={fixPosition}
         >
           <input
             type="text"
+            readOnly
             placeholder={placeholder}
             className="pt-input"
             value={selectedToString()}
@@ -105,6 +115,7 @@ DropdownSelector.propTypes = {
   placeholder: PropTypes.string,
   selected: PropTypes.any,
   type: PropTypes.string,
+  position: PropTypes.number,
 };
 
 export default DropdownSelector;

@@ -14,6 +14,7 @@ class CoDropdownSelector extends Component {
       placeholders,
       onSelect,
       selected,
+      positions,
     } = this.props;
     return (
       <div className="co-dropdown-selector">
@@ -23,6 +24,7 @@ class CoDropdownSelector extends Component {
             items={itemsList[0]}
             placeholder={placeholders && placeholders[0]}
             selected={selected && selected[0]}
+            position={positions && positions[0]}
             onSelect={(e, item) => {
               if (onSelect) {
                 onSelect(e, item, 0);
@@ -34,6 +36,7 @@ class CoDropdownSelector extends Component {
           <DropdownSelector
             items={itemsList[1]}
             placeholder={placeholders && placeholders[1]}
+            position={positions && positions[1]}
             selected={selected && selected[1]}
             onSelect={(e, item) => {
               if (onSelect) {
@@ -53,6 +56,7 @@ CoDropdownSelector.propTypes = {
   placeholders: PropTypes.array,
   onSelect: PropTypes.func,
   selected: PropTypes.array,
+  positions: PropTypes.array,
 };
 
 export default CoDropdownSelector;

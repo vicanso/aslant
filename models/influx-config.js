@@ -40,5 +40,6 @@ module.exports = {
     cals: [Schema.Types.Mixed],
     groups: Schema.Types.Mixed,
     time: Schema.Types.Mixed,
+    view: Schema.Types.Mixed,
   },
 };
