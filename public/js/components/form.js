@@ -1,6 +1,5 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import {
-  Toaster,
   Switch,
 } from '@blueprintjs/core';
 import classnames from 'classnames';
@@ -14,6 +13,7 @@ class Form extends Component {
       error: '',
     };
     this.inputs = {};
+    this.showError = props.showError || _.noop;
   }
   getData() {
     const inputs = this.inputs;
@@ -51,12 +51,6 @@ class Form extends Component {
       return 'Submitting...';
     }
     return 'Submit';
-  }
-  showError(message) {
-    this.toaster.show({
-      message,
-      className: 'pt-intent-warning',
-    });
   }
   render() {
     const {
@@ -134,14 +128,13 @@ class Form extends Component {
             />
           </div>
         </fieldset>
-        <Toaster
-          ref={(c) => {
-            this.toaster = c;
-          }}
-        />
       </form>
     );
   }
 }
+
+Form.propTypes = {
+  showError: PropTypes.func,
+};
 
 export default Form;

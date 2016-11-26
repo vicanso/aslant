@@ -1,10 +1,14 @@
 import React, { Component, PropTypes } from 'react';
+import * as _ from 'lodash';
 import {
   Alert,
-  Toaster,
 } from '@blueprintjs/core';
 
 class InfluxTable extends Component {
+  constructor(props) {
+    super(props);
+    this.showError = props.showError || _.noop;
+  }
   confirmToRemove(e, item) {
     this.setState({
       removeItem: item,
@@ -19,16 +23,10 @@ class InfluxTable extends Component {
         removeItem: null,
       });
     }).catch((err) => {
-      this.showError(err.response.body.message);
+      this.showError(err);
       this.setState({
         removeItem: null,
       });
-    });
-  }
-  showError(message) {
-    this.toaster.show({
-      message,
-      className: 'pt-intent-warning',
     });
   }
   renderAlert() {
@@ -51,19 +49,11 @@ class InfluxTable extends Component {
       </Alert>
     );
   }
-  renderToaster() {
-    return (
-      <Toaster
-        ref={(c) => {
-          this.toaster = c;
-        }}
-      />
-    );
-  }
 }
 
 InfluxTable.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  showError: PropTypes.func,
 };
 
 export default InfluxTable;

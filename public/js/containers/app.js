@@ -61,7 +61,7 @@ class App extends Component {
       this.setState({
         isFetchingUserInfo: false,
       });
-      this.showError(err.response.body.message);
+      this.showError(err);
     });
     this.handleLink = this.handleLink.bind(this);
     this.showError = this.showError.bind(this);
@@ -154,6 +154,7 @@ class App extends Component {
     }
     return (
       <InfluxView
+        showError={this.showError}
         dispatch={dispatch}
         servers={result}
       />
@@ -165,6 +166,7 @@ class App extends Component {
     } = this.props;
     return (
       <ServerView
+        showError={this.showError}
         dispatch={dispatch}
       />
     );
@@ -180,6 +182,7 @@ class App extends Component {
     }
     return (
       <InfluxView
+        showError={this.showError}
         dispatch={dispatch}
         servers={result}
         id={id}
@@ -210,6 +213,7 @@ class App extends Component {
     } = this.props;
     return (
       <InfluxConfigsView
+        showError={this.showError}
         dispatch={dispatch}
         configs={influxdb.configs}
         handleLink={this.handleLink}
@@ -220,6 +224,7 @@ class App extends Component {
     const { dispatch } = this.props;
     return (
       <Login
+        showError={this.showError}
         dispatch={dispatch}
       />
     );
@@ -228,6 +233,7 @@ class App extends Component {
     const { dispatch } = this.props;
     return (
       <Register
+        showError={this.showError}
         dispatch={dispatch}
       />
     );
@@ -239,6 +245,7 @@ class App extends Component {
     } = this.props;
     return (
       <ServersView
+        showError={this.showError}
         dispatch={dispatch}
         servers={servers}
         handleLink={this.handleLink}

@@ -111,7 +111,6 @@ class Servers extends InfluxTable {
       <div className="influxdb-servers-wrapper">
         { this.renderServers() }
         { this.renderAlert() }
-        { this.renderToaster() }
       </div>
     );
   }
@@ -121,6 +120,7 @@ Servers.propTypes = {
   dispatch: PropTypes.func.isRequired,
   servers: PropTypes.array.isRequired,
   handleLink: PropTypes.func.isRequired,
+  showError: PropTypes.func,
 };
 
 export default Servers;

@@ -119,6 +119,7 @@ class Server extends FormView {
 
 Server.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  showError: PropTypes.func,
 };
 
 export default Server;

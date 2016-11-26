@@ -20,6 +20,9 @@ function toJSON(data) {
     return result;
   }
   _.forEach(data.results, (tmp) => {
+    if (tmp.error) {
+      throw new Error(tmp.error);
+    }
     _.forEach(tmp.series, (item) => {
       const columns = item.columns;
       const arr = [];
@@ -125,6 +128,56 @@ export function toChartData(data, tags, cals) {
     categories,
     data: result,
   };
+}
+
+export function toTableData(data, cals) {
+  const result = [];
+  _.forEach(data, (arr, name) => {
+    // show keys(convert the key such as max_1)
+    const keys = [];
+    const filterCals = _.filter(cals, item => item.cal && item.field);
+    const sortCals = _.sortBy(filterCals, item => `${item.field}${item.cal}`);
+    // original key for get the data
+    const originalKeys = [];
+    _.forEach(_.keys(arr[0]), (key) => {
+      if (key === 'time') {
+        keys.unshift(key);
+        originalKeys.unshift(key);
+        return;
+      }
+      originalKeys.push(key);
+      const reg = /_(\d)*$/gi;
+      const k = key.replace(reg, '');
+      const index = _.findIndex(sortCals, item => item.cal === k);
+      if (index !== -1) {
+        const filterCal = sortCals.splice(index, 1)[0];
+        keys.push(`${filterCal.cal}(${filterCal.field})`);
+        return;
+      }
+      keys.push(key);
+    });
+    const items = _.map(arr, item => _.map(originalKeys, (key) => {
+      const v = item[key];
+      if (key !== 'time') {
+        return v;
+      }
+      return moment(v).format('YYYY-MM-DD HH:mm:ss');
+    }));
+    items.sort((arr1, arr2) => {
+      if (arr1[0] > arr2[0]) {
+        return -1;
+      } else if (arr1[0] < arr2[0]) {
+        return 1;
+      }
+      return 0;
+    });
+    result.push({
+      name,
+      keys,
+      items,
+    });
+  });
+  return result;
 }
 
 

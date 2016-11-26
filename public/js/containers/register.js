@@ -104,6 +104,7 @@ class Register extends FormView {
 
 Register.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  showError: PropTypes.func,
 };
 
 export default Register;

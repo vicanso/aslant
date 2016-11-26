@@ -1,7 +1,8 @@
 import React, { PropTypes, Component } from 'react';
 import * as _ from 'lodash';
+import moment from 'moment';
 import InfluxQL from 'influx-ql';
-import { Line } from 'dcharts';
+import { Line, Bar } from 'dcharts';
 import classnames from 'classnames';
 import {
   Toaster,
@@ -13,9 +14,16 @@ import * as influxdbService from '../../services/influxdb';
 import * as influxdbAction from '../../actions/influxdb';
 import * as navigationAction from '../../actions/navigation';
 import CoDropdownSelector from '../../components/co-dropdown-selector';
+import Table from '../../components/table';
 import {
   VIEW_INFLUX_CONFIGS,
 } from '../../constants/urls';
+import {
+  CHART_TYPES,
+  TIME_INTERVALS,
+  GROUP_INTERVALS,
+  CHART_WIDTHS,
+} from '../../constants/common';
 
 function getClearItem(fn) {
   return (
@@ -96,13 +104,22 @@ function getInfluxQL(state) {
     }
   });
   _.forEach(time, (v, k) => {
-    if (!v) {
+    let timeValue = v;
+    if (!timeValue) {
       return;
     }
+    if (timeValue === 'today') {
+      timeValue = moment().set({
+        hour: 0,
+        minute: 0,
+        second: 0,
+        millisecond: 0,
+      }).toISOString();
+    }
     if (k === 'start') {
-      ql.start = v;
+      ql.start = timeValue;
     } else {
-      ql.end = v;
+      ql.end = timeValue;
     }
   });
   if (groups.interval) {
@@ -140,6 +157,7 @@ class Influx extends Component {
         width: '20%',
       },
     };
+    this.showError = props.showError;
   }
 
   componentWillUpdate(nextProps, nextState) {
@@ -155,14 +173,10 @@ class Influx extends Component {
     const args = [server, database];
     influxdbService.showMeasurements(...args).then(measurements => this.setState({
       measurements: measurements.sort(),
-    })).catch((err) => {
-      this.showError(err.response.body.message);
-    });
+    })).catch(this.showError);
     influxdbService.showRps(...args).then(rps => this.setState({
       rps: rps.sort(),
-    })).catch((err) => {
-      this.showError(err.response.body.message);
-    });
+    })).catch(this.showError);
   }
   onSelectMeasurement(measurement) {
     const {
@@ -175,32 +189,20 @@ class Influx extends Component {
     influxdbService.showSeries(...args).then((series) => {
       const data = formatSeries(series);
       this.setState(data);
-    }).catch((err) => {
-      this.showError(err.response.body.message);
-    });
+    }).catch(this.showError);
     influxdbService.showFieldKeys(...args).then((data) => {
       const fields = _.map(_.get(data, '[0].values'), item => item.key);
       this.setState({
         fields,
       });
-    }).catch((err) => {
-      this.showError(err.response.body.message);
-    });
+    }).catch(this.showError);
   }
   onSelectServer(server) {
     const id = server._id;
     this.reset('server', id);
     influxdbService.showDatabases(id).then(dbs => this.setState({
       dbs: dbs.sort(),
-    })).catch((err) => {
-      this.showError(err.response.body.message);
-    });
-  }
-  showError(message) {
-    this.toaster.show({
-      message,
-      className: 'pt-intent-warning',
-    });
+    })).catch(this.showError);
   }
   query() {
     const {
@@ -213,10 +215,10 @@ class Influx extends Component {
       return;
     }
     influxdbService.query(server, database, ql)
-      .then(data => this.renderChart(data))
-      .catch((err) => {
-        this.showError(err.response.body.message);
-      });
+      .then((data) => {
+        this.renderChart(data);
+      })
+      .catch(this.showError);
   }
   reset(type, value) {
     let state = null;
@@ -285,9 +287,7 @@ class Influx extends Component {
       }
       result.name = data.name;
       this.setState(result);
-    }).catch((err) => {
-      this.showError(err.response.body.message);
-    });
+    }).catch(this.showError);
   }
   saveInfluxConfig() {
     const {
@@ -312,9 +312,7 @@ class Influx extends Component {
     }
     dispatch(fn)
       .then(() => dispatch(navigationAction.to(VIEW_INFLUX_CONFIGS)))
-      .catch((err) => {
-        this.showError(err.response.body.message);
-      });
+      .catch(this.showError);
   }
   renderChart(data) {
     const {
@@ -323,15 +321,33 @@ class Influx extends Component {
     const {
       tags,
       cals,
+      view,
     } = this.state;
-    const chartData = influxdbService.toChartData(data, tags, cals);
-    chart.innerHTML = '<svg></svg>';
-    const line = new Line(chart.children[0]);
-    line.set({
-      'xAxis.distance': 100,
-      'xAxis.categories': chartData.categories,
-    })
-    .render(chartData.data);
+    const chartView = (Fn) => {
+      const chartData = influxdbService.toChartData(data, tags, cals);
+      chart.innerHTML = '<svg></svg>';
+      const item = new Fn(chart.children[0]);
+      item.set({
+        'xAxis.distance': 100,
+        'xAxis.categories': chartData.categories,
+      })
+      .render(chartData.data);
+    };
+    switch (view.type) {
+      case 'line': {
+        chartView(Line);
+        break;
+      }
+      case 'bar': {
+        chartView(Bar);
+        break;
+      }
+      default: {
+        this.setState({
+          tableData: influxdbService.toTableData(data, cals),
+        });
+      }
+    }
   }
   renderFieldCalSelectorList() {
     const {
@@ -402,23 +418,7 @@ class Influx extends Component {
     const {
       view,
     } = this.state;
-    const items = [
-      {
-        type: 'line',
-        icon: 'pt-icon-chart',
-        title: 'line chart',
-      },
-      {
-        type: 'bar',
-        icon: 'pt-icon-timeline-bar-chart',
-        title: 'bar chart',
-      },
-      {
-        type: 'table',
-        icon: 'pt-icon-th',
-        title: 'table view',
-      },
-    ];
+    const items = CHART_TYPES;
     const arr = _.map(items, (item) => {
       const cls = {
         'pt-button': true,
@@ -458,28 +458,7 @@ class Influx extends Component {
     const {
       view,
     } = this.state;
-    const items = [
-      {
-        width: '20%',
-        title: '20% view',
-      },
-      {
-        width: '40%',
-        title: '40% view',
-      },
-      {
-        width: '60%',
-        title: '60% view',
-      },
-      {
-        width: '80%',
-        title: '80% view',
-      },
-      {
-        width: '100%',
-        title: '100% view',
-      },
-    ];
+    const items = CHART_WIDTHS;
     const arr = _.map(items, (item) => {
       const cls = {
         'pt-button': true,
@@ -516,7 +495,7 @@ class Influx extends Component {
       tags,
       groups,
     } = this.state;
-    const intervalList = '10s 30s 1m 5m 10m 15m 30m 1h 2h 6h 12h 1d 2d 7d 30d'.split(' ');
+    const intervalList = GROUP_INTERVALS;
     return (
       <div>
         <DropdownSelector
@@ -620,48 +599,7 @@ class Influx extends Component {
     });
   }
   renderTimeSelector() {
-    const times = [
-      {
-        name: 'Past 5 minutes',
-        value: '-5m',
-      },
-      {
-        name: 'Past 15 minutes',
-        value: '-15m',
-      },
-      {
-        name: 'Past 30 minutes',
-        value: '-30m',
-      },
-      {
-        name: 'Past hour',
-        value: '-1h',
-      },
-      {
-        name: 'Past 6 hours',
-        value: '-6h',
-      },
-      {
-        name: 'Past 12 hours',
-        value: '-12h',
-      },
-      {
-        name: 'Past 24 hours',
-        value: '-24h',
-      },
-      {
-        name: 'Past 2 days',
-        value: '-2d',
-      },
-      {
-        name: 'Past 7 days',
-        value: '-7d',
-      },
-      {
-        name: 'Past 30 days',
-        value: '-30d',
-      },
-    ];
+    const times = TIME_INTERVALS;
     const {
       time,
     } = this.state;
@@ -687,6 +625,36 @@ class Influx extends Component {
           selected={[time.start, time.end]}
         />
       </div>
+    );
+  }
+  renderStatsView() {
+    const {
+      view,
+      tableData,
+    } = this.state;
+    if (view.type === 'table') {
+      const arr = _.map(tableData, data => (
+        <Table
+          key={data.name}
+          keys={data.keys}
+          items={data.items}
+        />
+      ));
+      return (
+        <div
+          className="table-wrapper"
+        >
+          { arr }
+        </div>
+      );
+    }
+    return (
+      <div
+        className="chart-wrapper"
+        ref={(c) => {
+          this.chart = c;
+        }}
+      />
     );
   }
   render() {
@@ -808,24 +776,19 @@ class Influx extends Component {
               />
             </div>
           </div>
-          <div className="save">
+          <div
+            className="save"
+            style={{
+              margin: '15px',
+            }}
+          >
             <button
               className="pt-button pt-intent-primary pt-fill"
               onClick={() => this.saveInfluxConfig()}
             >Save</button>
           </div>
-          <div
-            className="chart-wrapper"
-            ref={(c) => {
-              this.chart = c;
-            }}
-          />
+          { this.renderStatsView() }
         </div>
-        <Toaster
-          ref={(c) => {
-            this.toaster = c;
-          }}
-        />
       </div>
     );
   }
@@ -834,6 +797,7 @@ class Influx extends Component {
 Influx.propTypes = {
   dispatch: PropTypes.func.isRequired,
   servers: PropTypes.array.isRequired,
+  showError: PropTypes.func.isRequired,
   id: PropTypes.string,
 };
 

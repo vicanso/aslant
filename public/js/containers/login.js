@@ -98,6 +98,7 @@ class Login extends FormView {
 
 Login.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  showError: PropTypes.func,
 };
 
 export default Login;

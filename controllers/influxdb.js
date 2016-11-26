@@ -201,7 +201,7 @@ exports.query = (ctx) => {
 };
 
 function pickInfluxConfig(data) {
-  const keys = '_id name updatedAt token view'.split(' ');
+  const keys = '_id name updatedAt token view time groups'.split(' ');
   return _.pick(data, keys);
 }
 
