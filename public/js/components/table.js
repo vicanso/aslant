@@ -13,6 +13,7 @@ class Table extends Component {
   getData() {
     const {
       sort,
+      sortBy,
     } = this.state;
     const {
       items,
@@ -22,7 +23,11 @@ class Table extends Component {
     if (index === -1) {
       return items.slice(0);
     }
-    return _.sortBy(items, arr => arr[index]);
+    const result = _.sortBy(items, arr => arr[index]);
+    if (sortBy === 'desc') {
+      return result.reverse();
+    }
+    return result;
   }
   changeSort(key) {
     const {
@@ -89,9 +94,14 @@ class Table extends Component {
   }
   renderTbody() {
     const items = this.getData();
-    const arr = _.map(items, (tmpArr) => {
-      const key = tmpArr.join('');
-      const tdList = _.map(tmpArr, item => <td key={item}> {item} </td>);
+    const arr = _.map(items, (tmpArr, index) => {
+      const key = `${index}-${tmpArr.join('')}`;
+      const tdList = _.map(tmpArr, (item, i) => {
+        const tdKey = `${i}-${item}`;
+        return (
+          <td key={tdKey}> {item} </td>
+        );
+      });
       return (
         <tr key={key}>
           { tdList }

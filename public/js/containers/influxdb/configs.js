@@ -7,6 +7,7 @@ import InfluxTable from '../../components/influx-table';
 import * as influxdbAction from '../../actions/influxdb';
 import {
   VIEW_EDIT_INFLUX,
+  VIEW_INFLUX_VISUALIZATION,
 } from '../../constants/urls';
 import {
   CHART_TYPES,
@@ -44,10 +45,17 @@ class Configs extends InfluxTable {
       configs,
       handleLink,
     } = this.props;
+    const getTime = (time, key, defaultValue) => {
+      if (!time) {
+        return '--';
+      }
+      return time[key] || defaultValue;
+    };
     const arr = _.map(configs, (item) => {
       /* eslint no-underscore-dangle:0 */
       const id = item._id;
-      const url = VIEW_EDIT_INFLUX.replace(':id', id);
+      const editUrl = VIEW_EDIT_INFLUX.replace(':id', id);
+      const viewUrl = VIEW_INFLUX_VISUALIZATION.replace(':id', id);
       const type = item.view && item.view.type;
       return (
         <tr
@@ -58,24 +66,25 @@ class Configs extends InfluxTable {
           <td>{ renderChartType(type) }</td>
           <td>{item.view && item.view.width}</td>
           <td>
-            { item.time.start || 'now()' }
+            { getTime(item, 'start', 'earliest') }
             -
-            { item.time.end || 'now()' }
+            { getTime(item, 'end', 'now()') }
           </td>
           <td>
-            { item.groups.interval || '--'}
+            { _.get(item, 'groups.interval', '--') }
           </td>
           <td
             className="op"
           >
             <a
-              href={url}
-              onClick={handleLink(url)}
+              href={editUrl}
+              onClick={handleLink(editUrl)}
             >
               <span className="pt-icon-standard pt-icon-edit" />
             </a>
             <a
-              href="javascript:;"
+              href={viewUrl}
+              onClick={handleLink(viewUrl)}
             >
               <span className="pt-icon-standard pt-icon-chart" />
             </a>

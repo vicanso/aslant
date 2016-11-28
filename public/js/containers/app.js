@@ -20,6 +20,7 @@ import {
   VIEW_ADD_INFLUX,
   VIEW_EDIT_INFLUX,
   VIEW_INFLUX_CONFIGS,
+  VIEW_INFLUX_VISUALIZATION,
 } from '../constants/urls';
 
 import Login from './login';
@@ -30,6 +31,7 @@ import ServersView from './influxdb/servers';
 import ServerStatusView from './influxdb/status';
 import InfluxView from './influxdb/influx';
 import InfluxConfigsView from './influxdb/configs';
+import InfluxVisualizationView from './influxdb/visualization';
 
 import * as navigationAction from '../actions/navigation';
 import * as userAction from '../actions/user';
@@ -150,7 +152,17 @@ class App extends Component {
     } = this.props;
     const result = _.sortBy(servers, item => item.name);
     if (!result.length) {
-      return null;
+      return (
+        <p
+          className="tac mtop10"
+        >
+          There is not any server, please add one atleast.
+          <a
+            href={VIEW_ADD_SERVER}
+            onClick={this.handleLink(VIEW_ADD_SERVER)}
+          >Add</a>
+        </p>
+      );
     }
     return (
       <InfluxView
@@ -265,6 +277,21 @@ class App extends Component {
       />
     );
   }
+  renderInfluxVisualization({ params: { id } }) {
+    const {
+      influxdb,
+    } = this.props;
+    if (!influxdb || !influxdb.configs.length) {
+      return null;
+    }
+    const found = _.find(influxdb.configs, item => item._id === id);
+    return (
+      <InfluxVisualizationView
+        config={found}
+        showError={this.showError}
+      />
+    );
+  }
   render() {
     const {
       isFetchingUserInfo,
@@ -320,6 +347,10 @@ class App extends Component {
             <Route
               path={VIEW_INFLUX_CONFIGS}
               component={() => this.renderInfluxConfigs()}
+            />
+            <Route
+              path={VIEW_INFLUX_VISUALIZATION}
+              component={arg => this.renderInfluxVisualization(arg)}
             />
           </Router>
         </div>

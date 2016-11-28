@@ -37,3 +37,4 @@ export const VIEW_SERVER_STATUS = `${appUrlPrfix}/influxdb/servers/:id/status`;
 export const VIEW_ADD_INFLUX = `${appUrlPrfix}/influxdb/influx-configs/add`;
 export const VIEW_INFLUX_CONFIGS = `${appUrlPrfix}/influxdb/influx-configs`;
 export const VIEW_EDIT_INFLUX = `${appUrlPrfix}/influxdb/influx-configs/:id`;
+export const VIEW_INFLUX_VISUALIZATION = `${appUrlPrfix}/influxdb/visualizations/:id`;

@@ -22,29 +22,37 @@ export const CHART_WIDTHS = [
   {
     width: '20%',
     title: '20% view',
+    className: 'pure-u-1-5',
   },
   {
     width: '33%',
+    title: '33% view',
+    className: 'pure-u-1-3',
   },
   {
     width: '40%',
     title: '40% view',
+    className: 'pure-u-2-5',
   },
   {
     width: '50%',
     title: '50% view',
+    className: 'pure-u-1-2',
   },
   {
     width: '60%',
     title: '60% view',
+    className: 'pure-u-3-5',
   },
   {
     width: '80%',
     title: '80% view',
+    className: 'pure-u-4-5',
   },
   {
     width: '100%',
     title: '100% view',
+    className: 'pure-u-1',
   },
 ];
 

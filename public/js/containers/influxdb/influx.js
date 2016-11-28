@@ -40,29 +40,6 @@ function getClearItem(fn) {
   );
 }
 
-function formatSeries(series) {
-  const tags = [];
-  const tagValueDict = {};
-  _.forEach(series, (str) => {
-    _.forEach(str.split(',').slice(1), (item) => {
-      const [tag, value] = item.split('=');
-      if (_.indexOf(tags, tag) === -1) {
-        tags.push(tag);
-        tagValueDict[tag] = [];
-      }
-      if (_.indexOf(tagValueDict[tag], value) === -1) {
-        tagValueDict[tag].push(value);
-      }
-    });
-  });
-  _.forEach(tagValueDict, (values, tag) => {
-    tagValueDict[tag] = values.sort();
-  });
-  return {
-    tags,
-    tagValueDict,
-  };
-}
 
 function getInfluxQL(state) {
   const {
@@ -187,7 +164,7 @@ class Influx extends Component {
     /* eslint no-underscore-dangle:0 */
     const args = [server, database, measurement];
     influxdbService.showSeries(...args).then((series) => {
-      const data = formatSeries(series);
+      const data = influxdbService.formatSeries(series);
       this.setState(data);
     }).catch(this.showError);
     influxdbService.showFieldKeys(...args).then((data) => {
@@ -283,7 +260,7 @@ class Influx extends Component {
         }
       });
       if (data.series) {
-        _.extend(result, formatSeries(data.series));
+        _.extend(result, influxdbService.formatSeries(data.series));
       }
       result.name = data.name;
       this.setState(result);
@@ -299,6 +276,7 @@ class Influx extends Component {
 
     const name = this.influxName.value;
     data.name = name;
+    data.ql = this.ql.value;
     const emptyKeys = _.filter('name server database measurement'.split(' '), key => !data[key]);
     if (emptyKeys.length) {
       this.showError(`${emptyKeys.join(',')} can not be null`);

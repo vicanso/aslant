@@ -180,6 +180,30 @@ export function toTableData(data, cals) {
   return result;
 }
 
+export function formatSeries(series) {
+  const tags = [];
+  const tagValueDict = {};
+  _.forEach(series, (str) => {
+    _.forEach(str.split(',').slice(1), (item) => {
+      const [tag, value] = item.split('=');
+      if (_.indexOf(tags, tag) === -1) {
+        tags.push(tag);
+        tagValueDict[tag] = [];
+      }
+      if (_.indexOf(tagValueDict[tag], value) === -1) {
+        tagValueDict[tag].push(value);
+      }
+    });
+  });
+  _.forEach(tagValueDict, (values, tag) => {
+    tagValueDict[tag] = values.sort();
+  });
+  return {
+    tags,
+    tagValueDict,
+  };
+}
+
 
 export function showDatabases(id) {
   return http.get(INFLUXDB_DATABASES.replace(':id', id))

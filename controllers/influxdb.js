@@ -12,6 +12,7 @@ function validateConfig(data) {
     database: Joi.string().required(),
     rp: Joi.string().empty('').optional(),
     measurement: Joi.string().required(),
+    ql: Joi.string().required(),
     conditions: Joi.array().items(Joi.object().keys({
       tag: Joi.string().empty('').optional(),
       value: Joi.string().empty('').optional(),
