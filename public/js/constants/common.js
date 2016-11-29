@@ -3,17 +3,17 @@ export const CHART_TYPES = [
   {
     type: 'line',
     icon: 'pt-icon-chart',
-    title: 'line chart',
+    name: 'line chart',
   },
   {
     type: 'bar',
     icon: 'pt-icon-timeline-bar-chart',
-    title: 'bar chart',
+    name: 'bar chart',
   },
   {
     type: 'table',
     icon: 'pt-icon-th',
-    title: 'table view',
+    name: 'table view',
   },
 ];
 
@@ -21,37 +21,47 @@ export const CHART_TYPES = [
 export const CHART_WIDTHS = [
   {
     width: '20%',
-    title: '20% view',
+    name: '20% view area',
     className: 'pure-u-1-5',
   },
   {
+    width: '25%',
+    name: '25% view area',
+    className: 'pure-u-1-4',
+  },
+  {
     width: '33%',
-    title: '33% view',
+    name: '33% view area',
     className: 'pure-u-1-3',
   },
   {
     width: '40%',
-    title: '40% view',
+    name: '40% view area',
     className: 'pure-u-2-5',
   },
   {
     width: '50%',
-    title: '50% view',
+    name: '50% view area',
     className: 'pure-u-1-2',
   },
   {
     width: '60%',
-    title: '60% view',
+    name: '60% view area',
     className: 'pure-u-3-5',
   },
   {
+    width: '75%',
+    name: '75% view area',
+    className: 'pure-u-3-4',
+  },
+  {
     width: '80%',
-    title: '80% view',
+    name: '80% view area',
     className: 'pure-u-4-5',
   },
   {
     width: '100%',
-    title: '100% view',
+    name: '100% view area',
     className: 'pure-u-1',
   },
 ];

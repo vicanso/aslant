@@ -72,6 +72,7 @@ class DropdownSelector extends Component {
         <MenuItem
           key={name}
           text={name}
+          iconName={item.icon || ''}
           onClick={e => this.onSelect(e, item)}
         />
       );

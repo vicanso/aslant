@@ -131,7 +131,7 @@ class Influx extends Component {
       },
       view: {
         type: 'line',
-        width: '20%',
+        width: '100%',
       },
     };
     this.showError = props.showError;
@@ -392,79 +392,44 @@ class Influx extends Component {
       );
     });
   }
-  renderChartTypes() {
+  renderChartSetting() {
     const {
       view,
     } = this.state;
-    const items = CHART_TYPES;
-    const arr = _.map(items, (item) => {
-      const cls = {
-        'pt-button': true,
-      };
-      if (item.type === view.type) {
-        cls['pt-intent-primary'] = true;
-      }
-      return (
-        <a
-          href="javascript:;"
-          key={item.type}
-          className={classnames(cls)}
-          title={item.title}
-          onClick={() => {
-            view.type = item.type;
-            this.setState({
-              view,
-            });
-          }}
-        >
-          <span
-            style={{
-              marginRight: 0,
+    const selectedChartType = _.find(CHART_TYPES, item => item.type === view.type);
+    const selectedChartWidth = _.find(CHART_WIDTHS, item => item.width === view.width);
+    return (
+      <div className="pure-g">
+        <div className="pure-u-1-2"><div className="mright5">
+          <DropdownSelector
+            key={'chart-type'}
+            placeholder={'Choose chart type'}
+            items={CHART_TYPES}
+            selected={selectedChartType}
+            position={Position.RIGHT_BOTTOM}
+            onSelect={(e, item) => {
+              view.type = item.type;
+              this.setState({
+                view,
+              });
             }}
-            className={`pt-icon-standard ${item.icon}`}
           />
-        </a>
-      );
-    });
-    return (
-      <div className="pt-button-group pt-fill">
-        { arr }
-      </div>
-    );
-  }
-  renderChartWidth() {
-    const {
-      view,
-    } = this.state;
-    const items = CHART_WIDTHS;
-    const arr = _.map(items, (item) => {
-      const cls = {
-        'pt-button': true,
-      };
-      if (item.width === view.width) {
-        cls['pt-intent-primary'] = true;
-      }
-      return (
-        <a
-          href="javascript:;"
-          key={item.width}
-          title={item.title}
-          className={classnames(cls)}
-          onClick={() => {
-            view.width = item.width;
-            this.setState({
-              view,
-            });
-          }}
-        >
-          { item.width }
-        </a>
-      );
-    });
-
-    return (
-      <div className="pt-button-group pt-fill">
-        { arr }
+        </div></div>
+        <div className="pure-u-1-2"><div className="mleft5">
+          <DropdownSelector
+            key={'chart-width'}
+            placeholder={'Choose chart width'}
+            items={CHART_WIDTHS}
+            selected={selectedChartWidth}
+            position={Position.RIGHT_BOTTOM}
+            onSelect={(e, item) => {
+              view.width = item.width;
+              this.setState({
+                view,
+              });
+            }}
+          />
+        </div></div>
       </div>
     );
   }
@@ -610,6 +575,9 @@ class Influx extends Component {
       view,
       tableData,
     } = this.state;
+    if (this.chart) {
+      this.chart.innerHTML = '';
+    }
     if (view.type === 'table') {
       const arr = _.map(tableData, data => (
         <Table
@@ -721,10 +689,8 @@ class Influx extends Component {
             { this.renderGroupSelectorList() }
             <h5>Time</h5>
             { this.renderTimeSelector() }
-            <h5>Chart Type</h5>
-            { this.renderChartTypes() }
-            <h5>Chart Width</h5>
-            { this.renderChartWidth() }
+            <h5>Chart Setting</h5>
+            { this.renderChartSetting() }
           </div>
         </div>
         <div className="influx-content-wrapper pure-u-4-5">

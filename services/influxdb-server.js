@@ -85,7 +85,7 @@ exports.query = (id, db, ql) => {
 };
 
 exports.addConfig = (data) => {
-  const InfluxConfig = Models.get('Influx-config');
+  const InfluxConfig = Models.get('Config');
   const date = (new Date()).toISOString();
   data.createdAt = date;
   data.updatedAt = date;
@@ -94,14 +94,14 @@ exports.addConfig = (data) => {
 };
 
 exports.listConfig = (conditions) => {
-  const InfluxConfig = Models.get('Influx-config');
+  const InfluxConfig = Models.get('Config');
   return InfluxConfig.find(conditions).sort({
     updatedAt: -1,
   }).then(docsToJSON);
 };
 
 exports.getConfig = (id) => {
-  return Models.get('Influx-config').findById(id).then((doc) => {
+  return Models.get('Config').findById(id).then((doc) => {
     if (!doc) {
       return null;
     }
@@ -112,7 +112,7 @@ exports.getConfig = (id) => {
 exports.updateConfig = (conditon, data) => {
   data.token = uuid();
   data.updatedAt = (new Date()).toISOString();
-  const InfluxConfig = Models.get('Influx-config');
+  const InfluxConfig = Models.get('Config');
   return InfluxConfig.findOneAndUpdate(conditon, data, {
     new: true,
   }).then((doc) => {
@@ -124,7 +124,7 @@ exports.updateConfig = (conditon, data) => {
 };
 
 exports.removeConfig = (conditon) => {
-  const InfluxConfig = Models.get('Influx-config');
+  const InfluxConfig = Models.get('Config');
   return InfluxConfig.findOneAndRemove(conditon).then((doc) => {
     if (!doc) {
       throw errors.get(5);

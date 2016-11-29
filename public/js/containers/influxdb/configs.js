@@ -66,9 +66,9 @@ class Configs extends InfluxTable {
           <td>{ renderChartType(type) }</td>
           <td>{item.view && item.view.width}</td>
           <td>
-            { getTime(item, 'start', 'earliest') }
+            { getTime(item.time, 'start', 'begin') }
             -
-            { getTime(item, 'end', 'now()') }
+            { getTime(item.time, 'end', 'now()') }
           </td>
           <td>
             { _.get(item, 'groups.interval', '--') }
