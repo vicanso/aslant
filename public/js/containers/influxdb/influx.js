@@ -3,7 +3,6 @@ import * as _ from 'lodash';
 import moment from 'moment';
 import InfluxQL from 'influx-ql';
 import { Line, Bar } from 'dcharts';
-import classnames from 'classnames';
 import {
   Toaster,
   Position,
@@ -81,19 +80,34 @@ function getInfluxQL(state) {
     }
   });
   _.forEach(time, (v, k) => {
-    let timeValue = v;
+    const timeValue = v;
     if (!timeValue) {
       return;
     }
     if (timeValue === 'today') {
-      timeValue = moment().set({
+      ql.start = moment().set({
         hour: 0,
         minute: 0,
         second: 0,
         millisecond: 0,
       }).toISOString();
-    }
-    if (k === 'start') {
+    } else if (timeValue === 'yesterday') {
+      ql.end = moment()
+        .set({
+          hour: 23,
+          minute: 59,
+          second: 59,
+          millisecond: 999,
+        }).toISOString();
+      ql.start = moment()
+        .add('day', -1)
+        .set({
+          hour: 0,
+          minute: 0,
+          second: 0,
+          millisecond: 0,
+        }).toISOString();
+    } else if (k === 'start') {
       ql.start = timeValue;
     } else {
       ql.end = timeValue;
@@ -679,6 +693,7 @@ class Influx extends Component {
               placeholder={'Choose Measurement'}
               items={measurements}
               selected={measurement}
+              position={Position.RIGHT_TOP}
               onSelect={(e, item) => this.onSelectMeasurement(item)}
             />
             <h5>Filter By</h5>

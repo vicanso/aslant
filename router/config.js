@@ -53,11 +53,11 @@ module.exports = [
 
   '[GET] [/api/influxdb/select/:id/:db/:measurement] [c.influxdb.select]',
 
-  '[GET] [/api/influxdb/configs] [m.session.isLogined & m.session.read & c.influxdb.listConfig]',
-  '[GET] [/api/influxdb/configs/:id] [c.influxdb.getConfig]',
-  '[POST] [/api/influxdb/configs] [m.session.isLogined & m.session.read & c.influxdb.addConfig]',
-  '[PUT] [/api/influxdb/configs/:id] [m.validateAccessToken & m.session.isLogined & m.session.read & c.influxdb.updateConfig]',
-  '[DELETE] [/api/influxdb/configs/:id] [m.session.isLogined & m.session.read & c.influxdb.removeConfig]',
+  '[GET] [/api/influxdb/configs] [m.session.isLogined & m.session.read & c.config.list]',
+  '[GET] [/api/influxdb/configs/:id] [c.config.get]',
+  '[POST] [/api/influxdb/configs] [m.session.isLogined & m.session.read & c.config.add]',
+  '[PUT] [/api/influxdb/configs/:id] [m.validateAccessToken & m.session.isLogined & m.session.read & c.config.update]',
+  '[DELETE] [/api/influxdb/configs/:id] [m.session.isLogined & m.session.read & c.config.remove]',
 
   // stats
   '[POST] [/api/stats/ajax] [c.stats.ajax]',

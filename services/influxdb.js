@@ -5,10 +5,6 @@ const Influx = require('influxdb-nodejs');
 const Models = localRequire('models');
 const errors = localRequire('helpers/errors');
 
-function docsToJSON(docs) {
-  return _.map(docs, item => item.toJSON());
-}
-
 function getInfluxClient(id, db = '_internal') {
   const InfluxdbServer = Models.get('Server');
   return InfluxdbServer.findById(id).then((doc) => {
@@ -25,7 +21,6 @@ function getInfluxClient(id, db = '_internal') {
     return new Influx(arr.join(''));
   });
 }
-
 
 
 exports.showDatabases = id => getInfluxClient(id).then(client => client.showDatabases());
@@ -81,54 +76,5 @@ exports.select = (id, db, measurement, query) => {
 exports.query = (id, db, ql) => {
   return getInfluxClient(id, db).then((client) => {
     return client.queryRaw(ql);
-  });
-};
-
-exports.addConfig = (data) => {
-  const InfluxConfig = Models.get('Config');
-  const date = (new Date()).toISOString();
-  data.createdAt = date;
-  data.updatedAt = date;
-  data.token = uuid();
-  return (new InfluxConfig(data)).save().then(doc => doc.toJSON());
-};
-
-exports.listConfig = (conditions) => {
-  const InfluxConfig = Models.get('Config');
-  return InfluxConfig.find(conditions).sort({
-    updatedAt: -1,
-  }).then(docsToJSON);
-};
-
-exports.getConfig = (id) => {
-  return Models.get('Config').findById(id).then((doc) => {
-    if (!doc) {
-      return null;
-    }
-    return doc.toJSON();
-  });
-};
-
-exports.updateConfig = (conditon, data) => {
-  data.token = uuid();
-  data.updatedAt = (new Date()).toISOString();
-  const InfluxConfig = Models.get('Config');
-  return InfluxConfig.findOneAndUpdate(conditon, data, {
-    new: true,
-  }).then((doc) => {
-    if (!doc) {
-      throw errors.get(4);
-    }
-    return doc.toJSON();
-  });
-};
-
-exports.removeConfig = (conditon) => {
-  const InfluxConfig = Models.get('Config');
-  return InfluxConfig.findOneAndRemove(conditon).then((doc) => {
-    if (!doc) {
-      throw errors.get(5);
-    }
-    return null;
   });
 };

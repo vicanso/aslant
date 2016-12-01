@@ -34,7 +34,9 @@ export const VIEW_EDIT_SERVER = `${appUrlPrfix}/influxdb/servers/:id`;
 export const VIEW_SERVERS = `${appUrlPrfix}/influxdb/servers`;
 export const VIEW_SERVER_STATUS = `${appUrlPrfix}/influxdb/servers/:id/status`;
 
-export const VIEW_ADD_INFLUX = `${appUrlPrfix}/influxdb/influx-configs/add`;
-export const VIEW_INFLUX_CONFIGS = `${appUrlPrfix}/influxdb/influx-configs`;
-export const VIEW_EDIT_INFLUX = `${appUrlPrfix}/influxdb/influx-configs/:id`;
+export const VIEW_ADD_INFLUX = `${appUrlPrfix}/influxdb/configs/add`;
+export const VIEW_INFLUX_CONFIGS = `${appUrlPrfix}/influxdb/configs`;
+export const VIEW_EDIT_INFLUX = `${appUrlPrfix}/influxdb/configs/:id`;
 export const VIEW_INFLUX_VISUALIZATION = `${appUrlPrfix}/influxdb/visualizations/:id`;
+export const VIEW_ADD_DASHBOARD = `${appUrlPrfix}/influxdb/dashboards/add`;
+export const VIEW_INFLUX_DASHBOARDS = `${appUrlPrfix}/influxdb/dashboards`;

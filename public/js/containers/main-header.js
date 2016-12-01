@@ -18,6 +18,8 @@ import {
   VIEW_SERVERS,
   VIEW_ADD_INFLUX,
   VIEW_INFLUX_CONFIGS,
+  VIEW_ADD_DASHBOARD,
+  VIEW_INFLUX_DASHBOARDS,
 } from '../constants/urls';
 import * as userAction from '../actions/user';
 import * as navigationAction from '../actions/navigation';
@@ -78,6 +80,18 @@ class MainHeader extends Component {
       },
       {
         icon: 'pt-icon-add',
+        name: 'Add Influx Dashboard',
+        action: 'redirect',
+        href: VIEW_ADD_DASHBOARD,
+      },
+      {
+        icon: 'pt-icon-dashboard',
+        name: 'Influx Dashboards',
+        action: 'redirect',
+        href: VIEW_INFLUX_DASHBOARDS,
+      },
+      {
+        icon: 'pt-icon-plus',
         name: 'Add Server',
         action: 'redirect',
         href: VIEW_ADD_SERVER,

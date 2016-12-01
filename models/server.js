@@ -1,5 +1,6 @@
 const {
   createUpdateHook,
+  createSaveHook,
 } = localRequire('helpers/hooks');
 
 module.exports = {
@@ -8,10 +9,7 @@ module.exports = {
       type: String,
       required: true,
     },
-    token: {
-      type: String,
-      required: true,
-    },
+    token: String,
     name: {
       type: String,
       required: true,
@@ -36,14 +34,8 @@ module.exports = {
     },
     username: String,
     password: String,
-    createdAt: {
-      type: String,
-      required: true,
-    },
-    updatedAt: {
-      type: String,
-      required: true,
-    },
+    createdAt: String,
+    updatedAt: String,
   },
   indexes: [
     {
@@ -53,6 +45,13 @@ module.exports = {
   pre: {
     findOneAndUpdate: [
       createUpdateHook({
+        updatedAt: 'date',
+        token: 'uuid',
+      }),
+    ],
+    save: [
+      createSaveHook({
+        createdAt: 'date',
         updatedAt: 'date',
         token: 'uuid',
       }),

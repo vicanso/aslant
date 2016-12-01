@@ -21,6 +21,7 @@ import {
   VIEW_EDIT_INFLUX,
   VIEW_INFLUX_CONFIGS,
   VIEW_INFLUX_VISUALIZATION,
+  VIEW_ADD_DASHBOARD,
 } from '../constants/urls';
 
 import Login from './login';
@@ -32,6 +33,7 @@ import ServerStatusView from './influxdb/status';
 import InfluxView from './influxdb/influx';
 import InfluxConfigsView from './influxdb/configs';
 import InfluxVisualizationView from './influxdb/visualization';
+import InfluxDashboardsView from './influxdb/dashboards';
 
 import * as navigationAction from '../actions/navigation';
 import * as userAction from '../actions/user';
@@ -180,6 +182,20 @@ class App extends Component {
       <ServerView
         showError={this.showError}
         dispatch={dispatch}
+      />
+    );
+  }
+  renderAddInfluxDashboard() {
+    const {
+      dispatch,
+      influxdb,
+    } = this.props;
+    return (
+      <InfluxDashboardsView
+        showError={this.showError}
+        dispatch={dispatch}
+        configs={influxdb.configs}
+        handleLink={this.handleLink}
       />
     );
   }
@@ -351,6 +367,10 @@ class App extends Component {
             <Route
               path={VIEW_INFLUX_VISUALIZATION}
               component={arg => this.renderInfluxVisualization(arg)}
+            />
+            <Route
+              path={VIEW_ADD_DASHBOARD}
+              component={() => this.renderAddInfluxDashboard()}
             />
           </Router>
         </div>

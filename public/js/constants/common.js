@@ -101,6 +101,10 @@ export const TIME_INTERVALS = [
     value: 'today',
   },
   {
+    name: 'Yesterday',
+    value: 'yesterday',
+  },
+  {
     name: 'Past 2 days',
     value: '-2d',
   },

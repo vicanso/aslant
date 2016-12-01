@@ -96,6 +96,13 @@ function createUpdateHook(opts) {
   };
 }
 
+function createSaveHook(opts) {
+  return function saveHoook(next) {
+    fillData(opts, this);
+    next();
+  };
+}
+
 function createValidateHook(opts) {
   return function validateHook(next) {
     fillData(opts, this);
@@ -118,3 +125,4 @@ exports.getStatisticsHooks = (name) => {
 
 exports.createUpdateHook = createUpdateHook;
 exports.createValidateHook = createValidateHook;
+exports.createSaveHook = createSaveHook;

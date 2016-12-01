@@ -1,8 +1,4 @@
 const {
-  Schema,
-} = require('mongoose');
-
-const {
   createUpdateHook,
   createSaveHook,
 } = localRequire('helpers/hooks');
@@ -20,27 +16,7 @@ module.exports = {
     },
     createdAt: String,
     updatedAt: String,
-    server: {
-      type: String,
-      required: true,
-    },
-    database: {
-      type: String,
-      required: true,
-    },
-    measurement: {
-      type: String,
-      required: true,
-    },
-    ql: {
-      type: String,
-      required: true,
-    },
-    conditions: [Schema.Types.Mixed],
-    cals: [Schema.Types.Mixed],
-    groups: Schema.Types.Mixed,
-    time: Schema.Types.Mixed,
-    view: Schema.Types.Mixed,
+    configs: [],
   },
   indexes: [
     {

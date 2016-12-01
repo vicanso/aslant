@@ -6,7 +6,7 @@ const utils = localRequire('helpers/utils');
 const debug = localRequire('helpers/debug');
 
 const client = config.influx ? new Influx(config.influx) : null;
-const maxQueueLength = 10;
+const maxQueueLength = 100;
 
 function flush() {
   const count = client.writeQueueLength;

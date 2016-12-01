@@ -1,4 +1,3 @@
-const uuid = require('uuid');
 const _ = require('lodash');
 
 const Models = localRequire('models');
@@ -6,10 +5,6 @@ const errors = localRequire('helpers/errors');
 
 exports.add = (data) => {
   const Server = Models.get('Server');
-  const date = (new Date()).toISOString();
-  data.createdAt = date;
-  data.updatedAt = date;
-  data.token = uuid();
   return (new Server(data)).save().then(doc => doc.toJSON());
 };
 
