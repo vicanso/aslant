@@ -1,7 +1,5 @@
 import React, { PropTypes, Component } from 'react';
 import * as _ from 'lodash';
-import moment from 'moment';
-import InfluxQL from 'influx-ql';
 import { Line, Bar } from 'dcharts';
 import {
   Toaster,
@@ -39,89 +37,6 @@ function getClearItem(fn) {
   );
 }
 
-
-function getInfluxQL(state) {
-  const {
-    database,
-    measurement,
-    conditions,
-    cals,
-    rp,
-    time,
-    groups,
-  } = state;
-  if (!database || !measurement) {
-    return '';
-  }
-  const ql = new InfluxQL(database);
-  ql.measurement = measurement;
-  ql.RP = _.get(rp, 'name', '');
-  _.forEach(conditions, (item) => {
-    const {
-      tag,
-      value,
-    } = item;
-    if (_.isUndefined(tag) || _.isUndefined(value)) {
-      return;
-    }
-    ql.condition(tag, value);
-  });
-  _.forEach(cals, (item) => {
-    const {
-      cal,
-      field,
-    } = item;
-    if (field) {
-      if (!cal || cal === 'none') {
-        ql.addField(field);
-      } else {
-        ql.addCalculate(cal, field);
-      }
-    }
-  });
-  _.forEach(time, (v, k) => {
-    const timeValue = v;
-    if (!timeValue) {
-      return;
-    }
-    if (timeValue === 'today') {
-      ql.start = moment().set({
-        hour: 0,
-        minute: 0,
-        second: 0,
-        millisecond: 0,
-      }).toISOString();
-    } else if (timeValue === 'yesterday') {
-      ql.end = moment()
-        .set({
-          hour: 23,
-          minute: 59,
-          second: 59,
-          millisecond: 999,
-        }).toISOString();
-      ql.start = moment()
-        .add('day', -1)
-        .set({
-          hour: 0,
-          minute: 0,
-          second: 0,
-          millisecond: 0,
-        }).toISOString();
-    } else if (k === 'start') {
-      ql.start = timeValue;
-    } else {
-      ql.end = timeValue;
-    }
-  });
-  if (groups.interval) {
-    ql.addGroup(`time(${groups.interval})`);
-  }
-  if (groups.tags && groups.tags.length) {
-    ql.addGroup(...groups.tags);
-  }
-  return ql.toSelect();
-}
-
 class Influx extends Component {
   constructor(props) {
     super(props);
@@ -152,7 +67,7 @@ class Influx extends Component {
   }
 
   componentWillUpdate(nextProps, nextState) {
-    const influxQL = getInfluxQL(nextState);
+    const influxQL = influxdbService.getInfluxQL(nextState);
     if (influxQL && this.ql) {
       this.ql.value = influxQL;
     }
@@ -290,7 +205,6 @@ class Influx extends Component {
 
     const name = this.influxName.value;
     data.name = name;
-    data.ql = this.ql.value;
     const emptyKeys = _.filter('name server database measurement'.split(' '), key => !data[key]);
     if (emptyKeys.length) {
       this.showError(`${emptyKeys.join(',')} can not be null`);
@@ -651,7 +565,7 @@ class Influx extends Component {
     }
     let influxQL = '';
     if (id) {
-      influxQL = getInfluxQL(this.state);
+      influxQL = influxdbService.getInfluxQL(this.state);
     }
 
     return (

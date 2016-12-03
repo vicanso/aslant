@@ -5,6 +5,7 @@ exports.byIP = (ip) => {
   const url = `http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=json&ip=${ip}`;
   const keys = 'country province city'.split(' ');
   return request.get(url)
+    .timeout(3000)
     .set('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36')
     .then(res => _.pick(res.body, keys));
 };

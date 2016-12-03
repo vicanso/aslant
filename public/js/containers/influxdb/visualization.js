@@ -5,9 +5,6 @@ import * as _ from 'lodash';
 
 import Table from '../../components/table';
 import * as influxdbService from '../../services/influxdb';
-import {
-  CHART_WIDTHS,
-} from '../../constants/common';
 
 class Visualization extends Component {
   constructor(props) {
@@ -31,8 +28,8 @@ class Visualization extends Component {
       const {
         server,
         database,
-        ql,
       } = data;
+      const ql = influxdbService.getInfluxQL(data);
       return influxdbService.query(server, database, ql);
     }).then((data) => {
       result.data = data;
@@ -102,21 +99,17 @@ class Visualization extends Component {
       );
     }
     const cls = {};
-    const widthConfig = _.find(CHART_WIDTHS, item => item.width === view.width);
-    if (widthConfig) {
-      cls[widthConfig.className] = true;
-    }
     if (view.type === 'table') {
       cls['table-wrapper'] = true;
       return this.renderTable(cls);
     }
     cls['chart-wrapper'] = true;
-    _.delay(() => this.renderChart(), 100);
     return (
       <div
         className={classnames(cls)}
         ref={(c) => {
           this.chart = c;
+          this.renderChart();
         }}
       />
     );

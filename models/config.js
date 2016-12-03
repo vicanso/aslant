@@ -32,10 +32,6 @@ module.exports = {
       type: String,
       required: true,
     },
-    ql: {
-      type: String,
-      required: true,
-    },
     conditions: [Schema.Types.Mixed],
     cals: [Schema.Types.Mixed],
     groups: Schema.Types.Mixed,

@@ -4,6 +4,8 @@ const _ = require('lodash');
 const errors = localRequire('helpers/errors');
 const userService = localRequire('services/user');
 const config = localRequire('config');
+const influx = localRequire('helpers/influx');
+const locationService = localRequire('services/location');
 const {
   randomToken,
 } = localRequire('helpers/utils');
@@ -68,8 +70,24 @@ exports.login = (ctx) => {
       userAgent: ctx.get('User-Agent'),
       ip,
     });
+
+    const writeLoginStats = (tags) => {
+      influx.write('login', {
+        account: user.account,
+        ip,
+        loginCount: user.loginCount,
+      }, _.extend({
+        city: 'unknown',
+      }, tags));
+    };
+    locationService.byIP(ip).then((location) => {
+      writeLoginStats(location);
+    }).catch(() => {
+      writeLoginStats();
+    });
   });
 };
+
 // refresh cookie max-age and session ttl
 exports.refreshSession = (ctx) => {
   const {
@@ -109,6 +127,20 @@ exports.register = (ctx) => {
       token: user.token,
       userAgent: ctx.get('User-Agent'),
       ip,
+    });
+
+    const writeRegStats = (tags) => {
+      influx.write('register', {
+        account: user.account,
+        ip,
+      }, _.extend({
+        city: 'unknown',
+      }, tags));
+    };
+    locationService.byIP(ip).then((location) => {
+      writeRegStats(location);
+    }).catch(() => {
+      writeRegStats();
     });
   });
 };

@@ -17,7 +17,6 @@ function validateConfig(data) {
     database: Joi.string().required(),
     rp: Joi.string().empty('').optional(),
     measurement: Joi.string().required(),
-    ql: Joi.string().required(),
     conditions: Joi.array().items(Joi.object().keys({
       tag: Joi.string().empty('').optional(),
       value: Joi.string().empty('').optional(),
@@ -52,10 +51,19 @@ exports.add = (ctx) => {
 };
 
 exports.list = (ctx) => {
-  const account = ctx.session.user.account;
-  return configService.list({
-    account,
-  }).then((docs) => {
+  let conditions = null;
+  if (ctx.query.ids) {
+    conditions = {
+      _id: {
+        $in: ctx.query.ids.split(','),
+      },
+    };
+  } else {
+    conditions = {
+      account: ctx.session.user.account,
+    };
+  }
+  return configService.list(conditions).then((docs) => {
     /* eslint no-param-reassign:0 */
     ctx.body = _.map(docs, pickInfluxConfig);
   });

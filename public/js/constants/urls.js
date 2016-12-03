@@ -22,6 +22,7 @@ export const INFLUXDB_SERIES = '/api/influxdb/server/:id/:db/:measurement/series
 export const INFLUXDB_SELECT = '/api/influxdb/select/:id/:db/:measurement';
 export const INFLUXDB_QUERY = '/api/influxdb/query/:id/:db';
 export const INFLUXDB_CONFIGS = '/api/influxdb/configs';
+export const INFLUXDB_DASHBOARDS = '/api/influxdb/dashboards';
 
 export const VIEW_HOME = `${appUrlPrfix}/`;
 export const VIEW_LOGIN = `${appUrlPrfix}/login`;
@@ -40,3 +41,5 @@ export const VIEW_EDIT_INFLUX = `${appUrlPrfix}/influxdb/configs/:id`;
 export const VIEW_INFLUX_VISUALIZATION = `${appUrlPrfix}/influxdb/visualizations/:id`;
 export const VIEW_ADD_DASHBOARD = `${appUrlPrfix}/influxdb/dashboards/add`;
 export const VIEW_INFLUX_DASHBOARDS = `${appUrlPrfix}/influxdb/dashboards`;
+export const VIEW_INFLUX_EDIT_DASHBOARD = `${appUrlPrfix}/influxdb/dashboards/:id`;
+export const VIEW_INFLUX_DASHBOARD = `${appUrlPrfix}/influxdb/dashboard/:id/visualizations`;

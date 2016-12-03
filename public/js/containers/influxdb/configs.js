@@ -77,16 +77,16 @@ class Configs extends InfluxTable {
             className="op"
           >
             <a
-              href={editUrl}
-              onClick={handleLink(editUrl)}
-            >
-              <span className="pt-icon-standard pt-icon-edit" />
-            </a>
-            <a
               href={viewUrl}
               onClick={handleLink(viewUrl)}
             >
               <span className="pt-icon-standard pt-icon-chart" />
+            </a>
+            <a
+              href={editUrl}
+              onClick={handleLink(editUrl)}
+            >
+              <span className="pt-icon-standard pt-icon-edit" />
             </a>
             <a
               href="javascript:;"

@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import moment from 'moment';
+import InfluxQL from 'influx-ql';
 
 import * as http from '../helpers/http';
 import {
@@ -204,6 +205,88 @@ export function formatSeries(series) {
   };
 }
 
+export function getInfluxQL(options) {
+  const {
+    database,
+    measurement,
+    conditions,
+    cals,
+    rp,
+    time,
+    groups,
+  } = options;
+  if (!database || !measurement) {
+    return '';
+  }
+  const ql = new InfluxQL(database);
+  ql.measurement = measurement;
+  ql.RP = _.get(rp, 'name', '');
+  _.forEach(conditions, (item) => {
+    const {
+      tag,
+      value,
+    } = item;
+    if (_.isUndefined(tag) || _.isUndefined(value)) {
+      return;
+    }
+    ql.condition(tag, value);
+  });
+  _.forEach(cals, (item) => {
+    const {
+      cal,
+      field,
+    } = item;
+    if (field) {
+      if (!cal || cal === 'none') {
+        ql.addField(field);
+      } else {
+        ql.addCalculate(cal, field);
+      }
+    }
+  });
+  _.forEach(time, (v, k) => {
+    const timeValue = v;
+    if (!timeValue) {
+      return;
+    }
+    if (timeValue === 'today') {
+      ql.start = moment().set({
+        hour: 0,
+        minute: 0,
+        second: 0,
+        millisecond: 0,
+      }).toISOString();
+    } else if (timeValue === 'yesterday') {
+      ql.end = moment()
+        .set({
+          hour: 23,
+          minute: 59,
+          second: 59,
+          millisecond: 999,
+        }).toISOString();
+      ql.start = moment()
+        .add('day', -1)
+        .set({
+          hour: 0,
+          minute: 0,
+          second: 0,
+          millisecond: 0,
+        }).toISOString();
+    } else if (k === 'start') {
+      ql.start = timeValue;
+    } else {
+      ql.end = timeValue;
+    }
+  });
+  if (groups && groups.interval) {
+    ql.addGroup(`time(${groups.interval})`);
+  }
+  if (groups && groups.tags && groups.tags.length) {
+    ql.addGroup(...groups.tags);
+  }
+  return ql.toSelect();
+}
+
 
 export function showDatabases(id) {
   return http.get(INFLUXDB_DATABASES.replace(':id', id))
@@ -299,6 +382,12 @@ export function updateConfig(id, token, config) {
     .set('X-Token', token)
     .set('Cache-Control', 'no-cache')
     .send(config)
+    .then(res => res.body);
+}
+
+export function listConfigByIds(ids) {
+  return http.get(`${INFLUXDB_CONFIGS}?ids=${ids.join(',')}`)
+    .set('Cache-Control', 'no-cache')
     .then(res => res.body);
 }
 

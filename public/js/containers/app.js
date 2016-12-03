@@ -22,6 +22,9 @@ import {
   VIEW_INFLUX_CONFIGS,
   VIEW_INFLUX_VISUALIZATION,
   VIEW_ADD_DASHBOARD,
+  VIEW_INFLUX_DASHBOARDS,
+  VIEW_INFLUX_EDIT_DASHBOARD,
+  VIEW_INFLUX_DASHBOARD,
 } from '../constants/urls';
 
 import Login from './login';
@@ -33,12 +36,15 @@ import ServerStatusView from './influxdb/status';
 import InfluxView from './influxdb/influx';
 import InfluxConfigsView from './influxdb/configs';
 import InfluxVisualizationView from './influxdb/visualization';
+import InfluxDashboardView from './influxdb/dashboard';
 import InfluxDashboardsView from './influxdb/dashboards';
+import InfluxDashboardVisualizationsView from './influxdb/dashboard-visualizations';
 
 import * as navigationAction from '../actions/navigation';
 import * as userAction from '../actions/user';
 import * as influxdbAction from '../actions/influxdb';
 import * as serverActions from '../actions/server';
+import * as dashboardActions from '../actions/dashboard';
 
 class App extends Component {
   constructor(props) {
@@ -82,6 +88,9 @@ class App extends Component {
         dispatch(influxdbAction.listConfig()).catch((err) => {
           this.showError(err);
         });
+        dispatch(dashboardActions.list()).catch((err) => {
+          this.showError(err);
+        });
         dispatch(serverActions.list()).catch((err) => {
           this.showError(err);
         });
@@ -108,6 +117,9 @@ class App extends Component {
       message,
       className: 'pt-intent-warning',
     });
+    if (err.stack) {
+      console.error(err.stack);
+    }
   }
   handleLink(url) {
     const {
@@ -191,11 +203,24 @@ class App extends Component {
       influxdb,
     } = this.props;
     return (
-      <InfluxDashboardsView
+      <InfluxDashboardView
         showError={this.showError}
         dispatch={dispatch}
         configs={influxdb.configs}
         handleLink={this.handleLink}
+      />
+    );
+  }
+  renderInfluxDashboards() {
+    const {
+      dispatch,
+      dashboards,
+    } = this.props;
+    return (
+      <InfluxDashboardsView
+        showError={this.showError}
+        dispatch={dispatch}
+        dashboards={dashboards}
       />
     );
   }
@@ -231,6 +256,27 @@ class App extends Component {
       <ServerView
         dispatch={dispatch}
         server={result}
+      />
+    );
+  }
+  renderEditInfluxDashboard({ params: { id } }) {
+    const {
+      dispatch,
+      dashboards,
+      influxdb,
+    } = this.props;
+    /* eslint no-underscore-dangle:0 */
+    const result = _.find(dashboards, item => item._id === id);
+    if (!result) {
+      return null;
+    }
+    return (
+      <InfluxDashboardView
+        dispatch={dispatch}
+        dashboard={result}
+        showError={this.showError}
+        handleLink={this.handleLink}
+        configs={influxdb.configs}
       />
     );
   }
@@ -308,6 +354,19 @@ class App extends Component {
       />
     );
   }
+  renderInfluxDashboardVisualizationsView({ params: { id } }) {
+    const {
+      dashboards,
+    } = this.props;
+    /* eslint no-underscore-dangle:0 */
+    const result = _.find(dashboards, item => item._id === id);
+    return (
+      <InfluxDashboardVisualizationsView
+        dashboard={result}
+        showError={this.showError}
+      />
+    );
+  }
   render() {
     const {
       isFetchingUserInfo,
@@ -372,6 +431,18 @@ class App extends Component {
               path={VIEW_ADD_DASHBOARD}
               component={() => this.renderAddInfluxDashboard()}
             />
+            <Route
+              path={VIEW_INFLUX_DASHBOARDS}
+              component={() => this.renderInfluxDashboards()}
+            />
+            <Route
+              path={VIEW_INFLUX_EDIT_DASHBOARD}
+              component={arg => this.renderEditInfluxDashboard(arg)}
+            />
+            <Route
+              path={VIEW_INFLUX_DASHBOARD}
+              component={arg => this.renderInfluxDashboardVisualizationsView(arg)}
+            />
           </Router>
         </div>
         <Toaster
@@ -392,6 +463,7 @@ App.propTypes = {
   navigation: PropTypes.object.isRequired,
   influxdb: PropTypes.object.isRequired,
   servers: PropTypes.array.isRequired,
+  dashboards: PropTypes.array.isRequired,
   dispatch: PropTypes.func.isRequired,
 };
 
@@ -401,6 +473,7 @@ function mapStateToProps(state) {
     navigation: state.navigation,
     influxdb: state.influxdb,
     servers: state.server,
+    dashboards: state.dashboard,
   };
 }
 

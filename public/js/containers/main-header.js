@@ -13,7 +13,6 @@ import {
   VIEW_HOME,
   VIEW_LOGIN,
   VIEW_REGISTER,
-  VIEW_SETTING,
   VIEW_ADD_SERVER,
   VIEW_SERVERS,
   VIEW_ADD_INFLUX,
@@ -56,12 +55,18 @@ class MainHeader extends Component {
             className="pt-button"
             href={VIEW_LOGIN}
             onClick={handleLink(VIEW_LOGIN)}
-          >Sign In</a>
+          >
+            <span className="pt-icon-standard pt-icon-log-in" />
+            Sign In
+          </a>
           <a
             className="pt-button pt-intent-primary"
             href={VIEW_REGISTER}
             onClick={handleLink(VIEW_REGISTER)}
-          >Sign Up</a>
+          >
+            <span className="pt-icon-standard pt-icon-new-person" />
+            Sign Up
+          </a>
         </div>
       );
     }
@@ -106,17 +111,9 @@ class MainHeader extends Component {
         type: 'divider',
       },
       {
-        name: 'Settings',
-        action: 'setting',
-        href: VIEW_SETTING,
-      },
-      {
+        icon: 'pt-icon-log-out',
         name: 'Sign out',
         action: 'logout',
-      },
-      {
-        name: 'Token',
-        action: 'showToken',
       },
     ];
     return (

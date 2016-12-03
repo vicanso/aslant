@@ -1,115 +1,88 @@
-import React, { PropTypes, Component } from 'react';
-import classnames from 'classnames';
+import React, { PropTypes } from 'react';
+import moment from 'moment';
 import * as _ from 'lodash';
 
+import InfluxTable from '../../components/influx-table';
+import * as dashboardAction from '../../actions/dashboard';
 import {
-  CHART_TYPES,
-} from '../../constants/common';
+  VIEW_INFLUX_DASHBOARD,
+  VIEW_INFLUX_EDIT_DASHBOARD,
+} from '../../constants/urls';
 
-function renderChartType(type) {
-  const cls = {
-    'pt-icon-standard': true,
-  };
-  const found = _.find(CHART_TYPES, item => item.type === type);
-  if (!found) {
-    return null;
-  }
-  cls[found.icon] = true;
-  return (
-    <span
-      title={found.title}
-      className={classnames(cls)}
-    />
-  );
-}
-
-class Dashboards extends Component {
+class Dashboards extends InfluxTable {
   constructor(props) {
     super(props);
-    this.state = {
-      selectedItems: props.configs.slice(0),
-    };
+    this.state = {};
   }
-  changeOrder() {
+  remove(item) {
+    /* eslint no-underscore-dangle:0 */
+    const fn = dashboardAction.remove(item._id);
+    super.remove(fn);
   }
   render() {
     const {
-      selectedItems,
-      configs,
-    } = this.state;
-    const arr = _.map(configs, (item) => {
+      dashboards,
+      handleLink,
+    } = this.props;
+    const arr = _.map(dashboards, (dashboard) => {
       /* eslint no-underscore-dangle:0 */
-      const id = item._id;
-      const cls = {
-        'pt-icon-standard': true,
-      };
-      const index = _.indexOf(selectedItems, id);
-      if (index !== -1) {
-        cls['pt-icon-selection'] = true;
-      } else {
-        cls['pt-icon-circle'] = true;
-      }
+      const id = dashboard._id;
+      const viewUrl = VIEW_INFLUX_DASHBOARD.replace(':id', id);
+      const editUrl = VIEW_INFLUX_EDIT_DASHBOARD.replace(':id', id);
+      const updatedAt = moment(dashboard.updatedAt).format('YYYY-MM-DD HH:mm:ss');
       return (
-        <tr
-          key={id}
-        >
-          <td>
+        <tr key={id}>
+          <td>{dashboard.name}</td>
+          <td>{updatedAt}</td>
+          <td
+            className="op"
+          >
             <a
-              href="javascript:;"
-              onClick={() => {
-                if (index !== -1) {
-                  selectedItems.splice(index, 1);
-                } else {
-                  selectedItems.push(id);
-                }
-                this.setState({
-                  selectedItems,
-                });
-              }}
+              href={viewUrl}
+              onClick={handleLink(viewUrl)}
             >
-              <span className={classnames(cls)} />
+              <span className="pt-icon-standard pt-icon-dashboard" />
             </a>
-          </td>
-          <td>{item.name}</td>
-          <td>{ renderChartType(item.view.type) }</td>
-          <td>{item.view.width}</td>
-          <td>
             <a
-              href="javascript:;"
-              onClick={() => this.changeOrder(id, 'up')}
+              href={editUrl}
+              onClick={handleLink(editUrl)}
             >
-              <span className="pt-icon-standard pt-icon-arrow-up" />
+              <span className="pt-icon-standard pt-icon-edit" />
             </a>
             <a
               href="javascript:;"
-              onClick={() => this.changeOrder(id, 'down')}
+              onClick={e => this.confirmToRemove(e, dashboard)}
             >
-              <span className="pt-icon-standard pt-icon-arrow-down" />
+              <span className="pt-icon-standard pt-icon-remove" />
             </a>
           </td>
         </tr>
       );
     });
     return (
-      <div className="influx-dashboard-wrapper">
+      <div className="influxdb-dashboards-wrapper">
         <table className="table">
-          <thead><tr>
-            <th>Add</th>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Width</th>
-            <th>OP</th>
-          </tr></thead>
-          <tbody>{ arr }</tbody>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Updated At</th>
+              <th>OP</th>
+            </tr>
+          </thead>
+          <tbody>
+            { arr }
+          </tbody>
         </table>
+        { this.renderAlert() }
       </div>
     );
   }
 }
 
+
 Dashboards.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  configs: PropTypes.array.isRequired,
+  dashboards: PropTypes.array.isRequired,
   handleLink: PropTypes.func.isRequired,
   showError: PropTypes.func,
 };

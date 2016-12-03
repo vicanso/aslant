@@ -53,6 +53,13 @@ module.exports = [
 
   '[GET] [/api/influxdb/select/:id/:db/:measurement] [c.influxdb.select]',
 
+  // influxdb dashboards
+  '[GET] [/api/influxdb/dashboards] [m.session.isLogined & m.session.read & c.dashboard.list]',
+  '[POST] [/api/influxdb/dashboards] [m.session.isLogined & m.session.read & c.dashboard.add]',
+  '[DELETE] [/api/influxdb/dashboards/:id] [m.session.isLogined & m.session.read & c.dashboard.remove]',
+  '[PUT] [/api/influxdb/dashboards/:id] [m.session.isLogined & m.session.read & c.dashboard.update]',
+
+  // influxdb configs
   '[GET] [/api/influxdb/configs] [m.session.isLogined & m.session.read & c.config.list]',
   '[GET] [/api/influxdb/configs/:id] [c.config.get]',
   '[POST] [/api/influxdb/configs] [m.session.isLogined & m.session.read & c.config.add]',

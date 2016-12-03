@@ -24,9 +24,9 @@ exports.get = (id) => {
   });
 };
 
-exports.update = (conditon, data) => {
+exports.update = (condition, data) => {
   const InfluxConfig = Models.get('Config');
-  return InfluxConfig.findOneAndUpdate(conditon, data, {
+  return InfluxConfig.findOneAndUpdate(condition, data, {
     new: true,
   }).then((doc) => {
     if (!doc) {
@@ -36,9 +36,9 @@ exports.update = (conditon, data) => {
   });
 };
 
-exports.remove = (conditon) => {
+exports.remove = (condition) => {
   const InfluxConfig = Models.get('Config');
-  return InfluxConfig.findOneAndRemove(conditon).then((doc) => {
+  return InfluxConfig.findOneAndRemove(condition).then((doc) => {
     if (!doc) {
       throw errors.get(5);
     }
