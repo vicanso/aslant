@@ -1,8 +1,6 @@
 const middlewares = localRequire('middlewares');
-const {
-  version,
-  tracker,
-} = middlewares.common;
+const tracker = middlewares.tracker;
+
 module.exports = [
   // system start
   '[GET] [/api/sys/version] [m.noQuery & c.system.version]',
@@ -17,29 +15,63 @@ module.exports = [
   // user
   '[GET] [/api/users/me] [m.session.read & c.user.me]',
   '[DELETE] [/api/users/logout] [m.session & c.user.logout]',
-  '[GET,POST] [/api/users/login] [m.session & c.user.login]',
-  '[POST] [/api/users/register] [m.session & c.user.register]',
-  '[PUT] [/api/users/me] [m.session & c.user.refreshSession]',
+  '[GET] [/api/users/login] [m.session & c.user.login]',
   {
     methods: ['POST'],
-    urls: ['/api/users/like'],
+    urls: ['/api/users/login'],
     handlers: [
-      tracker('user-like', ['code']),
-      version([2, 3]),
-      'm.session.read',
-      'c.user.like',
+      'm.session',
+      tracker('login', ['account']),
+      'c.user.login',
     ],
   },
+  {
+    methods: ['POST'],
+    urls: ['/api/users/register'],
+    handlers: [
+      'm.session',
+      tracker('register', ['account', 'email']),
+      'c.user.register',
+    ],
+  },
+  '[PUT] [/api/users/me] [m.session & c.user.refreshSession]',
 
   // influxdb server route configs
   '[GET] [/api/influxdb/servers] [m.session.isLogined & m.session.read & c.server.list]',
-  '[POST] [/api/influxdb/servers] [m.session.isLogined & m.session.read & c.server.add]',
-  '[PUT] [/api/influxdb/servers/:id] [m.validateAccessToken & m.session.isLogined & m.session.read & c.server.update]',
-  '[DELETE] [/api/influxdb/servers/:id] [m.session.isLogined & m.session.read & c.server.remove]',
+  {
+    methods: ['POST'],
+    urls: ['/api/influxdb/servers'],
+    handlers: [
+      'm.session.isLogined',
+      'm.session.read',
+      tracker('add-server', ['name', 'host', 'port']),
+      'c.server.add',
+    ],
+  },
+  {
+    methods: ['PUT'],
+    urls: ['/api/influxdb/servers/:id'],
+    handlers: [
+      'm.validateAccessToken',
+      'm.session.isLogined',
+      'm.session.read',
+      tracker('update-server', ['name', 'host', 'port']),
+      'c.server.update',
+    ],
+  },
+  {
+    methods: ['DELETE'],
+    urls: ['/api/influxdb/servers/:id'],
+    handlers: [
+      'm.session.isLogined',
+      'm.session.read',
+      tracker('remove-server', ['id']),
+      'c.server.remove',
+    ],
+  },
 
-
+  // influxb ql
   '[GET] [/api/influxdb/server/:id/dbs] [c.influxdb.showDatabases]',
-
   '[GET] [/api/influxdb/server/:id/:db/rps] [c.influxdb.showRetentionPolicies]',
   '[POST] [/api/influxdb/server/:id/:db/rps] [m.session.isLogined & m.session.read & c.influxdb.addRetentionPolicy]',
   '[DELETE] [/api/influxdb/server/:id/:db/rps/:rp] [m.session.isLogined & m.session.read & c.influxdb.removeRetentionPolicy]',
@@ -55,15 +87,52 @@ module.exports = [
 
   // influxdb dashboards
   '[GET] [/api/influxdb/dashboards] [m.session.isLogined & m.session.read & c.dashboard.list]',
-  '[POST] [/api/influxdb/dashboards] [m.session.isLogined & m.session.read & c.dashboard.add]',
+  {
+    methods: ['POST'],
+    urls: ['/api/influxdb/dashboards'],
+    handlers: [
+      'm.session.isLogined',
+      'm.session.read',
+      tracker('add-dashboard', ['name']),
+      'c.dashboard.add',
+    ],
+  },
   '[DELETE] [/api/influxdb/dashboards/:id] [m.session.isLogined & m.session.read & c.dashboard.remove]',
-  '[PUT] [/api/influxdb/dashboards/:id] [m.session.isLogined & m.session.read & c.dashboard.update]',
+  {
+    methods: ['PUT'],
+    urls: ['/api/influxdb/dashboards/:id'],
+    handlers: [
+      'm.session.isLogined',
+      'm.session.read',
+      tracker('update-dashboard', ['name']),
+      'c.dashboard.update',
+    ],
+  },
 
   // influxdb configs
   '[GET] [/api/influxdb/configs] [m.session.isLogined & m.session.read & c.config.list]',
   '[GET] [/api/influxdb/configs/:id] [c.config.get]',
-  '[POST] [/api/influxdb/configs] [m.session.isLogined & m.session.read & c.config.add]',
-  '[PUT] [/api/influxdb/configs/:id] [m.validateAccessToken & m.session.isLogined & m.session.read & c.config.update]',
+  {
+    methods: ['POST'],
+    urls: ['/api/influxdb/configs'],
+    handlers: [
+      'm.session.isLogined',
+      'm.session.read',
+      tracker('add-config', ['name', 'server', 'database']),
+      'c.config.add',
+    ],
+  },
+  {
+    methods: ['PUT'],
+    urls: ['/api/influxdb/configs/:id'],
+    handlers: [
+      'm.validateAccessToken',
+      'm.session.isLogined',
+      'm.session.read',
+      tracker('update-config', ['name', 'server', 'database']),
+      'c.config.update',
+    ],
+  },
   '[DELETE] [/api/influxdb/configs/:id] [m.session.isLogined & m.session.read & c.config.remove]',
 
   // stats

@@ -48,10 +48,22 @@ class DropdownSelector extends Component {
       onSelect(e, item);
     }
   }
+  clear() {
+    const {
+      onClear,
+    } = this.props;
+    this.setState({
+      selected: null,
+    });
+    if (onClear) {
+      onClear();
+    }
+  }
   render() {
     const {
       items,
       placeholder,
+      onClear,
     } = this.props;
 
     // const multi = type === 'multi';
@@ -89,10 +101,21 @@ class DropdownSelector extends Component {
         fixPosition = Position.BOTTOM;
       }
     }
+    const clearItem = _.isFunction(onClear) && (
+      <a
+        className="clear tac"
+        href="javascript:;"
+        onClick={() => this.clear()}
+      >
+        <span className="pt-icon-standard pt-icon-small-cross" />
+      </a>
+    );
+
     return (
       <div
         className="dropdown-selector"
       >
+        { clearItem }
         <Popover
           content={menu}
           position={fixPosition}
@@ -117,6 +140,7 @@ DropdownSelector.propTypes = {
   selected: PropTypes.any,
   type: PropTypes.string,
   position: PropTypes.number,
+  onClear: PropTypes.func,
 };
 
 export default DropdownSelector;

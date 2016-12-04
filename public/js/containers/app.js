@@ -164,13 +164,20 @@ class App extends Component {
       dispatch,
       servers,
     } = this.props;
+    if (!servers) {
+      return (
+        <p
+          className="tac mtop10"
+        >Loading...</p>
+      );
+    }
     const result = _.sortBy(servers, item => item.name);
     if (!result.length) {
       return (
         <p
           className="tac mtop10"
         >
-          There is not any server, please add one atleast.
+          There is not any server, please add one first.
           <a
             href={VIEW_ADD_SERVER}
             onClick={this.handleLink(VIEW_ADD_SERVER)}
@@ -221,6 +228,7 @@ class App extends Component {
         showError={this.showError}
         dispatch={dispatch}
         dashboards={dashboards}
+        handleLink={this.handleLink}
       />
     );
   }
@@ -317,6 +325,13 @@ class App extends Component {
       dispatch,
       servers,
     } = this.props;
+    if (!servers) {
+      return (
+        <p
+          className="tac mtop10"
+        >Loading...</p>
+      );
+    }
     return (
       <ServersView
         showError={this.showError}

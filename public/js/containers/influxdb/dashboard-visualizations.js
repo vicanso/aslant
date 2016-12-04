@@ -13,16 +13,27 @@ class DashboardVisualizations extends Component {
     super(props);
     this.state = {};
   }
-  componentWillReceiveProps(nextProps) {
+  componentDidMount() {
     const {
-      showError,
+      dashboard,
     } = this.props;
+    if (_.get(dashboard, 'configs.length')) {
+      this.getData(dashboard);
+    }
+  }
+  componentWillReceiveProps(nextProps) {
     const id = _.get(this.props, 'dashboard._id');
     const dashboard = nextProps.dashboard;
     /* eslint no-underscore-dangle:0 */
     if (!dashboard || id === dashboard._id) {
       return;
     }
+    this.getData(dashboard);
+  }
+  getData(dashboard) {
+    const {
+      showError,
+    } = this.props;
     influxdbService.listConfigByIds(dashboard.configs).then((configs) => {
       this.setState({
         configs,
@@ -53,6 +64,7 @@ class DashboardVisualizations extends Component {
           key={id}
           className={classnames(cls)}
         >
+          <h3>{config.name}</h3>
           <InfluxVisualizationView
             config={config}
             showError={showError}

@@ -374,6 +374,12 @@ class Influx extends Component {
           placeholder={'Choose group interval'}
           items={intervalList}
           selected={groups.interval}
+          onClear={() => {
+            groups.interval = null;
+            this.setState({
+              groups,
+            });
+          }}
           onSelect={(e, item) => {
             groups.interval = item;
             this.setState({
@@ -387,6 +393,12 @@ class Influx extends Component {
           items={tags}
           type={'multi'}
           selected={groups.tags}
+          onClear={() => {
+            groups.tags = [];
+            this.setState({
+              groups,
+            });
+          }}
           onSelect={(e, item) => {
             const groupTags = groups.tags || [];
             groups.tags = groupTags;

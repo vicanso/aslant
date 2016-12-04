@@ -28,12 +28,12 @@ class Servers extends InfluxTable {
       servers,
       handleLink,
     } = this.props;
-    if (!servers || !servers.length) {
+    if (!servers.length) {
       return (
         <p
           className="tac"
         >
-          There is not any server, please add one atleast.
+          There is not any server, please add one first.
           <a
             href={VIEW_ADD_SERVER}
             onClick={handleLink(VIEW_ADD_SERVER)}
