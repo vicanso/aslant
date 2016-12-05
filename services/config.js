@@ -8,11 +8,9 @@ exports.add = (data) => {
   return (new InfluxConfig(data)).save().then(doc => doc.toJSON());
 };
 
-exports.list = (conditions) => {
+exports.list = (conditions, sort) => {
   const InfluxConfig = Models.get('Config');
-  return InfluxConfig.find(conditions).sort({
-    updatedAt: -1,
-  }).then(docs => _.map(docs, item => item.toJSON()));
+  return InfluxConfig.find(conditions).sort(sort).then(docs => _.map(docs, item => item.toJSON()));
 };
 
 exports.get = (id) => {

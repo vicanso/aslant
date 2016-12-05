@@ -21,16 +21,16 @@ class DropdownSelector extends Component {
       });
     }
   }
-  componentWillUnmount() {
-    this.isUnmounted = true;
-  }
   onSelect(e, item) {
     const {
       onSelect,
       type,
     } = this.props;
     const multi = type === 'multi';
-    const selected = this.state.selected || [];
+    let selected = (this.state.selected || this.props.selected || []);
+    if (_.isArray(selected)) {
+      selected = selected.slice(0);
+    }
     const state = {
       selected: item,
     };

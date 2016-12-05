@@ -1,17 +1,16 @@
 import React, { PropTypes, Component } from 'react';
 import * as _ from 'lodash';
-import { Line, Bar } from 'dcharts';
 import {
   Toaster,
   Position,
 } from '@blueprintjs/core';
 
 import DropdownSelector from '../../components/dropdown-selector';
+import InfluxVisualizationView from './visualization';
 import * as influxdbService from '../../services/influxdb';
 import * as influxdbAction from '../../actions/influxdb';
 import * as navigationAction from '../../actions/navigation';
 import CoDropdownSelector from '../../components/co-dropdown-selector';
-import Table from '../../components/table';
 import {
   VIEW_INFLUX_CONFIGS,
 } from '../../constants/urls';
@@ -62,6 +61,7 @@ class Influx extends Component {
         type: 'line',
         width: '100%',
       },
+      data: null,
     };
     this.showError = props.showError;
   }
@@ -120,9 +120,14 @@ class Influx extends Component {
       console.error('server, database and ql can not be null');
       return;
     }
+    this.setState({
+      data: null,
+    });
     influxdbService.query(server, database, ql)
       .then((data) => {
-        this.renderChart(data);
+        this.setState({
+          data,
+        });
       })
       .catch(this.showError);
   }
@@ -180,7 +185,7 @@ class Influx extends Component {
   }
   restore(id) {
     influxdbService.getConfig(id, {
-      fill: true,
+      fill: 'all',
     }).then((data) => {
       const result = _.pick(data, 'name token'.split(' '));
       _.forEach(this.state, (v, k) => {
@@ -219,41 +224,6 @@ class Influx extends Component {
     dispatch(fn)
       .then(() => dispatch(navigationAction.to(VIEW_INFLUX_CONFIGS)))
       .catch(this.showError);
-  }
-  renderChart(data) {
-    const {
-      chart,
-    } = this;
-    const {
-      tags,
-      cals,
-      view,
-    } = this.state;
-    const chartView = (Fn) => {
-      const chartData = influxdbService.toChartData(data, tags, cals);
-      chart.innerHTML = '<svg></svg>';
-      const item = new Fn(chart.children[0]);
-      item.set({
-        'xAxis.distance': 100,
-        'xAxis.categories': chartData.categories,
-      })
-      .render(chartData.data);
-    };
-    switch (view.type) {
-      case 'line': {
-        chartView(Line);
-        break;
-      }
-      case 'bar': {
-        chartView(Bar);
-        break;
-      }
-      default: {
-        this.setState({
-          tableData: influxdbService.toTableData(data, cals),
-        });
-      }
-    }
   }
   renderFieldCalSelectorList() {
     const {
@@ -375,7 +345,7 @@ class Influx extends Component {
           items={intervalList}
           selected={groups.interval}
           onClear={() => {
-            groups.interval = null;
+            delete groups.interval;
             this.setState({
               groups,
             });
@@ -394,7 +364,7 @@ class Influx extends Component {
           type={'multi'}
           selected={groups.tags}
           onClear={() => {
-            groups.tags = [];
+            delete groups.tags;
             this.setState({
               groups,
             });
@@ -512,34 +482,15 @@ class Influx extends Component {
   }
   renderStatsView() {
     const {
-      view,
-      tableData,
+      data,
     } = this.state;
-    if (this.chart) {
-      this.chart.innerHTML = '';
-    }
-    if (view.type === 'table') {
-      const arr = _.map(tableData, data => (
-        <Table
-          key={data.name}
-          keys={data.keys}
-          items={data.items}
-        />
-      ));
-      return (
-        <div
-          className="table-wrapper"
-        >
-          { arr }
-        </div>
-      );
+    if (!data) {
+      return null;
     }
     return (
-      <div
-        className="chart-wrapper"
-        ref={(c) => {
-          this.chart = c;
-        }}
+      <InfluxVisualizationView
+        data={this.state}
+        showError={this.props.showError}
       />
     );
   }

@@ -22,8 +22,6 @@ webpackConfig.plugins.push(
     },
   })
 );
-webpackConfig.output.filename = '[name].[hash].js';
-webpackConfig.output.sourceMapFilename = '[file].map';
 
 const assetsPath = 'assets';
 // 保存静态文件的crc32版本号
@@ -84,6 +82,7 @@ gulp.task('clean', ['crc32'], () => del(['build']));
 gulp.task('stylus', ['del:assets', 'del:build'], () => gulp.src('public/**/*.styl')
   .pipe(stylus({
     use: nib(),
+    'include css': true,
   }))
   .pipe(base64())
   .pipe(cssmin())
@@ -95,6 +94,12 @@ gulp.task('copy:others', ['del:assets', 'del:build'], () => gulp.src([
   '!public/**/*.styl',
   '!public/**/*.js',
 ]).pipe(copy('build', {
+  prefix: 1,
+})));
+
+gulp.task('copy:to-assets', ['del:assets'], () => gulp.src([
+  'public/fonts/*',
+]).pipe(copy(assetsPath, {
   prefix: 1,
 })));
 
@@ -139,10 +144,11 @@ gulp.task('static:webpack-sourcemap', ['webpack:bundle'], () => gulp.src(['publi
 gulp.task('static:webpack-version', ['static:webpack', 'static:webpack-sourcemap'], () => gulp.src([`${assetsPath}/bundle/*.js`])
   .pipe(through.obj((file, encoding, cb) => {
     const fileName = file.path.replace(path.join(__dirname, assetsPath), '');
+    const v = crc32.unsigned(file.contents);
     const arr = fileName.split('.');
-    const v = arr.splice(-2, 1);
-    crc32Versions[arr.join('.')] = v[0];
-    cb();
+    crc32Versions[fileName] = `${v}`;
+    arr.splice(1, 0, v);
+    fs.rename(file.path, file.path.replace(fileName, arr.join('.')), cb);
   }))
 );
 
@@ -182,6 +188,7 @@ gulp.task('default', [
   'del:build',
   'stylus',
   'copy:others',
+  'copy:to-assets',
   'static:css',
   'static:webpack',
   'static:js',

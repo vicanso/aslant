@@ -1,5 +1,9 @@
 import React, { PropTypes, Component } from 'react';
-import { Line, Bar } from 'dcharts';
+import {
+  Line,
+  Bar,
+  Pie,
+} from 'dcharts';
 import classnames from 'classnames';
 import * as _ from 'lodash';
 
@@ -9,8 +13,10 @@ import * as influxdbService from '../../services/influxdb';
 class Visualization extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
-    this.getData();
+    this.state = props.data || {};
+    if (props.config) {
+      this.getData();
+    }
   }
   getData() {
     const {
@@ -20,7 +26,7 @@ class Visualization extends Component {
     const result = {};
     /* eslint no-underscore-dangle:0 */
     influxdbService.getConfig(config._id, {
-      fill: true,
+      fill: ['series'].join(','),
     }).then((data) => {
       result.view = data.view;
       result.cals = data.cals;
@@ -50,15 +56,30 @@ class Visualization extends Component {
       const chartData = influxdbService.toChartData(data, tags, cals);
       chart.innerHTML = '<svg></svg>';
       const item = new Fn(chart.children[0]);
-      item.set({
-        'xAxis.distance': 100,
-        'xAxis.categories': chartData.categories,
-      })
-      .render(chartData.data);
+      if (view.type === 'pie') {
+        const arr = _.map(chartData.data, (tmp) => {
+          const value = tmp.data[0];
+          return {
+            name: tmp.name,
+            value,
+          };
+        });
+        item.render(arr);
+      } else {
+        item.set({
+          'xAxis.distance': 100,
+          'xAxis.categories': chartData.categories,
+        })
+        .render(chartData.data);
+      }
     };
     switch (view.type) {
       case 'bar': {
         chartView(Bar);
+        break;
+      }
+      case 'pie': {
+        chartView(Pie);
         break;
       }
       default: {
@@ -109,7 +130,9 @@ class Visualization extends Component {
         className={classnames(cls)}
         ref={(c) => {
           this.chart = c;
-          this.renderChart();
+          if (this.chart) {
+            this.renderChart();
+          }
         }}
       />
     );
@@ -124,7 +147,8 @@ class Visualization extends Component {
 }
 
 Visualization.propTypes = {
-  config: PropTypes.object.isRequired,
+  data: PropTypes.object,
+  config: PropTypes.object,
   showError: PropTypes.func.isRequired,
 };
 

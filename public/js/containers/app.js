@@ -477,7 +477,7 @@ App.propTypes = {
   user: PropTypes.object.isRequired,
   navigation: PropTypes.object.isRequired,
   influxdb: PropTypes.object.isRequired,
-  servers: PropTypes.array.isRequired,
+  servers: PropTypes.array,
   dashboards: PropTypes.array.isRequired,
   dispatch: PropTypes.func.isRequired,
 };

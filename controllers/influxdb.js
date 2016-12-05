@@ -156,17 +156,44 @@ exports.select = (ctx) => {
   });
 };
 
+function groupByField(data) {
+  data.results[0].series[0].columns.push('count');
+  const seriesData = data.results[0].series[0];
+
+  const arr = [];
+  const dict = {};
+  _.forEach(seriesData.values, (item) => {
+    const v = item[1];
+    const i = dict[v];
+    if (_.isUndefined(i)) {
+      dict[v] = arr.length;
+      item[2] = 1;
+      arr.push(item);
+      return;
+    }
+    arr[i][2] += 1;
+  });
+  seriesData.values = arr;
+  return data;
+}
+
 exports.query = (ctx) => {
   const {
     id,
     db,
   } = ctx.params;
   const query = Joi.validateThrow(ctx.query, {
-    ql: Joi.string(),
+    ql: Joi.string().required(),
+    'group-field': Joi.string(),
   });
+  const groupField = query['group-field'];
   return influxdbService.query(id, db, query.ql).then((data) => {
     ctx.set('Cache-Control', 'public, max-age=10');
     /* eslint no-param-reassign:0 */
-    ctx.body = data;
+    if (groupField) {
+      ctx.body = groupByField(data, groupField);
+    } else {
+      ctx.body = data;
+    }
   });
 };

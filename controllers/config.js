@@ -52,6 +52,7 @@ exports.add = (ctx) => {
 
 exports.list = (ctx) => {
   let conditions = null;
+  let sort = {};
   if (ctx.query.ids) {
     conditions = {
       _id: {
@@ -62,8 +63,11 @@ exports.list = (ctx) => {
     conditions = {
       account: ctx.session.user.account,
     };
+    sort = {
+      updatedAt: -1,
+    };
   }
-  return configService.list(conditions).then((docs) => {
+  return configService.list(conditions, sort).then((docs) => {
     /* eslint no-param-reassign:0 */
     ctx.body = _.map(docs, pickInfluxConfig);
   });
@@ -71,10 +75,17 @@ exports.list = (ctx) => {
 
 exports.get = (ctx) => {
   const query = Joi.validateThrow(ctx.query, {
-    fill: Joi.boolean().optional(),
+    fill: Joi.string().optional(),
   });
-  const fill = query.fill;
+  const fill = query.fill || '';
+  const fillItems = fill.split(',');
   const id = ctx.params.id;
+  const needToFill = (key) => {
+    if (fill === 'all' || _.indexOf(fillItems, key) !== -1) {
+      return true;
+    }
+    return false;
+  };
   return configService.get(id).then((doc) => {
     if (!doc) {
       throw errors.get(5);
@@ -88,13 +99,13 @@ exports.get = (ctx) => {
       database,
       measurement,
     } = doc;
-    if (server) {
+    if (server && needToFill('dbs')) {
       const fn = influxdbService.showDatabases(server).then((dbs) => {
         doc.dbs = dbs.sort();
       });
       fns.push(fn);
     }
-    if (database) {
+    if (database && needToFill('measurements')) {
       const args = [server, database];
       const fn1 = influxdbService.showMeasurements(...args).then((measurements) => {
         doc.measurements = measurements.sort();
@@ -107,13 +118,18 @@ exports.get = (ctx) => {
     }
     if (measurement) {
       const args = [server, database, measurement];
-      const fn1 = influxdbService.showSeries(...args).then((series) => {
-        doc.series = series;
-      });
-      const fn2 = influxdbService.showFieldKeys(...args).then((data) => {
-        doc.fields = _.map(_.get(data, '[0].values'), item => item.key);
-      });
-      fns.push(fn1, fn2);
+      if (needToFill('series')) {
+        const fn1 = influxdbService.showSeries(...args).then((series) => {
+          doc.series = series;
+        });
+        fns.push(fn1);
+      }
+      if (needToFill('field-keys')) {
+        const fn2 = influxdbService.showFieldKeys(...args).then((data) => {
+          doc.fields = _.map(_.get(data, '[0].values'), item => item.key);
+        });
+        fns.push(fn2);
+      }
     }
     return Promise.all(fns).then(() => doc);
   }).then((data) => {

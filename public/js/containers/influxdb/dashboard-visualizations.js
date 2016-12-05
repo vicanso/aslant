@@ -36,7 +36,7 @@ class DashboardVisualizations extends Component {
     } = this.props;
     influxdbService.listConfigByIds(dashboard.configs).then((configs) => {
       this.setState({
-        configs,
+        configs: _.sortBy(configs, config => _.indexOf(dashboard.configs, config._id)),
       });
     }).catch(showError);
   }

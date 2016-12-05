@@ -11,6 +11,11 @@ export const CHART_TYPES = [
     name: 'bar chart',
   },
   {
+    type: 'pie',
+    icon: 'pt-icon-pie-chart',
+    name: 'pie chart',
+  },
+  {
     type: 'table',
     icon: 'pt-icon-th',
     name: 'table view',

@@ -28,17 +28,33 @@ function renderChartType(type) {
   );
 }
 
+
+function resortConfigs(configs, selectedItems) {
+  const max = configs.length;
+  return _.sortBy(configs, (config) => {
+    const index = _.indexOf(selectedItems, config._id);
+    if (index === -1) {
+      return max;
+    }
+    return index;
+  });
+}
+
 class Dashboards extends Component {
   constructor(props) {
     super(props);
+    const selectedItems = _.get(props, 'dashboard.configs', []);
     this.state = {
-      configs: props.configs.slice(0),
-      selectedItems: _.get(props, 'dashboard.configs', []),
+      configs: resortConfigs(props.configs.slice(0), selectedItems),
+      selectedItems,
     };
   }
   componentWillReceiveProps(nextProps) {
+    const {
+      selectedItems,
+    } = this.state;
     this.setState({
-      configs: nextProps.configs.slice(0),
+      configs: resortConfigs(nextProps.configs.slice(0), selectedItems),
     });
   }
   changeOrder(id, type) {
@@ -69,6 +85,7 @@ class Dashboards extends Component {
     const {
       status,
       selectedItems,
+      configs,
     } = this.state;
     if (status === 'submitting') {
       return;
@@ -82,10 +99,16 @@ class Dashboards extends Component {
       showError('At least one influxdb config first');
       return;
     }
-
+    const newConfigs = [];
+    _.forEach(configs, (item) => {
+      const id = item._id;
+      if (_.indexOf(selectedItems, id) !== -1) {
+        newConfigs.push(id);
+      }
+    });
     const data = {
       name,
-      configs: selectedItems,
+      configs: newConfigs,
     };
     this.setState({
       status: 'submitting',

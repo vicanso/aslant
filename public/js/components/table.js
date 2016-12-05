@@ -98,8 +98,9 @@ class Table extends Component {
       const key = `${index}-${tmpArr.join('')}`;
       const tdList = _.map(tmpArr, (item, i) => {
         const tdKey = `${i}-${item}`;
+        const v = _.isNumber(item) ? item.toLocaleString() : item;
         return (
-          <td key={tdKey}> {item} </td>
+          <td key={tdKey}> {v} </td>
         );
       });
       return (
