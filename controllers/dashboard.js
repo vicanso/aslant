@@ -6,6 +6,7 @@ function validate(data) {
   return Joi.validateThrow(data, {
     name: Joi.string().required(),
     configs: Joi.array().items(Joi.string()).min(1).required(),
+    desc: Joi.string().optional(),
   });
 }
 

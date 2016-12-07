@@ -182,9 +182,11 @@ class MainHeader extends Component {
         className="main-header"
       >
         <a
+          className="logo-wrapper"
           href={VIEW_HOME}
           onClick={handleLink(VIEW_HOME)}
         >Aslant</a>
+        <div className="logo-bar" />
         <div
           className="pull-right user-infos"
         >

@@ -125,3 +125,42 @@ export const TIME_INTERVALS = [
 
 // the influxdb query group time interval
 export const GROUP_INTERVALS = '10s 30s 1m 5m 10m 15m 30m 1h 2h 6h 12h 1d 2d 7d 30d'.split(' ');
+
+export const AUTO_REFRESH_INTERVALS = [
+  {
+    name: 'None',
+    value: 0,
+  },
+  {
+    name: 'Every 5 seconds',
+    value: 5,
+  },
+  {
+    name: 'Every 10 seconds',
+    value: 10,
+  },
+  {
+    name: 'Every 15 seconds',
+    value: 15,
+  },
+  {
+    name: 'Every 30 seconds',
+    value: 30,
+  },
+  {
+    name: 'Every 40 seconds',
+    value: 45,
+  },
+  {
+    name: 'Every minute',
+    value: 60,
+  },
+  {
+    name: 'Every 5 minutes',
+    value: 5 * 60,
+  },
+  {
+    name: 'Every 10 minutes',
+    value: 10 * 60,
+  },
+];

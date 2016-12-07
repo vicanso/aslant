@@ -1,26 +1,42 @@
-.mainNav
+@import './common'
+
+.main-nav
   position fixed
+  top $MAIN_HEADER_HEIGHT
   left 0
-  top 0
+  width $MAIN_NAV_WIDTH
   bottom 0
-  width 150px
-  background-color #252024
+  background-color $COLOR_DARK
   ul
     margin 0
     padding 0
-    list-style none
+    list-style 0
+  .navigation
+    color #aaa
+    min-height 300px
     li
-      padding 15px 20px
-      color #f0f0f0
-      font-weight 400
-      .fa
-        text-align center
-        width 14px
-        margin-right 10px
-  .logo
-    font-size 28px
-    font-weight 500
-    text-indent 2em
-    height 40px
-    line-height @height
-    color #fff
+      position relative
+      ul
+        display none
+      .selected
+        position absolute
+        right 0
+        top 50%
+        margin-top -8px
+        color #fff
+      a
+        color #aaa
+        text-decoration none
+        padding 8px 10px
+        display block
+        &:hover
+          background-color $COLOR_BLUE
+    > li.active
+      border-left 2px solid $COLOR_BLUE
+      background-color #222933
+      ul
+        display block
+      a
+        color #fff
+    ul a
+      padding-left 18px

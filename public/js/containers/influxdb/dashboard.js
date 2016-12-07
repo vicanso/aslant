@@ -108,6 +108,7 @@ class Dashboards extends Component {
     });
     const data = {
       name,
+      desc: (this.dashboardDesc.value || '').trim(),
       configs: newConfigs,
     };
     this.setState({
@@ -223,6 +224,17 @@ class Dashboards extends Component {
           >
             { btnText }
           </button>
+        </div>
+        <div className="desc-wrapper">
+          <input
+            type="text"
+            className="pt-input pt-fill"
+            placeholder="Input dashboard's description"
+            defaultValue={_.get(this.props, 'dashboard.desc', '')}
+            ref={(c) => {
+              this.dashboardDesc = c;
+            }}
+          />
         </div>
         <table className="table">
           <thead><tr>

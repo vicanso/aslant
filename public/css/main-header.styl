@@ -1,17 +1,37 @@
 @import './common'
 
 .main-header
-  $paddingTop = 10px
-  padding $paddingTop 20px
+  $paddingValue = 10px
+  padding $paddingValue 20px
   background-color #fff
-  border-bottom 1px solid $COLOR_LIGHT_GRAY
   height $MAIN_HEADER_HEIGHT
-  line-height $MAIN_HEADER_HEIGHT - 2 * $paddingTop
+  line-height $MAIN_HEADER_HEIGHT - 2 * $paddingValue
   position fixed
   left 0
   right 0
   top 0
   z-index 9
+  $logoWrapperWidth = $MAIN_NAV_WIDTH
+  $logoFontSize = 18px
+  .logo-wrapper
+    position absolute
+    left 0
+    top 0
+    bottom 0
+    width 160px
+    background-color $COLOR_DARK
+    color #fff
+    font-size $logoFontSize
+    line-height $MAIN_HEADER_HEIGHT
+    text-decoration none
+    text-indent 1em
+  .logo-bar
+    position absolute
+    left $logoFontSize
+    width ($logoWrapperWidth / 3)
+    top 0
+    height 3px
+    background-color $COLOR_BLUE
   .user-infos
     .fa
       width 14px

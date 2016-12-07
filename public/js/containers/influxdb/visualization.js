@@ -18,16 +18,25 @@ class Visualization extends Component {
       this.getData();
     }
   }
+  componentWillMount() {
+    clearInterval(this.timer);
+  }
   getData() {
     const {
       config,
       showError,
+      time,
     } = this.props;
     const result = {};
     /* eslint no-underscore-dangle:0 */
     influxdbService.getConfig(config._id, {
       fill: ['series'].join(','),
     }).then((data) => {
+      if (time) {
+        /* eslint no-param-reassign:0 */
+        data.time = time;
+      }
+      result.config = data;
       result.view = data.view;
       result.cals = data.cals;
       result.tags = influxdbService.formatSeries(data.series).tags;
@@ -40,7 +49,41 @@ class Visualization extends Component {
     }).then((data) => {
       result.data = data;
       this.setState(result);
-    }).catch(showError);
+    }).catch((err) => {
+      showError(err);
+      this.setState(result);
+    });
+  }
+  startAutoRefresh(interval) {
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
+    const {
+      config,
+    } = this.state;
+    if (!config) {
+      return;
+    }
+    const {
+      time,
+    } = this.props;
+    const {
+      server,
+      database,
+    } = config;
+    if (time) {
+      config.time = time;
+    }
+    const ql = influxdbService.getInfluxQL(config);
+    if (interval) {
+      this.timer = setInterval(() => {
+        influxdbService.query(server, database, ql).then((data) => {
+          this.setState({
+            data,
+          });
+        });
+      }, interval * 1000);
+    }
   }
   renderChart() {
     const {
@@ -56,6 +99,7 @@ class Visualization extends Component {
       const chartData = influxdbService.toChartData(data, tags, cals);
       chart.innerHTML = '<svg></svg>';
       const item = new Fn(chart.children[0]);
+      item.set('disabled.legend', true);
       if (view.type === 'pie') {
         const arr = _.map(chartData.data, (tmp) => {
           const value = tmp.data[0];
@@ -138,6 +182,10 @@ class Visualization extends Component {
     );
   }
   render() {
+    const {
+      interval,
+    } = this.props;
+    this.startAutoRefresh(interval);
     return (
       <div className="influx-visualization-wrapper">
         { this.renderVisualization() }
@@ -150,6 +198,8 @@ Visualization.propTypes = {
   data: PropTypes.object,
   config: PropTypes.object,
   showError: PropTypes.func.isRequired,
+  interval: PropTypes.number,
+  time: PropTypes.object,
 };
 
 export default Visualization;

@@ -30,6 +30,7 @@ import {
 import Login from './login';
 import Register from './register';
 import MainHeader from './main-header';
+import MainNav from './main-nav';
 import ServerView from './influxdb/server';
 import ServersView from './influxdb/servers';
 import ServerStatusView from './influxdb/status';
@@ -39,6 +40,7 @@ import InfluxVisualizationView from './influxdb/visualization';
 import InfluxDashboardView from './influxdb/dashboard';
 import InfluxDashboardsView from './influxdb/dashboards';
 import InfluxDashboardVisualizationsView from './influxdb/dashboard-visualizations';
+import HomeView from './home';
 
 import * as navigationAction from '../actions/navigation';
 import * as userAction from '../actions/user';
@@ -382,6 +384,16 @@ class App extends Component {
       />
     );
   }
+  renderHomeView() {
+    const {
+      dispatch,
+    } = this.props;
+    return (
+      <HomeView
+        dispatch={dispatch}
+      />
+    );
+  }
   render() {
     const {
       isFetchingUserInfo,
@@ -390,6 +402,7 @@ class App extends Component {
       user,
       navigation,
       dispatch,
+      dashboards,
     } = this.props;
     const handleLink = this.handleLink;
     return (
@@ -399,6 +412,10 @@ class App extends Component {
           isFetchingUserInfo={isFetchingUserInfo}
           handleLink={handleLink}
           dispatch={dispatch}
+        />
+        <MainNav
+          dashboards={dashboards}
+          handleLink={handleLink}
         />
         <div className="content-wrapper">
           <Router {...navigation}>
@@ -457,6 +474,10 @@ class App extends Component {
             <Route
               path={VIEW_INFLUX_DASHBOARD}
               component={arg => this.renderInfluxDashboardVisualizationsView(arg)}
+            />
+            <Route
+              path="*"
+              component={() => this.renderHomeView()}
             />
           </Router>
         </div>
