@@ -6,13 +6,14 @@ const influxdbService = localRequire('services/influxdb');
 const errors = localRequire('helpers/errors');
 
 function pickInfluxConfig(data) {
-  const keys = '_id name updatedAt token view time groups'.split(' ');
+  const keys = '_id name desc updatedAt token view time groups'.split(' ');
   return _.pick(data, keys);
 }
 
 function validateConfig(data) {
   return Joi.validateThrow(data, {
     name: Joi.string().required(),
+    desc: Joi.string().optional(),
     server: Joi.string().required(),
     database: Joi.string().required(),
     rp: Joi.string().empty('').optional(),

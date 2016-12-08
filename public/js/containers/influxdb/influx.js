@@ -208,8 +208,9 @@ class Influx extends Component {
     const keys = 'server database rp measurement conditions cals groups time view'.split(' ');
     const data = _.pick(this.state, keys);
 
-    const name = this.influxName.value;
+    const name = this.influxName.value || '';
     data.name = name;
+    data.desc = this.influxDesc.value || '';
     const emptyKeys = _.filter('name server database measurement'.split(' '), key => !data[key]);
     if (emptyKeys.length) {
       this.showError(`${emptyKeys.join(',')} can not be null`);
@@ -587,41 +588,55 @@ class Influx extends Component {
         </div>
         <div className="influx-content-wrapper pure-u-4-5">
           <div
-            className="influx-ql-wrapper clearfix"
-          >
-            <span
-              className="pull-left"
-              style={{
-                marginTop: '4px',
-              }}
-            >Influx QL</span>
-            <button
-              className="pt-button pt-intent-primary pull-right"
-              onClick={() => this.query()}
-            >
-              Query
-            </button>
-            <div className="ql-input">
-              <input
-                className="pt-input"
-                type="text"
-                defaultValue={influxQL}
-                ref={(c) => {
-                  this.ql = c;
-                }}
-              />
-            </div>
-          </div>
-          <div
-            className="save"
             style={{
               margin: '15px',
             }}
           >
-            <button
-              className="pt-button pt-intent-primary pt-fill"
-              onClick={() => this.saveInfluxConfig()}
-            >Save</button>
+            <div
+              className="influx-ql-wrapper clearfix"
+            >
+              <span
+                className="pull-left"
+                style={{
+                  marginTop: '4px',
+                }}
+              >Influx QL</span>
+              <button
+                className="pt-button pt-intent-primary pull-right"
+                onClick={() => this.query()}
+              >
+                Query
+              </button>
+              <div className="ql-input">
+                <input
+                  className="pt-input"
+                  type="text"
+                  defaultValue={influxQL}
+                  ref={(c) => {
+                    this.ql = c;
+                  }}
+                />
+              </div>
+            </div>
+            <input
+              style={{
+                margin: '15px 0',
+              }}
+              ref={(c) => {
+                this.influxDesc = c;
+              }}
+              className="pt-fill pt-input"
+              type="text"
+              placeholder="Input influx description"
+            />
+            <div
+              className="save"
+            >
+              <button
+                className="pt-button pt-intent-primary pt-fill"
+                onClick={() => this.saveInfluxConfig()}
+              >Save</button>
+            </div>
           </div>
           { this.renderStatsView() }
         </div>

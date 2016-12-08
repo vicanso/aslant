@@ -21,6 +21,14 @@ class Visualization extends Component {
   componentWillMount() {
     clearInterval(this.timer);
   }
+  componentWillReceiveProps(nextProps) {
+    const {
+      forceUpdatedAt,
+    } = this.props;
+    if (nextProps.forceUpdatedAt && nextProps.forceUpdatedAt !== forceUpdatedAt) {
+      this.getData();
+    }
+  }
   getData() {
     const {
       config,
@@ -51,6 +59,7 @@ class Visualization extends Component {
       this.setState(result);
     }).catch((err) => {
       showError(err);
+      result.error = `加载数据失败:${err.response.body.message}`;
       this.setState(result);
     });
   }
@@ -97,6 +106,10 @@ class Visualization extends Component {
     } = this.state;
     const chartView = (Fn) => {
       const chartData = influxdbService.toChartData(data, tags, cals);
+      if (!chartData.data || !chartData.data.length) {
+        chart.innerHTML = '<p class="tac mtop10">无数据</p>';
+        return;
+      }
       chart.innerHTML = '<svg></svg>';
       const item = new Fn(chart.children[0]);
       item.set('disabled.legend', true);
@@ -113,6 +126,7 @@ class Visualization extends Component {
         item.set({
           'xAxis.distance': 100,
           'xAxis.categories': chartData.categories,
+          duration: 0,
         })
         .render(chartData.data);
       }
@@ -138,6 +152,11 @@ class Visualization extends Component {
       cals,
     } = this.state;
     const tableData = influxdbService.toTableData(data, cals);
+    if (!tableData || !tableData.length) {
+      return (
+        <p className="tac mtop10">无数据</p>
+      );
+    }
     const arr = _.map(tableData, item => (
       <Table
         key={item.name}
@@ -157,7 +176,13 @@ class Visualization extends Component {
     const {
       view,
       data,
+      error,
     } = this.state;
+    if (error) {
+      return (
+        <div className="tac mtop10">{error}</div>
+      );
+    }
     if (!data) {
       return (
         <p className="tac mtop10">数据加载中，请稍候...</p>
@@ -200,6 +225,7 @@ Visualization.propTypes = {
   showError: PropTypes.func.isRequired,
   interval: PropTypes.number,
   time: PropTypes.object,
+  forceUpdatedAt: PropTypes.number,
 };
 
 export default Visualization;

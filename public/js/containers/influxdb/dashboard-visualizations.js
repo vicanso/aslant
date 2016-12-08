@@ -19,6 +19,8 @@ class DashboardVisualizations extends Component {
     super(props);
     this.state = {
       interval: 0,
+      forceUpdatedAtList: [],
+      fullScreenList: [],
     };
   }
   componentDidMount() {
@@ -56,31 +58,80 @@ class DashboardVisualizations extends Component {
       configs,
       interval,
       time,
+      forceUpdatedAtList,
+      fullScreenList,
     } = this.state;
     if (!configs) {
       return null;
     }
-
-    const arr = _.map(configs, (config) => {
+    const arr = _.map(configs, (config, index) => {
       /* eslint no-underscore-dangle:0 */
       const id = config._id;
       const widthConfig = _.find(CHART_WIDTHS, item => item.width === config.view.width);
-      const cls = {
-        'visualization-wrapper': true,
+      const cls = {};
+      const isFullScreen = !!fullScreenList[index];
+      const fullScreenIconCls = {
+        'pt-icon-standard': true,
       };
-      cls[widthConfig.className] = true;
+      if (isFullScreen) {
+        cls['full-screen'] = true;
+        cls['overflow-y'] = true;
+        fullScreenIconCls['pt-icon-minimize'] = true;
+      } else {
+        cls[widthConfig.className] = true;
+        fullScreenIconCls['pt-icon-maximize'] = true;
+      }
       return (
         <div
           key={id}
           className={classnames(cls)}
         >
-          <h3>{config.name}</h3>
-          <InfluxVisualizationView
-            interval={interval}
-            config={config}
-            time={time}
-            showError={showError}
-          />
+          <div
+            className="visualization-wrapper"
+          >
+            <h3>
+              {config.name}
+              <div
+                className="pull-right"
+                style={{
+                  marginRight: '5px',
+                }}
+              >
+                <a
+                  href="javascript:;"
+                  onClick={() => {
+                    const clone = forceUpdatedAtList.slice(0);
+                    clone[index] = Date.now();
+                    this.setState({
+                      forceUpdatedAtList: clone,
+                    });
+                  }}
+                >
+                  <span className="pt-icon-standard pt-icon-refresh" />
+                </a>
+                <a
+                  href="javascript:;"
+                  onClick={() => {
+                    const clone = fullScreenList.slice(0);
+                    clone[index] = !isFullScreen;
+                    this.setState({
+                      fullScreenList: clone,
+                    });
+                  }}
+                >
+                  <span className={classnames(fullScreenIconCls)} />
+                </a>
+              </div>
+            </h3>
+            <InfluxVisualizationView
+              forceUpdatedAt={forceUpdatedAtList[index]}
+              fullScreen={fullScreenList[index]}
+              interval={interval}
+              config={config}
+              time={time}
+              showError={showError}
+            />
+          </div>
         </div>
       );
     });
@@ -102,6 +153,7 @@ class DashboardVisualizations extends Component {
             className="pull-right"
             style={{
               margin: '10px 0',
+              height: '20px',
             }}
           >
             <div className="interval-selector">
@@ -134,7 +186,13 @@ class DashboardVisualizations extends Component {
             </div>
           </div>
         </div>
-        { this.renderVisualizations() }
+        <div
+          style={{
+            margin: '8px',
+          }}
+        >
+          { this.renderVisualizations() }
+        </div>
       </div>
     );
   }

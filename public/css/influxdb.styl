@@ -7,6 +7,15 @@
       margin 0 5px
 
 .influx-dashboard-visualizations-wrapper
+  .full-screen
+    position fixed
+    left 0
+    top 0
+    right 0
+    bottom 0
+    z-index 9
+    background-color rgba(0, 0, 0, 0.4)
+    
   .interval-selector, .time-selector
     width 180px
     display inline-block
@@ -14,10 +23,26 @@
   .influx-visualization-wrapper
     margin-top 0
   .visualization-wrapper
-    margin-top 15px
+    margin 8px
+    background-color #fff
+    border 1px solid $COLOR_GRAY
+    border-radius 3px
     h3
       margin 0
-      line-height 2
+      line-height 3
+      font-size 16px
+      text-indent 1em
+      border-bottom 1px solid $COLOR_GRAY
+      a
+        text-indent 0
+        padding 0 7px
+        color $COLOR_GRAY
+        font-size 14px
+        &:hover
+          color $COLOR_BLUE
+    .table
+      thead
+        border-top none
 
 .server-status-wrapper
   .server-status
@@ -65,6 +90,7 @@
           color $COLOR_BLUE
           margin-left 3px
 .add-influx-wrapper
+  margin-left -($MAIN_NAV_WIDTH)
   .influx-ql-wrapper
     background-color #fff
     padding 10px
@@ -83,11 +109,6 @@
         height 100%
     .chart-config-wrapper
       margin 15px
-    // .save
-    //   position absolute
-    //   left 15px
-    //   right 15px
-    //   bottom 15px
   .config-wrapper
     padding 0 30px 20px 10px
     overflow-scrolling touch

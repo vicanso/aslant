@@ -416,6 +416,7 @@ class App extends Component {
         <MainNav
           dashboards={dashboards}
           handleLink={handleLink}
+          navigation={navigation}
         />
         <div className="content-wrapper">
           <Router {...navigation}>

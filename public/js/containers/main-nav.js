@@ -14,6 +14,14 @@ class MainNav extends Component {
       subActive: '',
     };
   }
+  componentWillReceiveProps(nextProps) {
+    const {
+      navigation,
+    } = nextProps;
+    this.setState({
+      hidden: navigation.location.indexOf('/influxdb/configs/add') !== -1,
+    });
+  }
   renderDashboards() {
     const {
       dashboards,
@@ -59,8 +67,7 @@ class MainNav extends Component {
           onClick={() => {
             this.setState({
               active: 'dashboard',
-              /* eslint no-underscore-dangle:0*/
-              subActive: dashboards[0]._id,
+              subActive: _.get(dashboards, '[0]._id'),
             });
           }}
         >
@@ -74,6 +81,12 @@ class MainNav extends Component {
     );
   }
   render() {
+    const {
+      hidden,
+    } = this.state;
+    if (hidden) {
+      return null;
+    }
     return (
       <div className="main-nav">
         <ul
