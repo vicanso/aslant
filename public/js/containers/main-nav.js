@@ -4,6 +4,9 @@ import * as _ from 'lodash';
 
 import {
   VIEW_INFLUX_DASHBOARD,
+  VIEW_ADD_DASHBOARD,
+  VIEW_INFLUX_VISUALIZATION,
+  VIEW_ADD_INFLUX,
 } from '../constants/urls';
 
 class MainNav extends Component {
@@ -18,46 +21,90 @@ class MainNav extends Component {
     const {
       navigation,
     } = nextProps;
+    const location = navigation.location;
+    const hiddenUrls = [
+      // add config
+      '/influxdb/configs/add',
+      // update config
+      '/influxdb/configs/',
+    ];
+    const found = _.find(hiddenUrls, url => location.indexOf(url) !== -1);
     this.setState({
-      hidden: navigation.location.indexOf('/influxdb/configs/add') !== -1,
+      hidden: !!found,
     });
   }
-  renderDashboards() {
+  renderList(items, options) {
     const {
-      dashboards,
       handleLink,
     } = this.props;
     const {
       active,
       subActive,
     } = this.state;
+    const {
+      type,
+      addUrl,
+      viewUrl,
+      name,
+      icon,
+    } = options;
     const cls = {
-      active: active === 'dashboard',
+      active: active === type,
     };
-    const arr = _.map(dashboards, (item) => {
-      /* eslint no-underscore-dangle:0 */
-      const id = item._id;
-      const viewUrl = VIEW_INFLUX_DASHBOARD.replace(':id', id);
-      const fn = handleLink(viewUrl);
+    const iconCls = {
+      'pt-icon-standard': true,
+      mright5: true,
+    };
+    iconCls[icon] = true;
+    const renderActiveIcon = (id) => {
+      if (active !== type || subActive !== id) {
+        return null;
+      }
       return (
-        <li key={id}>
-          {
-            subActive === id && <span className="pt-icon-chevron-right pt-icon-standard selected" />
-          }
-          <a
-            href={viewUrl}
-            onClick={(e) => {
-              this.setState({
-                subActive: id,
-              });
-              fn(e);
-            }}
-          >
-            {item.name}
-          </a>
-        </li>
+        <span className="pt-icon-chevron-right pt-icon-standard selected" />
       );
-    });
+    };
+    const renderSubItems = () => {
+      if (!items.length) {
+        return (
+          <li>
+            <a
+              href={addUrl}
+              onClick={handleLink(addUrl)}
+            >
+              <span className="pt-icon-standard pt-icon-plus" />
+              Add
+            </a>
+          </li>
+        );
+      }
+      return _.map(items, (item) => {
+        /* eslint no-underscore-dangle:0 */
+        const id = item._id;
+        const url = viewUrl.replace(':id', id);
+        const fn = handleLink(url);
+        return (
+          <li key={id}>
+            {
+              renderActiveIcon(id)
+            }
+            <a
+              href={url}
+              onClick={(e) => {
+                this.setState({
+                  subActive: id,
+                  active: type,
+                });
+                fn(e);
+              }}
+            >
+              {item.name}
+            </a>
+          </li>
+        );
+      });
+    };
+
     return (
       <li
         className={classnames(cls)}
@@ -66,19 +113,43 @@ class MainNav extends Component {
           href="javascript:;"
           onClick={() => {
             this.setState({
-              active: 'dashboard',
-              subActive: _.get(dashboards, '[0]._id'),
+              active: type,
+              subActive: _.get(items, '[0]._id'),
             });
           }}
         >
-          <span className="pt-icon-dashboard pt-icon-standard mright5" />
-          Dashboards
+          <span className={classnames(iconCls)} />
+          { name }
         </a>
         <ul>
-          { arr }
+          { renderSubItems() }
         </ul>
       </li>
     );
+  }
+  renderDashboards() {
+    const {
+      dashboards,
+    } = this.props;
+    return this.renderList(dashboards, {
+      type: 'dashboard',
+      addUrl: VIEW_ADD_DASHBOARD,
+      viewUrl: VIEW_INFLUX_DASHBOARD,
+      name: 'Dashboards',
+      icon: 'pt-icon-dashboard',
+    });
+  }
+  renderConfigs() {
+    const {
+      configs,
+    } = this.props;
+    return this.renderList(configs, {
+      type: 'config',
+      addUrl: VIEW_ADD_INFLUX,
+      viewUrl: VIEW_INFLUX_VISUALIZATION,
+      name: 'Influx Configs',
+      icon: 'pt-icon-horizontal-bar-chart',
+    });
   }
   render() {
     const {
@@ -93,6 +164,7 @@ class MainNav extends Component {
           className="navigation"
         >
           { this.renderDashboards() }
+          { this.renderConfigs() }
         </ul>
       </div>
     );
@@ -103,6 +175,7 @@ class MainNav extends Component {
 MainNav.propTypes = {
   dashboards: PropTypes.array.isRequired,
   handleLink: PropTypes.func.isRequired,
+  configs: PropTypes.array.isRequired,
 };
 
 export default MainNav;

@@ -187,7 +187,7 @@ class Influx extends Component {
     influxdbService.getConfig(id, {
       fill: 'all',
     }).then((data) => {
-      const result = _.pick(data, 'name token'.split(' '));
+      const result = _.pick(data, 'name token desc'.split(' '));
       _.forEach(this.state, (v, k) => {
         if (data[k] && data[k] !== v) {
           result[k] = data[k];
@@ -196,7 +196,6 @@ class Influx extends Component {
       if (data.series) {
         _.extend(result, influxdbService.formatSeries(data.series));
       }
-      result.name = data.name;
       this.setState(result);
     }).catch(this.showError);
   }
@@ -509,6 +508,7 @@ class Influx extends Component {
       rp,
       measurements,
       measurement,
+      desc,
     } = this.state;
     if (!server && id) {
       this.restore(id);
@@ -625,6 +625,7 @@ class Influx extends Component {
               ref={(c) => {
                 this.influxDesc = c;
               }}
+              defaultValue={desc}
               className="pt-fill pt-input"
               type="text"
               placeholder="Input influx description"

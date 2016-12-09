@@ -3,6 +3,7 @@ import {
   Line,
   Bar,
   Pie,
+  Circle,
 } from 'dcharts';
 import classnames from 'classnames';
 import * as _ from 'lodash';
@@ -112,8 +113,14 @@ class Visualization extends Component {
       }
       chart.innerHTML = '<svg></svg>';
       const item = new Fn(chart.children[0]);
-      item.set('disabled.legend', true);
-      if (view.type === 'pie') {
+      item.set({
+        'disabled.legend': true,
+        duration: 0,
+      });
+      if (view.type === 'circle') {
+        const circleData = chartData.data[0];
+        item.render(circleData.data[0] / 100);
+      } else if (view.type === 'pie') {
         const arr = _.map(chartData.data, (tmp) => {
           const value = tmp.data[0];
           return {
@@ -126,7 +133,6 @@ class Visualization extends Component {
         item.set({
           'xAxis.distance': 100,
           'xAxis.categories': chartData.categories,
-          duration: 0,
         })
         .render(chartData.data);
       }
@@ -138,6 +144,10 @@ class Visualization extends Component {
       }
       case 'pie': {
         chartView(Pie);
+        break;
+      }
+      case 'circle': {
+        chartView(Circle);
         break;
       }
       default: {

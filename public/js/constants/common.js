@@ -16,6 +16,11 @@ export const CHART_TYPES = [
     name: 'pie chart',
   },
   {
+    type: 'circle',
+    icon: 'pt-icon-doughnut-chart',
+    name: 'circle chart',
+  },
+  {
     type: 'table',
     icon: 'pt-icon-th',
     name: 'table view',
@@ -88,6 +93,10 @@ export const TIME_INTERVALS = [
   {
     name: 'Past hour',
     value: '-1h',
+  },
+  {
+    name: 'Past 2 hours',
+    value: '-2h',
   },
   {
     name: 'Past 6 hours',

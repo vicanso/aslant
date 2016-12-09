@@ -46,14 +46,14 @@ module.exports = {
     findOneAndUpdate: [
       createUpdateHook({
         updatedAt: 'date',
-        token: 'uuid',
+        token: 'ulid',
       }),
     ],
     save: [
       createSaveHook({
         createdAt: 'date',
         updatedAt: 'date',
-        token: 'uuid',
+        token: 'ulid',
       }),
     ],
   },

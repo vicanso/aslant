@@ -1,4 +1,3 @@
-const uuid = require('uuid');
 const _ = require('lodash');
 const Influx = require('influxdb-nodejs');
 

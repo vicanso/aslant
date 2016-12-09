@@ -84,7 +84,7 @@ class MainHeader extends Component {
         href: VIEW_INFLUX_CONFIGS,
       },
       {
-        icon: 'pt-icon-add',
+        icon: 'pt-icon-plus',
         name: 'Add Influx Dashboard',
         action: 'redirect',
         href: VIEW_ADD_DASHBOARD,
@@ -96,7 +96,7 @@ class MainHeader extends Component {
         href: VIEW_INFLUX_DASHBOARDS,
       },
       {
-        icon: 'pt-icon-plus',
+        icon: 'pt-icon-insert',
         name: 'Add Server',
         action: 'redirect',
         href: VIEW_ADD_SERVER,

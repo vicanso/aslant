@@ -85,7 +85,7 @@ exports.validateAccessToken = (ctx, next) => {
   Joi.validateThrow({
     token,
   }, {
-    token: Joi.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/),
+    token: Joi.string().length(26),
   });
   return next();
 };

@@ -69,6 +69,7 @@ class App extends Component {
       this.setState({
         isFetchingUserInfo: false,
       });
+      this.checkToRedirectHomePage();
     }).catch((err) => {
       this.setState({
         isFetchingUserInfo: false,
@@ -100,6 +101,17 @@ class App extends Component {
         dispatch(serverActions.reset());
         dispatch(navigationAction.home());
       }
+    }
+  }
+  checkToRedirectHomePage() {
+    const {
+      user,
+      navigation,
+      dispatch,
+    } = this.props;
+    const location = navigation.location;
+    if (!user.account && location !== VIEW_LOGIN && location !== VIEW_REGISTER) {
+      dispatch(navigationAction.home());
     }
   }
   alert(content, cb) {
@@ -403,6 +415,7 @@ class App extends Component {
       navigation,
       dispatch,
       dashboards,
+      influxdb,
     } = this.props;
     const handleLink = this.handleLink;
     return (
@@ -417,6 +430,7 @@ class App extends Component {
           dashboards={dashboards}
           handleLink={handleLink}
           navigation={navigation}
+          configs={influxdb.configs}
         />
         <div className="content-wrapper">
           <Router {...navigation}>
