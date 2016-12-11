@@ -378,6 +378,7 @@ class App extends Component {
     const found = _.find(influxdb.configs, item => item._id === id);
     return (
       <InfluxVisualizationView
+        key={id}
         config={found}
         showError={this.showError}
       />
@@ -398,11 +399,13 @@ class App extends Component {
   }
   renderHomeView() {
     const {
-      dispatch,
+      dashboards,
+      influxdb,
     } = this.props;
     return (
       <HomeView
-        dispatch={dispatch}
+        dashboards={dashboards}
+        configs={influxdb.configs}
       />
     );
   }

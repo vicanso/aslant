@@ -6,7 +6,7 @@ A powerful charting and visualization for influxdb
 
 ### docker build
 
-docker build -t aslant .
+docker build -t vicanso/aslant .
 
 ### docker run
 

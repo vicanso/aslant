@@ -114,7 +114,6 @@ class MainNav extends Component {
           onClick={() => {
             this.setState({
               active: type,
-              subActive: _.get(items, '[0]._id'),
             });
           }}
         >
