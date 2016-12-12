@@ -122,14 +122,21 @@ class Influx extends Component {
     }
     this.setState({
       data: null,
+      status: 'fetching',
     });
     influxdbService.query(server, database, ql)
       .then((data) => {
         this.setState({
           data,
+          status: '',
         });
       })
-      .catch(this.showError);
+      .catch((err) => {
+        this.setState({
+          status: '',
+        });
+        this.showError(err);
+      });
   }
   reset(type, value) {
     let state = null;
@@ -483,7 +490,13 @@ class Influx extends Component {
   renderStatsView() {
     const {
       data,
+      status,
     } = this.state;
+    if (status === 'fetching') {
+      return (
+        <p className="tac mtop10">fetching...</p>
+      );
+    }
     if (!data) {
       return null;
     }

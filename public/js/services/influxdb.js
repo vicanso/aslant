@@ -47,7 +47,7 @@ function toJSON(data) {
 }
 
 export function toChartData(data, tags, cals) {
-  const times = [];
+  const timeArr = [];
   const dict = {};
   const calsDict = {};
   _.forEach(cals, (item) => {
@@ -69,7 +69,7 @@ export function toChartData(data, tags, cals) {
   _.forEach(data, (arr, name) => {
     _.forEach(arr, (item) => {
       if (!fillCat) {
-        times.push(item.time);
+        timeArr.push(item.time);
       }
       const keys = [];
       const values = [];
@@ -115,6 +115,7 @@ export function toChartData(data, tags, cals) {
       data: v,
     };
   });
+  const times = _.uniq(timeArr).sort();
   const offset = Math.abs(moment(_.first(times)).valueOf() - moment(_.last(times)).valueOf());
   const categories = [];
   let format = 'YYYY-MM-DD HH:mm:ss';
@@ -258,6 +259,7 @@ export function getInfluxQL(options) {
       }).toISOString();
     } else if (timeValue === 'yesterday') {
       ql.end = moment()
+        .add('day', -1)
         .set({
           hour: 23,
           minute: 59,

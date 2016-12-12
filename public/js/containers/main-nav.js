@@ -47,6 +47,7 @@ class MainNav extends Component {
       viewUrl,
       name,
       icon,
+      hasChild,
     } = options;
     const cls = {
       active: active === type,
@@ -65,6 +66,9 @@ class MainNav extends Component {
       );
     };
     const renderSubItems = () => {
+      if (hasChild === false) {
+        return null;
+      }
       if (!items.length) {
         return (
           <li>
@@ -78,7 +82,7 @@ class MainNav extends Component {
           </li>
         );
       }
-      return _.map(items, (item) => {
+      const arr = _.map(items, (item) => {
         /* eslint no-underscore-dangle:0 */
         const id = item._id;
         const url = viewUrl.replace(':id', id);
@@ -103,11 +107,17 @@ class MainNav extends Component {
           </li>
         );
       });
+      return (
+        <ul>
+          { arr }
+        </ul>
+      );
     };
 
     return (
       <li
         className={classnames(cls)}
+        key={type}
       >
         <a
           href="javascript:;"
@@ -120,9 +130,9 @@ class MainNav extends Component {
           <span className={classnames(iconCls)} />
           { name }
         </a>
-        <ul>
-          { renderSubItems() }
-        </ul>
+        {
+          renderSubItems()
+        }
       </li>
     );
   }
@@ -157,6 +167,12 @@ class MainNav extends Component {
     if (hidden) {
       return null;
     }
+    const renderAbout = () => this.renderList(null, {
+      type: 'about',
+      name: 'About',
+      icon: 'pt-icon-applications',
+      hasChild: false,
+    });
     return (
       <div className="main-nav">
         <ul
@@ -164,6 +180,9 @@ class MainNav extends Component {
         >
           { this.renderDashboards() }
           { this.renderConfigs() }
+          {
+            renderAbout()
+          }
         </ul>
       </div>
     );
