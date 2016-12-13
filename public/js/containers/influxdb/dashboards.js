@@ -7,6 +7,7 @@ import * as dashboardAction from '../../actions/dashboard';
 import {
   VIEW_INFLUX_DASHBOARD,
   VIEW_INFLUX_EDIT_DASHBOARD,
+  VIEW_ADD_DASHBOARD,
 } from '../../constants/urls';
 
 class Dashboards extends InfluxTable {
@@ -24,6 +25,23 @@ class Dashboards extends InfluxTable {
       dashboards,
       handleLink,
     } = this.props;
+    if (!dashboards) {
+      return (
+        <p className="pt-callout pt-icon-automatic-updates margin15">Loading...</p>
+      );
+    }
+    if (!dashboards.length) {
+      return (
+        <p className="pt-callout pt-intent-primary pt-icon-info-sign margin15">
+          There is no influx dashboard, please add one first.
+          <a
+            className="mleft10"
+            href={VIEW_ADD_DASHBOARD}
+            onClick={handleLink(VIEW_ADD_DASHBOARD)}
+          >Add</a>
+        </p>
+      );
+    }
     const arr = _.map(dashboards, (dashboard) => {
       /* eslint no-underscore-dangle:0 */
       const id = dashboard._id;
@@ -82,7 +100,7 @@ class Dashboards extends InfluxTable {
 
 Dashboards.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  dashboards: PropTypes.array.isRequired,
+  dashboards: PropTypes.array,
   handleLink: PropTypes.func.isRequired,
   showError: PropTypes.func,
 };

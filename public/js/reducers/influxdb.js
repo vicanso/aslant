@@ -8,7 +8,7 @@ import {
 } from '../constants/action-types';
 
 const defaultStates = {
-  configs: [],
+  configs: null,
 };
 
 export default function influxdb(state = defaultStates, action) {

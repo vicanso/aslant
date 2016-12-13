@@ -66,20 +66,27 @@ class MainNav extends Component {
       );
     };
     const renderSubItems = () => {
+      if (!items && hasChild !== false) {
+        return (
+          <ul><li>Loading...</li></ul>
+        );
+      }
       if (hasChild === false) {
         return null;
       }
       if (!items.length) {
         return (
-          <li>
-            <a
-              href={addUrl}
-              onClick={handleLink(addUrl)}
-            >
-              <span className="pt-icon-standard pt-icon-plus" />
-              Add
-            </a>
-          </li>
+          <ul>
+            <li>
+              <a
+                href={addUrl}
+                onClick={handleLink(addUrl)}
+              >
+                <span className="pt-icon-standard pt-icon-plus" />
+                Add
+              </a>
+            </li>
+          </ul>
         );
       }
       const arr = _.map(items, (item) => {
@@ -191,9 +198,9 @@ class MainNav extends Component {
 
 
 MainNav.propTypes = {
-  dashboards: PropTypes.array.isRequired,
+  dashboards: PropTypes.array,
   handleLink: PropTypes.func.isRequired,
-  configs: PropTypes.array.isRequired,
+  configs: PropTypes.array,
 };
 
 export default MainNav;

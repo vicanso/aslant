@@ -16,7 +16,7 @@ class Visualization extends Component {
     super(props);
     this.state = props.data || {};
     if (props.config) {
-      this.getData();
+      this.getData(props);
     }
   }
   componentWillMount() {
@@ -25,16 +25,21 @@ class Visualization extends Component {
   componentWillReceiveProps(nextProps) {
     const {
       forceUpdatedAt,
+      time,
     } = this.props;
-    if (nextProps.forceUpdatedAt && nextProps.forceUpdatedAt !== forceUpdatedAt) {
-      this.getData();
+    const different = nextProps.time !== time;
+    const updated = nextProps.forceUpdatedAt && nextProps.forceUpdatedAt !== forceUpdatedAt;
+    if (different || updated) {
+      this.getData(nextProps);
     }
   }
-  getData() {
+  getData(props) {
+    const {
+      time,
+    } = props;
     const {
       config,
       showError,
-      time,
     } = this.props;
     const result = {};
     /* eslint no-underscore-dangle:0 */

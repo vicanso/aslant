@@ -8,7 +8,7 @@ import {
   INFLUXDB_RESET,
 } from '../constants/action-types';
 
-const defaultStates = [];
+const defaultStates = null;
 
 export default function dashboard(state = defaultStates, action) {
   switch (action.type) {

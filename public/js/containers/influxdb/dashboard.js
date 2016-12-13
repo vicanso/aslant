@@ -40,7 +40,7 @@ function resortConfigs(configs, selectedItems) {
   });
 }
 
-class Dashboards extends Component {
+class Dashboard extends Component {
   constructor(props) {
     super(props);
     const selectedItems = _.get(props, 'dashboard.configs', []);
@@ -251,11 +251,11 @@ class Dashboards extends Component {
   }
 }
 
-Dashboards.propTypes = {
+Dashboard.propTypes = {
   dispatch: PropTypes.func.isRequired,
   configs: PropTypes.array.isRequired,
   showError: PropTypes.func,
   dashboard: PropTypes.object,
 };
 
-export default Dashboards;
+export default Dashboard;

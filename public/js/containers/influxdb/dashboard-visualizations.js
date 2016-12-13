@@ -143,7 +143,7 @@ class DashboardVisualizations extends Component {
     } = this.props;
     if (!dashboard) {
       return (
-        <p className="tac">Loading...</p>
+        <p className="pt-callout pt-icon-automatic-updates margin15">Loading...</p>
       );
     }
     return (

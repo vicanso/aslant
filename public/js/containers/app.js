@@ -178,32 +178,12 @@ class App extends Component {
       dispatch,
       servers,
     } = this.props;
-    if (!servers) {
-      return (
-        <p
-          className="tac mtop10"
-        >Loading...</p>
-      );
-    }
-    const result = _.sortBy(servers, item => item.name);
-    if (!result.length) {
-      return (
-        <p
-          className="tac mtop10"
-        >
-          There is not any server, please add one first.
-          <a
-            href={VIEW_ADD_SERVER}
-            onClick={this.handleLink(VIEW_ADD_SERVER)}
-          >Add</a>
-        </p>
-      );
-    }
     return (
       <InfluxView
         showError={this.showError}
         dispatch={dispatch}
-        servers={result}
+        servers={servers}
+        handleLink={this.handleLink}
       />
     );
   }
@@ -339,13 +319,6 @@ class App extends Component {
       dispatch,
       servers,
     } = this.props;
-    if (!servers) {
-      return (
-        <p
-          className="tac mtop10"
-        >Loading...</p>
-      );
-    }
     return (
       <ServersView
         showError={this.showError}
@@ -406,6 +379,7 @@ class App extends Component {
       <HomeView
         dashboards={dashboards}
         configs={influxdb.configs}
+        handleLink={this.handleLink}
       />
     );
   }
@@ -517,7 +491,7 @@ App.propTypes = {
   navigation: PropTypes.object.isRequired,
   influxdb: PropTypes.object.isRequired,
   servers: PropTypes.array,
-  dashboards: PropTypes.array.isRequired,
+  dashboards: PropTypes.array,
   dispatch: PropTypes.func.isRequired,
 };
 

@@ -8,6 +8,7 @@ import * as influxdbAction from '../../actions/influxdb';
 import {
   VIEW_EDIT_INFLUX,
   VIEW_INFLUX_VISUALIZATION,
+  VIEW_ADD_INFLUX,
 } from '../../constants/urls';
 import {
   CHART_TYPES,
@@ -45,6 +46,23 @@ class Configs extends InfluxTable {
       configs,
       handleLink,
     } = this.props;
+    if (!configs) {
+      return (
+        <p className="pt-callout pt-icon-automatic-updates margin15">Loading...</p>
+      );
+    }
+    if (!configs.length) {
+      return (
+        <p className="pt-callout pt-intent-primary pt-icon-info-sign margin15">
+          There is no influx config, please add one first.
+          <a
+            className="mleft10"
+            href={VIEW_ADD_INFLUX}
+            onClick={handleLink(VIEW_ADD_INFLUX)}
+          >Add</a>
+        </p>
+      );
+    }
     const getTime = (time, key, defaultValue) => {
       if (!time) {
         return '--';
@@ -124,7 +142,7 @@ class Configs extends InfluxTable {
 
 Configs.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  configs: PropTypes.array.isRequired,
+  configs: PropTypes.array,
   handleLink: PropTypes.func.isRequired,
   showError: PropTypes.func,
 };

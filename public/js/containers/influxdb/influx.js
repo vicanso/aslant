@@ -13,6 +13,7 @@ import * as navigationAction from '../../actions/navigation';
 import CoDropdownSelector from '../../components/co-dropdown-selector';
 import {
   VIEW_INFLUX_CONFIGS,
+  VIEW_ADD_SERVER,
 } from '../../constants/urls';
 import {
   CHART_TYPES,
@@ -511,6 +512,7 @@ class Influx extends Component {
     const {
       servers,
       id,
+      handleLink,
     } = this.props;
     const {
       name,
@@ -523,6 +525,26 @@ class Influx extends Component {
       measurement,
       desc,
     } = this.state;
+    if (!servers) {
+      return (
+        <p className="pt-callout pt-icon-automatic-updates margin15">Loading...</p>
+      );
+    }
+    if (!servers.length) {
+      return (
+        <div className="add-influx-wrapper">
+          <p className="pt-callout pt-intent-primary pt-icon-info-sign margin15">
+            There is no influx server, please add one first.
+            <a
+              className="mleft10"
+              href={VIEW_ADD_SERVER}
+              onClick={handleLink(VIEW_ADD_SERVER)}
+            >Add</a>
+          </p>
+        </div>
+      );
+    }
+    const sortedServers = _.sortBy(servers, item => item.name);
     if (!server && id) {
       this.restore(id);
       return (
@@ -532,13 +554,13 @@ class Influx extends Component {
               this.toaster = c;
             }}
           />
-          <p className="tac">正在加载中，请稍候...</p>
+          <p className="pt-callout pt-icon-automatic-updates margin15">Loading...</p>
         </div>
       );
     }
     let selectedServer = server;
     if (_.isString(selectedServer)) {
-      selectedServer = _.find(servers, item => item._id === server);
+      selectedServer = _.find(sortedServers, item => item._id === server);
     }
     let influxQL = '';
     if (id) {
@@ -562,7 +584,7 @@ class Influx extends Component {
             <h4>Influx Config</h4>
             <DropdownSelector
               placeholder={'Choose Server'}
-              items={servers}
+              items={sortedServers}
               selected={selectedServer}
               onSelect={(e, item) => this.onSelectServer(item)}
             />
@@ -664,6 +686,7 @@ Influx.propTypes = {
   servers: PropTypes.array.isRequired,
   showError: PropTypes.func.isRequired,
   id: PropTypes.string,
+  handleLink: PropTypes.func.isRequired,
 };
 
 export default Influx;

@@ -28,13 +28,17 @@ class Servers extends InfluxTable {
       servers,
       handleLink,
     } = this.props;
+    if (!servers) {
+      return (
+        <p className="pt-callout pt-icon-automatic-updates margin15">Loading...</p>
+      );
+    }
     if (!servers.length) {
       return (
-        <p
-          className="tac"
-        >
-          There is not any server, please add one first.
+        <p className="pt-callout pt-intent-primary pt-icon-info-sign margin15">
+          There is no influx server, please add one first.
           <a
+            className="mleft10"
             href={VIEW_ADD_SERVER}
             onClick={handleLink(VIEW_ADD_SERVER)}
           >Add</a>
@@ -118,7 +122,7 @@ class Servers extends InfluxTable {
 
 Servers.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  servers: PropTypes.array.isRequired,
+  servers: PropTypes.array,
   handleLink: PropTypes.func.isRequired,
   showError: PropTypes.func,
 };
