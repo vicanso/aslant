@@ -8,7 +8,7 @@ import * as statsService from './services/stats';
 import store from './store';
 import App from './containers/app';
 import * as http from './helpers/http';
-
+import * as userService from './services/user';
 
 function globarErrorCatch() {
   globals.set('onerror', (msg, url, line, row, err) => {
@@ -72,4 +72,5 @@ _.defer(() => {
   statistics();
   initRender();
   http.timeout = 10 * 1000;
+  userService.refresh();
 });

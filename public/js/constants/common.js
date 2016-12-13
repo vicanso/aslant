@@ -130,6 +130,10 @@ export const TIME_INTERVALS = [
     name: 'Past 30 days',
     value: '-30d',
   },
+  {
+    name: 'Custom',
+    value: 'custom',
+  },
 ];
 
 // the influxdb query group time interval

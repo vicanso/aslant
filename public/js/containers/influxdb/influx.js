@@ -4,6 +4,10 @@ import {
   Toaster,
   Position,
 } from '@blueprintjs/core';
+import {
+  DateTimePicker,
+  TimePickerPrecision,
+} from '@blueprintjs/datetime';
 
 import DropdownSelector from '../../components/dropdown-selector';
 import InfluxVisualizationView from './visualization';
@@ -63,6 +67,7 @@ class Influx extends Component {
         width: '100%',
       },
       data: null,
+      dateTimePicker: '',
     };
     this.showError = props.showError;
   }
@@ -459,12 +464,76 @@ class Influx extends Component {
       );
     });
   }
+  renderDatetimePicker() {
+    const {
+      dateTimePicker,
+      time,
+    } = this.state;
+    if (!dateTimePicker) {
+      return null;
+    }
+    const timeProps = {
+      precision: TimePickerPrecision.SECOND,
+    };
+    const style = {};
+    const type = dateTimePicker;
+    if (type === 'start') {
+      style.left = 0;
+    } else {
+      style.right = 0;
+    }
+    let selectedDate = '';
+    return (
+      <div
+        className="date-picker-wrapper"
+        style={style}
+      >
+        <DateTimePicker
+          onChange={(date) => {
+            selectedDate = date.toISOString();
+          }}
+          timePickerProps={timeProps}
+        />
+        <a
+          href="javascript:;"
+          className="cancel"
+          onClick={() => {
+            this.setState({
+              dateTimePicker: '',
+            });
+          }}
+        >
+          <span className="pt-icon-standard pt-icon-cross" />
+        </a>
+        <a
+          href="javascript:;"
+          className="confirm"
+          onClick={() => {
+            const tmp = {};
+            tmp[type] = selectedDate;
+            this.setState({
+              dateTimePicker: '',
+              time: _.extend({}, time, tmp),
+            });
+          }}
+        >
+          <span className="pt-icon-standard pt-icon-confirm" />
+        </a>
+      </div>
+    );
+  }
   renderTimeSelector() {
     const times = TIME_INTERVALS;
     const {
       time,
     } = this.state;
     const onSelect = (e, item, index) => {
+      if (item.value === 'custom') {
+        this.setState({
+          dateTimePicker: index === 0 ? 'start' : 'end',
+        });
+        return;
+      }
       if (index === 0) {
         time.start = item.value;
       } else {
@@ -616,7 +685,15 @@ class Influx extends Component {
             <h5>Group By</h5>
             { this.renderGroupSelectorList() }
             <h5>Time</h5>
-            { this.renderTimeSelector() }
+            <div
+              style={{
+                position: 'relative',
+                zIndex: '1',
+              }}
+            >
+              { this.renderDatetimePicker() }
+              { this.renderTimeSelector() }
+            </div>
             <h5>Chart Setting</h5>
             { this.renderChartSetting() }
           </div>
@@ -683,7 +760,7 @@ class Influx extends Component {
 
 Influx.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  servers: PropTypes.array.isRequired,
+  servers: PropTypes.array,
   showError: PropTypes.func.isRequired,
   id: PropTypes.string,
   handleLink: PropTypes.func.isRequired,

@@ -48,7 +48,7 @@ exports.connectLimitOptions = {
 exports.session = {
   key: pkg.name,
   ttl: 48 * 3600 * 1000,
-  maxAge: 24 * 3600 * 1000,
+  maxAge: 36 * 3600 * 1000,
 };
 // admin token (jenny)
 exports.adminToken = '6a3f4389a53c889b623e67f385f28ab8e84e5029';

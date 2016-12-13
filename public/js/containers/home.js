@@ -49,7 +49,7 @@ class Home extends Component {
         <div
           className="pure-u-1-4"
           key={id}
-        ><div className="item">
+        ><div className="column">
           <h4>
             <a
               className="pull-right tac mright15"
@@ -66,7 +66,7 @@ class Home extends Component {
       );
     });
     return (
-      <div className="items">
+      <div className="columns">
         { arr }
       </div>
     );

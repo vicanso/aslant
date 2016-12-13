@@ -68,7 +68,15 @@ class MainNav extends Component {
     const renderSubItems = () => {
       if (!items && hasChild !== false) {
         return (
-          <ul><li>Loading...</li></ul>
+          <ul>
+            <li
+              style={{
+                paddingLeft: '15px',
+              }}
+            >
+              Loading...
+            </li>
+          </ul>
         );
       }
       if (hasChild === false) {
