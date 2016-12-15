@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import * as _ from 'lodash';
 
 import DropdownSelector from './dropdown-selector';
 
@@ -16,6 +17,7 @@ class CoDropdownSelector extends Component {
       selected,
       positions,
     } = this.props;
+    const selectedHandler = onSelect || _.noop;
     return (
       <div className="co-dropdown-selector">
         <div className="relation">{ relation || '=' }</div>
@@ -25,11 +27,7 @@ class CoDropdownSelector extends Component {
             placeholder={placeholders && placeholders[0]}
             selected={selected && selected[0]}
             position={positions && positions[0]}
-            onSelect={(e, item) => {
-              if (onSelect) {
-                onSelect(e, item, 0);
-              }
-            }}
+            onSelect={(e, item) => selectedHandler(e, item, 0)}
           />
         </div></div>
         <div className="pure-u-1-2"><div className="mleft10">
@@ -38,11 +36,7 @@ class CoDropdownSelector extends Component {
             placeholder={placeholders && placeholders[1]}
             position={positions && positions[1]}
             selected={selected && selected[1]}
-            onSelect={(e, item) => {
-              if (onSelect) {
-                onSelect(e, item, 1);
-              }
-            }}
+            onSelect={(e, item) => selectedHandler(e, item, 1)}
           />
         </div></div>
       </div>

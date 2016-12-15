@@ -10,7 +10,7 @@ module.exports = [
   '[POST] [/api/sys/restart] [m.auth.admin & c.system.restart]',
 
   // page view
-  '[GET] [/,/login,/register,/influxdb/*] [v.home & c.home]',
+  '[GET] [/,/login,/register,/about,/influxdb/*] [v.home & c.home]',
 
   // user
   '[GET] [/api/users/me] [m.session.read & c.user.me]',

@@ -49,20 +49,20 @@ class Home extends Component {
         <div
           className="pure-u-1-4"
           key={id}
-        ><div className="column">
-          <h4>
-            <a
-              className="pull-right tac mright15"
-              href={url}
-              onClick={handleLink(url)}
-            >
-              <span className="pt-icon-eye-open" />
-            </a>
-            {item.name}
-          </h4>
-          <p>{item.desc}</p>
-          <div className="updatedAt">{moment(item.updatedAt).format('YYYY-MM-DD HH:mm:ss')}</div>
-        </div></div>
+        >
+          <a
+            className="column"
+            href={url}
+            onClick={handleLink(url)}
+          >
+            <h4>
+              <span className="pt-icon-eye-open pull-right mright10" />
+              {item.name}
+            </h4>
+            <p>{item.desc}</p>
+            <div className="updatedAt">{moment(item.updatedAt).format('YYYY-MM-DD HH:mm:ss')}</div>
+          </a>
+        </div>
       );
     });
     return (

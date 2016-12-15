@@ -25,6 +25,7 @@ import {
   VIEW_INFLUX_DASHBOARDS,
   VIEW_INFLUX_EDIT_DASHBOARD,
   VIEW_INFLUX_DASHBOARD,
+  VIEW_ABOUT,
 } from '../constants/urls';
 
 import Login from './login';
@@ -41,6 +42,7 @@ import InfluxDashboardView from './influxdb/dashboard';
 import InfluxDashboardsView from './influxdb/dashboards';
 import InfluxDashboardVisualizationsView from './influxdb/dashboard-visualizations';
 import HomeView from './home';
+import AboutView from './about';
 
 import * as navigationAction from '../actions/navigation';
 import * as userAction from '../actions/user';
@@ -360,7 +362,7 @@ class App extends Component {
       />
     );
   }
-  renderInfluxDashboardVisualizationsView({ params: { id } }) {
+  renderInfluxDashboardVisualizations({ params: { id } }) {
     const {
       dashboards,
     } = this.props;
@@ -373,7 +375,7 @@ class App extends Component {
       />
     );
   }
-  renderHomeView() {
+  renderHome() {
     const {
       dashboards,
       influxdb,
@@ -468,11 +470,15 @@ class App extends Component {
             />
             <Route
               path={VIEW_INFLUX_DASHBOARD}
-              component={arg => this.renderInfluxDashboardVisualizationsView(arg)}
+              component={arg => this.renderInfluxDashboardVisualizations(arg)}
+            />
+            <Route
+              path={VIEW_ABOUT}
+              component={() => <AboutView />}
             />
             <Route
               path="*"
-              component={() => this.renderHomeView()}
+              component={() => this.renderHome()}
             />
           </Router>
         </div>

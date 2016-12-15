@@ -26,6 +26,13 @@ class DropdownSelector extends Component {
       onSelect,
       type,
     } = this.props;
+    const fn = onSelect || _.noop;
+    if (fn(e, item) === false) {
+      this.setState({
+        selected: null,
+      });
+      return;
+    }
     const multi = type === 'multi';
     let selected = (this.state.selected || this.props.selected || []);
     if (_.isArray(selected)) {
@@ -44,9 +51,6 @@ class DropdownSelector extends Component {
       state.selected = selected;
     }
     this.setState(state);
-    if (onSelect) {
-      onSelect(e, item);
-    }
   }
   clear() {
     const {

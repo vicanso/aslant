@@ -14,6 +14,24 @@ import {
   TIME_INTERVALS,
 } from '../../constants/common';
 
+function getTimeDesc(time) {
+  if (!time) {
+    return null;
+  }
+  return (
+    <span className="mright10 time-range">
+      <span className="pt-icon-calendar mright5" />
+      ({time.start || 'unlimited'}
+      <span
+        style={{
+          margin: '0 3px',
+        }}
+      >-</span>
+      {time.end || 'now'})
+    </span>
+  );
+}
+
 class DashboardVisualizations extends Component {
   constructor(props) {
     super(props);
@@ -97,6 +115,7 @@ class DashboardVisualizations extends Component {
                   marginRight: '5px',
                 }}
               >
+                { getTimeDesc(config.time) }
                 <a
                   href="javascript:;"
                   onClick={() => {

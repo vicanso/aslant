@@ -43,3 +43,5 @@ export const VIEW_ADD_DASHBOARD = `${appUrlPrfix}/influxdb/dashboards/add`;
 export const VIEW_INFLUX_DASHBOARDS = `${appUrlPrfix}/influxdb/dashboards`;
 export const VIEW_INFLUX_EDIT_DASHBOARD = `${appUrlPrfix}/influxdb/dashboards/:id`;
 export const VIEW_INFLUX_DASHBOARD = `${appUrlPrfix}/influxdb/dashboard/:id/visualizations`;
+
+export const VIEW_ABOUT = `${appUrlPrfix}/about`;

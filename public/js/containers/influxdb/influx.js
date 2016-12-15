@@ -510,7 +510,7 @@ class Influx extends Component {
           className="confirm"
           onClick={() => {
             const tmp = {};
-            tmp[type] = selectedDate;
+            tmp[type] = selectedDate || (new Date().toISOString());
             this.setState({
               dateTimePicker: '',
               time: _.extend({}, time, tmp),
@@ -532,7 +532,7 @@ class Influx extends Component {
         this.setState({
           dateTimePicker: index === 0 ? 'start' : 'end',
         });
-        return;
+        return false;
       }
       if (index === 0) {
         time.start = item.value;
@@ -542,6 +542,7 @@ class Influx extends Component {
       this.setState({
         time,
       });
+      return true;
     };
     return (
       <div

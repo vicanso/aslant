@@ -7,6 +7,7 @@ import {
   VIEW_ADD_DASHBOARD,
   VIEW_INFLUX_VISUALIZATION,
   VIEW_ADD_INFLUX,
+  VIEW_ABOUT,
 } from '../constants/urls';
 
 class MainNav extends Component {
@@ -29,8 +30,10 @@ class MainNav extends Component {
       '/influxdb/configs/',
     ];
     const found = _.find(hiddenUrls, url => location.indexOf(url) !== -1);
+
     this.setState({
       hidden: !!found,
+      active: location === VIEW_ABOUT ? 'about' : this.state.active,
     });
   }
   renderList(items, options) {
@@ -129,19 +132,30 @@ class MainNav extends Component {
         </ul>
       );
     };
-
+    let itemHref = 'javascript:;';
+    let itemOnClick = () => {
+      this.setState({
+        active: type,
+      });
+    };
+    if (hasChild === false && viewUrl) {
+      itemHref = viewUrl;
+      const fn = handleLink(viewUrl);
+      itemOnClick = (e) => {
+        fn(e);
+        this.setState({
+          active: type,
+        });
+      };
+    }
     return (
       <li
         className={classnames(cls)}
         key={type}
       >
         <a
-          href="javascript:;"
-          onClick={() => {
-            this.setState({
-              active: type,
-            });
-          }}
+          href={itemHref}
+          onClick={itemOnClick}
         >
           <span className={classnames(iconCls)} />
           { name }
@@ -187,6 +201,7 @@ class MainNav extends Component {
       type: 'about',
       name: 'About',
       icon: 'pt-icon-applications',
+      viewUrl: VIEW_ABOUT,
       hasChild: false,
     });
     return (
