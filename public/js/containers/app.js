@@ -102,6 +102,9 @@ class App extends Component {
         dispatch(navigationAction.home());
       }
     }
+    if (!nextAccount) {
+      dispatch(navigationAction.login());
+    }
   }
   checkToRedirectHomePage() {
     const {

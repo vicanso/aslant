@@ -97,7 +97,8 @@ class MainNav extends Component {
           </ul>
         );
       }
-      const arr = _.map(items, (item) => {
+      const sortItems = _.sortBy(items, item => item.name);
+      const arr = _.map(sortItems, (item) => {
         /* eslint no-underscore-dangle:0 */
         const id = item._id;
         const url = viewUrl.replace(':id', id);
