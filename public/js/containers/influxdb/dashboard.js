@@ -1,6 +1,9 @@
 import React, { PropTypes, Component } from 'react';
 import classnames from 'classnames';
 import * as _ from 'lodash';
+import {
+  Checkbox,
+} from '@blueprintjs/core';
 
 import {
   CHART_TYPES,
@@ -165,6 +168,34 @@ class Dashboard extends Component {
           <span className="pt-icon-standard pt-icon-arrow-down" />
         </a>
       );
+      const getBtn = (type, id, disabled) => {
+        const anchorCls = {};
+        const btnCls = {
+          'pt-icon-standard': true,
+        };
+        if (disabled) {
+          anchorCls.disabled = true;
+        }
+        if (type === 'up') {
+          btnCls['pt-icon-arrow-up'] = true;
+        } else {
+          btnCls['pt-icon-arrow-down'] = true;
+        }
+        return (
+          <a
+            href="javascript:;"
+            className={classnames(anchorCls)}
+            onClick={() => {
+              if (disabled) {
+                return;
+              }
+              this.changeOrder(id, type);
+            }}
+          >
+            <span className={classnames(btnCls)} />
+          </a>
+        );
+      };
       return (
         <tr
           key={id}
@@ -191,10 +222,10 @@ class Dashboard extends Component {
           <td>{item.view.width}</td>
           <td>
             {
-              i !== 0 && upBtn
+              getBtn('up', id, i === 0)
             }
             {
-              (i !== configs.length - 1) && downBtn
+              getBtn('down', id, i === configs.length - 1)
             }
           </td>
         </tr>
@@ -226,15 +257,29 @@ class Dashboard extends Component {
           </button>
         </div>
         <div className="desc-wrapper">
-          <input
-            type="text"
-            className="pt-input pt-fill"
-            placeholder="Input dashboard's description"
-            defaultValue={_.get(this.props, 'dashboard.desc', '')}
-            ref={(c) => {
-              this.dashboardDesc = c;
+          <Checkbox
+            className="pull-left"
+            style={{
+              marginTop: '7px',
             }}
-          />
+          >
+            Public
+          </Checkbox>
+          <div
+            style={{
+              marginLeft: '80px',
+            }}
+          >
+            <input
+              type="text"
+              className="pt-input pt-fill"
+              placeholder="Input dashboard's description"
+              defaultValue={_.get(this.props, 'dashboard.desc', '')}
+              ref={(c) => {
+                this.dashboardDesc = c;
+              }}
+            />
+          </div>
         </div>
         <table className="table">
           <thead><tr>
