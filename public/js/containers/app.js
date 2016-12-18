@@ -246,6 +246,7 @@ class App extends Component {
         dispatch={dispatch}
         servers={result}
         id={id}
+        handleLink={this.handleLink}
       />
     );
   }

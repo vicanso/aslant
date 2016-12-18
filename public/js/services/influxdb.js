@@ -241,7 +241,7 @@ export function getInfluxQL(options) {
       if (!cal || cal === 'none') {
         ql.addField(field);
       } else {
-        ql.addCalculate(cal, field);
+        ql.addFunction(cal, field);
       }
     }
   });
