@@ -13,8 +13,8 @@ export function add(dashboard) {
   }));
 }
 
-export function list() {
-  return dispatch => dashboardService.list().then(data => dispatch({
+export function list(params) {
+  return dispatch => dashboardService.list(params).then(data => dispatch({
     type: INFLUXDB_LIST_DASHBOARD,
     items: data,
   }));

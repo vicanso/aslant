@@ -93,7 +93,9 @@ class App extends Component {
         dispatch(influxdbAction.listConfig()).catch((err) => {
           this.showError(err);
         });
-        dispatch(dashboardActions.list()).catch((err) => {
+        dispatch(dashboardActions.list({
+          group: '*',
+        })).catch((err) => {
           this.showError(err);
         });
         dispatch(serverActions.list()).catch((err) => {
@@ -104,7 +106,8 @@ class App extends Component {
         dispatch(navigationAction.home());
       }
     }
-    if (!nextAccount) {
+    const location = _.get(nextProps, 'navigation.location');
+    if (!nextAccount && location !== VIEW_LOGIN && location !== VIEW_REGISTER) {
       dispatch(navigationAction.login());
     }
   }
@@ -221,6 +224,7 @@ class App extends Component {
     const {
       dispatch,
       dashboards,
+      user,
     } = this.props;
     return (
       <InfluxDashboardsView
@@ -228,6 +232,7 @@ class App extends Component {
         dispatch={dispatch}
         dashboards={dashboards}
         handleLink={this.handleLink}
+        user={user}
       />
     );
   }
@@ -351,7 +356,7 @@ class App extends Component {
     const {
       influxdb,
     } = this.props;
-    if (!influxdb || !influxdb.configs.length) {
+    if (!influxdb || !influxdb.configs) {
       return null;
     }
     const found = _.find(influxdb.configs, item => item._id === id);

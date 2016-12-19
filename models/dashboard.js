@@ -14,6 +14,10 @@ module.exports = {
       type: String,
       required: true,
     },
+    group: {
+      type: String,
+      required: true,
+    },
     desc: String,
     createdAt: String,
     updatedAt: String,

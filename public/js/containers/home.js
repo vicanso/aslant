@@ -45,22 +45,35 @@ class Home extends Component {
       /* eslint no-underscore-dangle:0 */
       const id = item._id;
       const url = viewUrl.replace(':id', id);
+      const updatedAt = moment(item.updatedAt).format('YYYY-MM-DD HH:mm:ss');
+      const createdAt = moment(item.createdAt).format('YYYY-MM-DD HH:mm:ss');
+      const title = `Created by ${item.account} at ${createdAt}, updated at ${updatedAt}`;
+      let infoItem = null;
+      if (type === 'dashboard') {
+        infoItem = (
+          <div className="info">
+            <span className="pt-icon-person mright5" />
+            {item.account}
+          </div>
+        );
+      }
       return (
         <div
-          className="pure-u-1-4"
+          className="pure-u-1-4 cloumn-wrapper"
           key={id}
         >
           <a
             className="column"
             href={url}
             onClick={handleLink(url)}
+            title={title}
           >
             <h4>
               <span className="pt-icon-eye-open pull-right mright10" />
               {item.name}
             </h4>
             <p>{item.desc}</p>
-            <div className="updatedAt">{moment(item.updatedAt).format('YYYY-MM-DD HH:mm:ss')}</div>
+            { infoItem }
           </a>
         </div>
       );

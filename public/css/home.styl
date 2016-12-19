@@ -19,7 +19,11 @@
         text-decoration none
         .pt-icon-eye-open
           color $COLOR_BLUE
-    .updatedAt
+      h4
+        white-space nowrap
+        text-overflow ellipsis
+        overflow hidden
+    .info
       position absolute
       right 0
       bottom 0
@@ -28,4 +32,10 @@
       border-top 1px solid $COLOR_GRAY
       border-left 1px solid $COLOR_GRAY
       border-radius top left 3px
-        
+      
+    @media only screen and (max-width : 1000px)
+      .cloumn-wrapper
+        width 33.3333%
+    @media only screen and (max-width : 800px)
+      .cloumn-wrapper
+        width 50%

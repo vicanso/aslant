@@ -51,6 +51,7 @@ class Dashboard extends Component {
       configs: resortConfigs(props.configs.slice(0), selectedItems),
       selectedItems,
     };
+    this.group = _.get(props, 'dashboard.group', 'personal');
   }
   componentWillReceiveProps(nextProps) {
     const {
@@ -113,6 +114,7 @@ class Dashboard extends Component {
       name,
       desc: (this.dashboardDesc.value || '').trim(),
       configs: newConfigs,
+      group: this.group,
     };
     this.setState({
       status: 'submitting',
@@ -152,23 +154,7 @@ class Dashboard extends Component {
       } else {
         cls['pt-icon-circle'] = true;
       }
-      const upBtn = (
-        <a
-          href="javascript:;"
-          onClick={() => this.changeOrder(id, 'up')}
-        >
-          <span className="pt-icon-standard pt-icon-arrow-up" />
-        </a>
-      );
-      const downBtn = (
-        <a
-          href="javascript:;"
-          onClick={() => this.changeOrder(id, 'down')}
-        >
-          <span className="pt-icon-standard pt-icon-arrow-down" />
-        </a>
-      );
-      const getBtn = (type, id, disabled) => {
+      const getBtn = (type, disabled) => {
         const anchorCls = {};
         const btnCls = {
           'pt-icon-standard': true,
@@ -222,10 +208,10 @@ class Dashboard extends Component {
           <td>{item.view.width}</td>
           <td>
             {
-              getBtn('up', id, i === 0)
+              getBtn('up', i === 0)
             }
             {
-              getBtn('down', id, i === configs.length - 1)
+              getBtn('down', i === configs.length - 1)
             }
           </td>
         </tr>
@@ -259,8 +245,16 @@ class Dashboard extends Component {
         <div className="desc-wrapper">
           <Checkbox
             className="pull-left"
+            defaultChecked={this.group === '*'}
             style={{
               marginTop: '7px',
+            }}
+            onChange={() => {
+              if (this.group === '*') {
+                this.group = 'personal';
+              } else {
+                this.group = '*';
+              }
             }}
           >
             Public

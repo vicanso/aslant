@@ -259,7 +259,7 @@ export function getInfluxQL(options) {
       }).toISOString();
     } else if (timeValue === 'yesterday') {
       ql.end = moment()
-        .add('day', -1)
+        .add(-1, 'day')
         .set({
           hour: 23,
           minute: 59,
@@ -267,7 +267,7 @@ export function getInfluxQL(options) {
           millisecond: 999,
         }).toISOString();
       ql.start = moment()
-        .add('day', -1)
+        .add(-1, 'day')
         .set({
           hour: 0,
           minute: 0,

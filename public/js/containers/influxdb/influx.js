@@ -679,7 +679,7 @@ class Influx extends Component {
               position={Position.RIGHT_TOP}
               onSelect={(e, item) => this.onSelectMeasurement(item)}
             />
-            <h5>Filter By</h5>
+            <h5>Filter By Tag</h5>
             { this.renderTagSelectorList() }
             <h5>Extract By</h5>
             { this.renderFieldCalSelectorList() }

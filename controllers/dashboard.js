@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const _ = require('lodash');
 
 const dashboardService = localRequire('services/dashboard');
 
@@ -7,16 +8,34 @@ function validate(data) {
     name: Joi.string().required(),
     configs: Joi.array().items(Joi.string()).min(1).required(),
     desc: Joi.string().optional(),
+    group: Joi.string().valid('*', 'personal'),
   });
 }
 
 exports.list = (ctx) => {
+  const group = ctx.query.group || 'personal';
   const account = ctx.session.user.account;
-  return dashboardService.list({
-    account,
-  }).then((docs) => {
+  const conditions = {};
+  if (group === '*') {
+    conditions.$or = [
+      {
+        group: '*',
+      },
+      {
+        account,
+      },
+    ];
+  } else {
+    conditions.account = account;
+  }
+  return dashboardService.list(conditions).then((docs) => {
     /* eslint no-param-reassign:0 */
-    ctx.body = docs;
+    ctx.body = _.sortBy(docs, (item) => {
+      if (item.account === account) {
+        return `0${item.updatedAt}`;
+      }
+      return `1${item.updatedAt}`;
+    });
   });
 };
 

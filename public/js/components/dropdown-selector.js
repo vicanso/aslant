@@ -12,6 +12,7 @@ class DropdownSelector extends Component {
     super(props);
     this.state = {
       selected: null,
+      keyword: '',
     };
   }
   componentWillReceiveProps(nextProps) {
@@ -50,7 +51,18 @@ class DropdownSelector extends Component {
       }
       state.selected = selected;
     }
+    this.userInput.value = this.getSelectString(state);
     this.setState(state);
+  }
+  getSelectString(state = {}) {
+    const selected = state.selected || this.state.selected || this.props.selected;
+    if (!selected) {
+      return '';
+    }
+    if (_.isArray(selected)) {
+      return _.map(selected, item => item.name || item).join(',');
+    }
+    return selected.name || selected;
   }
   clear() {
     const {
@@ -65,24 +77,20 @@ class DropdownSelector extends Component {
   }
   render() {
     const {
+      keyword,
+    } = this.state;
+    const {
       items,
       placeholder,
       onClear,
     } = this.props;
 
     // const multi = type === 'multi';
-    const selected = this.state.selected || this.props.selected;
-    const selectedToString = () => {
-      if (!selected) {
-        return '';
-      }
-      if (_.isArray(selected)) {
-        return _.map(selected, item => item.name || item).join(',');
-      }
-      return selected.name || selected;
-    };
-
-    const arr = _.map(items, (item) => {
+    const filterItems = _.filter(items, (item) => {
+      const name = item.name || item;
+      return name.indexOf(keyword) !== -1;
+    });
+    const arr = _.map(filterItems, (item) => {
       const name = item.name || item;
       return (
         <MenuItem
@@ -101,7 +109,7 @@ class DropdownSelector extends Component {
     let fixPosition = this.props.position;
     if (_.isUndefined(this.props.position)) {
       fixPosition = Position.RIGHT;
-      if (items.length > 20) {
+      if (filterItems.length > 20) {
         fixPosition = Position.BOTTOM;
       }
     }
@@ -123,13 +131,26 @@ class DropdownSelector extends Component {
         <Popover
           content={menu}
           position={fixPosition}
+          autoFocus={false}
         >
           <input
             type="text"
-            readOnly
             placeholder={placeholder}
             className="pt-input"
-            value={selectedToString()}
+            defaultValue={this.getSelectString()}
+            onKeyUp={(e) => {
+              if (e.keyCode === 0x0d && filterItems.length) {
+                this.onSelect(e, filterItems[0]);
+              }
+            }}
+            onChange={() => {
+              this.setState({
+                keyword: this.userInput.value,
+              });
+            }}
+            ref={(c) => {
+              this.userInput = c;
+            }}
           />
         </Popover>
       </div>

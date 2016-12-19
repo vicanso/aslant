@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import moment from 'moment';
 import * as _ from 'lodash';
+import classnames from 'classnames';
 
 import InfluxTable from '../../components/influx-table';
 import * as dashboardAction from '../../actions/dashboard';
@@ -24,6 +25,7 @@ class Dashboards extends InfluxTable {
     const {
       dashboards,
       handleLink,
+      user,
     } = this.props;
     if (!dashboards) {
       return (
@@ -45,13 +47,26 @@ class Dashboards extends InfluxTable {
     const arr = _.map(dashboards, (dashboard) => {
       /* eslint no-underscore-dangle:0 */
       const id = dashboard._id;
+      const isOwner = dashboard.account === user.account;
       const viewUrl = VIEW_INFLUX_DASHBOARD.replace(':id', id);
-      const editUrl = VIEW_INFLUX_EDIT_DASHBOARD.replace(':id', id);
+      const editUrl = isOwner ? VIEW_INFLUX_EDIT_DASHBOARD.replace(':id', id) : 'javascript:;';
       const updatedAt = moment(dashboard.updatedAt).format('YYYY-MM-DD HH:mm:ss');
+      const editCls = {
+        'pt-icon-standard': true,
+        'pt-icon-edit': true,
+        disabled: !isOwner,
+      };
+      const removeCls = {
+        'pt-icon-standard': true,
+        'pt-icon-remove': true,
+        disabled: !isOwner,
+      };
       return (
         <tr key={id}>
           <td>{dashboard.name}</td>
           <td>{updatedAt}</td>
+          <td>{dashboard.group || 'personal'}</td>
+          <td>{dashboard.account}</td>
           <td
             className="op"
           >
@@ -63,15 +78,25 @@ class Dashboards extends InfluxTable {
             </a>
             <a
               href={editUrl}
-              onClick={handleLink(editUrl)}
+              onClick={(e) => {
+                if (!isOwner) {
+                  return;
+                }
+                handleLink(editUrl)(e);
+              }}
             >
-              <span className="pt-icon-standard pt-icon-edit" />
+              <span className={classnames(editCls)} />
             </a>
             <a
               href="javascript:;"
-              onClick={e => this.confirmToRemove(e, dashboard)}
+              onClick={(e) => {
+                if (!isOwner) {
+                  return;
+                }
+                this.confirmToRemove(e, dashboard);
+              }}
             >
-              <span className="pt-icon-standard pt-icon-remove" />
+              <span className={classnames(removeCls)} />
             </a>
           </td>
         </tr>
@@ -84,6 +109,8 @@ class Dashboards extends InfluxTable {
             <tr>
               <th>Name</th>
               <th>Updated At</th>
+              <th>Group</th>
+              <th>Creator</th>
               <th>OP</th>
             </tr>
           </thead>
@@ -99,6 +126,7 @@ class Dashboards extends InfluxTable {
 
 
 Dashboards.propTypes = {
+  user: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
   dashboards: PropTypes.array,
   handleLink: PropTypes.func.isRequired,

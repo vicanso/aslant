@@ -107,8 +107,9 @@ class DashboardVisualizations extends Component {
           <div
             className="visualization-wrapper"
           >
-            <h3>
-              {config.name}
+            <h3
+              title={config.name}
+            >
               <div
                 className="pull-right"
                 style={{
@@ -141,6 +142,7 @@ class DashboardVisualizations extends Component {
                   <span className={classnames(fullScreenIconCls)} />
                 </a>
               </div>
+              {config.name}
             </h3>
             <InfluxVisualizationView
               forceUpdatedAt={forceUpdatedAtList[index]}

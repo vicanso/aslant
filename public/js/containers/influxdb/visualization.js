@@ -4,6 +4,7 @@ import {
   Bar,
   Pie,
   Circle,
+  d3,
 } from 'dcharts';
 import classnames from 'classnames';
 import * as _ from 'lodash';
@@ -138,6 +139,7 @@ class Visualization extends Component {
         item.set({
           'xAxis.distance': 100,
           'xAxis.categories': chartData.categories,
+          curve: d3.curveCatmullRom.alpha(0.5),
         })
         .render(chartData.data);
       }

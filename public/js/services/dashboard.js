@@ -4,8 +4,9 @@ import {
   INFLUXDB_DASHBOARDS,
 } from '../constants/urls';
 
-export function list() {
+export function list(params = { group: 'personal' }) {
   return http.get(INFLUXDB_DASHBOARDS)
+    .query(params)
     .set('Cache-Control', 'no-cache')
     .then(res => res.body);
 }
