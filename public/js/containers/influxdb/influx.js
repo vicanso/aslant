@@ -68,6 +68,7 @@ class Influx extends Component {
       },
       data: null,
       dateTimePicker: '',
+      customConditions: '',
     };
     this.showError = props.showError;
   }
@@ -217,7 +218,7 @@ class Influx extends Component {
       dispatch,
       id,
     } = this.props;
-    const keys = 'server database rp measurement conditions cals groups time view'.split(' ');
+    const keys = 'server database rp measurement conditions cals customConditions groups time view'.split(' ');
     const data = _.pick(this.state, keys);
 
     const name = this.influxName.value || '';
@@ -483,6 +484,11 @@ class Influx extends Component {
       style.right = 0;
     }
     let selectedDate = '';
+    const selectedTime = time[type];
+    let defaultDate = new Date();
+    if (selectedTime && selectedTime.length === 24) {
+      defaultDate = new Date(selectedTime);
+    }
     return (
       <div
         className="date-picker-wrapper"
@@ -492,6 +498,7 @@ class Influx extends Component {
           onChange={(date) => {
             selectedDate = date.toISOString();
           }}
+          defaultValue={defaultDate}
           timePickerProps={timeProps}
         />
         <a
@@ -594,6 +601,7 @@ class Influx extends Component {
       measurements,
       measurement,
       desc,
+      customConditions,
     } = this.state;
     if (!servers) {
       return (
@@ -681,6 +689,28 @@ class Influx extends Component {
             />
             <h5>Filter By Tag</h5>
             { this.renderTagSelectorList() }
+            <h5>Custom filter</h5>
+            <textarea
+              placeholder={'field=\'String\' and field = Number'}
+              style={{
+                width: '100%',
+                height: '60px',
+                padding: '7px',
+                fontSize: '14px',
+              }}
+              defaultValue={customConditions}
+              ref={(c) => {
+                if (!c) {
+                  return;
+                }
+                this.customFilter = c;
+              }}
+              onChange={() => {
+                this.setState({
+                  customConditions: this.customFilter.value,
+                });
+              }}
+            />
             <h5>Extract By</h5>
             { this.renderFieldCalSelectorList() }
             <h5>Group By</h5>

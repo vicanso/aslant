@@ -20,9 +20,6 @@ class Visualization extends Component {
       this.getData(props);
     }
   }
-  componentWillMount() {
-    clearInterval(this.timer);
-  }
   componentWillReceiveProps(nextProps) {
     const {
       forceUpdatedAt,
@@ -33,6 +30,9 @@ class Visualization extends Component {
     if (different || updated) {
       this.getData(nextProps);
     }
+  }
+  componentWillUnmount() {
+    clearInterval(this.timer);
   }
   getData(props) {
     const {
@@ -207,6 +207,9 @@ class Visualization extends Component {
     }
     const cls = {};
     if (view.type === 'table') {
+      if (this.chart) {
+        this.chart.innerHTML = '';
+      }
       cls['table-wrapper'] = true;
       return this.renderTable(cls);
     }

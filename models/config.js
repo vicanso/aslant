@@ -34,6 +34,7 @@ module.exports = {
       required: true,
     },
     conditions: [Schema.Types.Mixed],
+    customConditions: String,
     cals: [Schema.Types.Mixed],
     groups: Schema.Types.Mixed,
     time: Schema.Types.Mixed,

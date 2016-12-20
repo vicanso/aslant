@@ -22,6 +22,7 @@ function validateConfig(data) {
       tag: Joi.string().empty('').optional(),
       value: Joi.string().empty('').optional(),
     })).optional(),
+    customConditions: Joi.string().optional(),
     cals: Joi.array().items(Joi.object().keys({
       field: Joi.string().empty('').optional(),
       cal: Joi.string().empty('').optional(),

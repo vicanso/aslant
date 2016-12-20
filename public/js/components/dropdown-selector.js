@@ -21,6 +21,15 @@ class DropdownSelector extends Component {
         selected: null,
       });
     }
+    if (nextProps.selected !== this.props.selected && this.userInput) {
+      const value = this.getSelectString();
+      if (this.userInput.value === value) {
+        return;
+      }
+      this.forceUpdate(() => {
+        this.userInput.value = this.getSelectString();
+      });
+    }
   }
   onSelect(e, item) {
     const {
@@ -71,6 +80,9 @@ class DropdownSelector extends Component {
     this.setState({
       selected: null,
     });
+    if (this.userInput) {
+      this.userInput.value = '';
+    }
     if (onClear) {
       onClear();
     }
@@ -137,7 +149,6 @@ class DropdownSelector extends Component {
             type="text"
             placeholder={placeholder}
             className="pt-input"
-            defaultValue={this.getSelectString()}
             onKeyUp={(e) => {
               if (e.keyCode === 0x0d && filterItems.length) {
                 this.onSelect(e, filterItems[0]);
@@ -148,7 +159,11 @@ class DropdownSelector extends Component {
                 keyword: this.userInput.value,
               });
             }}
+            defaultValue={this.getSelectString()}
             ref={(c) => {
+              if (!c) {
+                return;
+              }
               this.userInput = c;
             }}
           />
