@@ -72,5 +72,7 @@ _.defer(() => {
   statistics();
   initRender();
   http.timeout = 10 * 1000;
-  userService.refresh();
+  _.delay(() => {
+    userService.refresh();
+  }, 3000);
 });

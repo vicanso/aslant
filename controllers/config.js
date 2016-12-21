@@ -23,9 +23,9 @@ function validateConfig(data) {
       value: Joi.string().empty('').optional(),
     })).optional(),
     customConditions: Joi.string().optional(),
-    cals: Joi.array().items(Joi.object().keys({
+    aggregations: Joi.array().items(Joi.object().keys({
       field: Joi.string().empty('').optional(),
-      cal: Joi.string().empty('').optional(),
+      aggregation: Joi.string().empty('').optional(),
     })).optional(),
     groups: Joi.object().keys({
       interval: Joi.string().optional(),

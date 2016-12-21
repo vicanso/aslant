@@ -21,28 +21,36 @@ class CoDropdownSelector extends Component {
     return (
       <div className="co-dropdown-selector">
         <div className="relation">{ relation || '=' }</div>
-        <div className="pure-u-1-2"><div style={{
-          marginRight: '15px',
-        }}>
-          <DropdownSelector
-            items={itemsList[0]}
-            placeholder={placeholders && placeholders[0]}
-            selected={selected && selected[0]}
-            position={positions && positions[0]}
-            onSelect={(e, item) => selectedHandler(e, item, 0)}
-          />
-        </div></div>
-        <div className="pure-u-1-2"><div style={{
-          marginLeft: '15px',
-        }}>
-          <DropdownSelector
-            items={itemsList[1]}
-            placeholder={placeholders && placeholders[1]}
-            position={positions && positions[1]}
-            selected={selected && selected[1]}
-            onSelect={(e, item) => selectedHandler(e, item, 1)}
-          />
-        </div></div>
+        <div className="pure-u-1-2">
+          <div
+            style={{
+              marginRight: '15px',
+            }}
+          >
+            <DropdownSelector
+              items={itemsList[0]}
+              placeholder={placeholders && placeholders[0]}
+              selected={selected && selected[0]}
+              position={positions && positions[0]}
+              onSelect={(e, item) => selectedHandler(e, item, 0)}
+            />
+          </div>
+        </div>
+        <div className="pure-u-1-2">
+          <div
+            style={{
+              marginLeft: '15px',
+            }}
+          >
+            <DropdownSelector
+              items={itemsList[1]}
+              placeholder={placeholders && placeholders[1]}
+              position={positions && positions[1]}
+              selected={selected && selected[1]}
+              onSelect={(e, item) => selectedHandler(e, item, 1)}
+            />
+          </div>
+        </div>
       </div>
     );
   }

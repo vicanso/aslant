@@ -44,7 +44,7 @@ function version(opts) {
 
 gulp.task('bootstrap', [
   'copy-blueprintjs/core/css',
-  'copy-blueprintjs/core/font',
+  'copy-blueprintjs/core/resources',
   'copy-blueprintjs/table/css',
   'copy-blueprintjs/datetime/css',
 ]);
@@ -52,12 +52,12 @@ gulp.task('bootstrap', [
 gulp.task('copy-blueprintjs/core/css', () => gulp.src('node_modules/@blueprintjs/core/dist/blueprint.css')
   .pipe(through.obj((file, encoding, cb) => {
     const css = file.contents.toString();
-    const reg = /assets/gi;
-    const buf = new Buffer(css.replace(reg, '../fonts'));
+    const reg = /resources\/icons/gi;
+    const buf = new Buffer(css.replace(reg, 'resources'));
     fs.writeFile('public/css/blueprint.css', buf, cb);
   })));
-gulp.task('copy-blueprintjs/core/font', () => gulp.src('node_modules/@blueprintjs/core/dist/assets/*')
-  .pipe(copy('public/fonts', {
+gulp.task('copy-blueprintjs/core/resources', () => gulp.src('node_modules/@blueprintjs/core/resources/icons/*')
+  .pipe(copy('public/resources', {
     prefix: 5,
   })));
 
@@ -98,7 +98,7 @@ gulp.task('copy:others', ['del:assets', 'del:build'], () => gulp.src([
 })));
 
 gulp.task('copy:to-assets', ['del:assets'], () => gulp.src([
-  'public/fonts/*',
+  'public/resources/*',
 ]).pipe(copy(assetsPath, {
   prefix: 1,
 })));

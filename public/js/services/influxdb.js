@@ -46,24 +46,24 @@ function toJSON(data) {
   return result;
 }
 
-export function toChartData(data, tags, cals) {
+export function toChartData(data, tags, aggregations) {
   const timeArr = [];
   const dict = {};
-  const calsDict = {};
-  _.forEach(cals, (item) => {
+  const aggregationsDict = {};
+  _.forEach(aggregations, (item) => {
     const {
-      cal,
+      aggregation,
       field,
     } = item;
-    if (!cal || !field) {
+    if (!aggregation || !field) {
       return;
     }
-    if (!calsDict[cal]) {
-      calsDict[cal] = [field];
+    if (!aggregationsDict[aggregation]) {
+      aggregationsDict[aggregation] = [field];
       return;
     }
-    const index = _.sortedIndex(calsDict[cal], field);
-    calsDict[cal].splice(index, 0, field);
+    const index = _.sortedIndex(aggregationsDict[aggregation], field);
+    aggregationsDict[aggregation].splice(index, 0, field);
   });
   let fillCat = false;
   _.forEach(data, (arr, name) => {
@@ -96,8 +96,8 @@ export function toChartData(data, tags, cals) {
           convertKey = k.substring(0, k.length - result[0].length);
           index = parseInt(result[1], 10);
         }
-        if (calsDict[convertKey]) {
-          key = `${baseKey}.${calsDict[convertKey][index]}`;
+        if (aggregationsDict[convertKey]) {
+          key = `${baseKey}.${convertKey}(${aggregationsDict[convertKey][index]})`;
         }
 
         if (!dict[key]) {
@@ -132,13 +132,13 @@ export function toChartData(data, tags, cals) {
   };
 }
 
-export function toTableData(data, cals) {
+export function toTableData(data, aggregations) {
   const result = [];
   _.forEach(data, (arr, name) => {
     // show keys(convert the key such as max_1)
     const keys = [];
-    const filterCals = _.filter(cals, item => item.cal && item.field);
-    const sortCals = _.sortBy(filterCals, item => `${item.field}${item.cal}`);
+    const filterAggregations = _.filter(aggregations, item => item.aggregation && item.field);
+    const sortAggregations = _.sortBy(filterAggregations, item => `${item.field}${item.aggregation}`);
     // original key for get the data
     const originalKeys = [];
     _.forEach(_.keys(arr[0]), (key) => {
@@ -150,10 +150,10 @@ export function toTableData(data, cals) {
       originalKeys.push(key);
       const reg = /_(\d)*$/gi;
       const k = key.replace(reg, '');
-      const index = _.findIndex(sortCals, item => item.cal === k);
+      const index = _.findIndex(sortAggregations, item => item.aggregation === k);
       if (index !== -1) {
-        const filterCal = sortCals.splice(index, 1)[0];
-        keys.push(`${filterCal.cal}(${filterCal.field})`);
+        const filterAggregation = sortAggregations.splice(index, 1)[0];
+        keys.push(`${filterAggregation.aggregation}(${filterAggregation.field})`);
         return;
       }
       keys.push(key);
@@ -211,7 +211,7 @@ export function getInfluxQL(options) {
     database,
     measurement,
     conditions,
-    cals,
+    aggregations,
     rp,
     time,
     groups,
@@ -233,16 +233,16 @@ export function getInfluxQL(options) {
     }
     ql.condition(tag, value);
   });
-  _.forEach(cals, (item) => {
+  _.forEach(aggregations, (item) => {
     const {
-      cal,
+      aggregation,
       field,
     } = item;
     if (field) {
-      if (!cal || cal === 'none') {
+      if (!aggregation || aggregation === 'none') {
         ql.addField(field);
       } else {
-        ql.addFunction(cal, field);
+        ql.addFunction(aggregation, field);
       }
     }
   });

@@ -35,7 +35,7 @@ module.exports = {
     },
     conditions: [Schema.Types.Mixed],
     customConditions: String,
-    cals: [Schema.Types.Mixed],
+    aggregations: [Schema.Types.Mixed],
     groups: Schema.Types.Mixed,
     time: Schema.Types.Mixed,
     view: Schema.Types.Mixed,

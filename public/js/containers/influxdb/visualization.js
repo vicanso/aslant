@@ -53,7 +53,7 @@ class Visualization extends Component {
       }
       result.config = data;
       result.view = data.view;
-      result.cals = data.cals;
+      result.aggregations = data.aggregations;
       result.tags = influxdbService.formatSeries(data.series).tags;
       const {
         server,
@@ -108,11 +108,11 @@ class Visualization extends Component {
     const {
       data,
       tags,
-      cals,
+      aggregations,
       view,
     } = this.state;
     const chartView = (Fn) => {
-      const chartData = influxdbService.toChartData(data, tags, cals);
+      const chartData = influxdbService.toChartData(data, tags, aggregations);
       if (!chartData.data || !chartData.data.length) {
         chart.innerHTML = '<p class="tac mtop10">无数据</p>';
         return;
@@ -166,9 +166,9 @@ class Visualization extends Component {
   renderTable(cls) {
     const {
       data,
-      cals,
+      aggregations,
     } = this.state;
-    const tableData = influxdbService.toTableData(data, cals);
+    const tableData = influxdbService.toTableData(data, aggregations);
     if (!tableData || !tableData.length) {
       return (
         <p className="tac mtop10">无数据</p>

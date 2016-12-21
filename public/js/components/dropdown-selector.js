@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import * as _ from 'lodash';
+import classnames from 'classnames';
 import {
   Menu,
   MenuItem,
@@ -16,55 +17,24 @@ class DropdownSelector extends Component {
     };
   }
   componentWillReceiveProps(nextProps) {
-    if (nextProps.items !== this.props.items) {
-      this.setState({
-        selected: null,
-      });
-    }
     if (nextProps.selected !== this.props.selected && this.userInput) {
-      const value = this.getSelectString();
-      if (this.userInput.value === value) {
-        return;
-      }
-      this.forceUpdate(() => {
-        this.userInput.value = this.getSelectString();
-      });
+      this.userInput.value = this.getSelectString(nextProps);
     }
   }
   onSelect(e, item) {
     const {
       onSelect,
-      type,
+      selected,
     } = this.props;
-    const fn = onSelect || _.noop;
-    if (fn(e, item) === false) {
-      this.setState({
-        selected: null,
-      });
+    if (item === selected) {
+      this.userInput.value = this.getSelectString();
       return;
     }
-    const multi = type === 'multi';
-    let selected = (this.state.selected || this.props.selected || []);
-    if (_.isArray(selected)) {
-      selected = selected.slice(0);
-    }
-    const state = {
-      selected: item,
-    };
-    if (multi) {
-      const index = _.indexOf(selected, item);
-      if (index === -1) {
-        selected.push(item);
-      } else {
-        selected.splice(index, 1);
-      }
-      state.selected = selected;
-    }
-    this.userInput.value = this.getSelectString(state);
-    this.setState(state);
+    const fn = onSelect || _.noop;
+    fn(e, item);
   }
-  getSelectString(state = {}) {
-    const selected = state.selected || this.state.selected || this.props.selected;
+  getSelectString(data = {}) {
+    const selected = data.selected || this.props.selected;
     if (!selected) {
       return '';
     }
@@ -77,9 +47,6 @@ class DropdownSelector extends Component {
     const {
       onClear,
     } = this.props;
-    this.setState({
-      selected: null,
-    });
     if (this.userInput) {
       this.userInput.value = '';
     }
@@ -95,20 +62,30 @@ class DropdownSelector extends Component {
       items,
       placeholder,
       onClear,
+      type,
+      readOnly,
+      selected,
     } = this.props;
 
-    // const multi = type === 'multi';
+    const multi = type === 'multi';
     const filterItems = _.filter(items, (item) => {
       const name = item.name || item;
       return name.indexOf(keyword) !== -1;
     });
     const arr = _.map(filterItems, (item) => {
       const name = item.name || item;
+      const cls = {};
+      if (item.icon) {
+        cls[item.icon] = true;
+      }
+      if (multi && _.indexOf(selected, item) !== -1) {
+        cls['pt-icon-small-tick'] = true;
+      }
       return (
         <MenuItem
           key={name}
           text={name}
-          iconName={item.icon || ''}
+          iconName={classnames(cls)}
           onClick={e => this.onSelect(e, item)}
         />
       );
@@ -149,6 +126,7 @@ class DropdownSelector extends Component {
             type="text"
             placeholder={placeholder}
             className="pt-input"
+            readOnly={readOnly}
             onKeyUp={(e) => {
               if (e.keyCode === 0x0d && filterItems.length) {
                 this.onSelect(e, filterItems[0]);
@@ -181,6 +159,7 @@ DropdownSelector.propTypes = {
   type: PropTypes.string,
   position: PropTypes.number,
   onClear: PropTypes.func,
+  readOnly: PropTypes.bool,
 };
 
 export default DropdownSelector;

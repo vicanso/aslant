@@ -56,7 +56,7 @@ class Influx extends Component {
       fields: [],
       tagValueDict: {},
       conditions: [],
-      cals: [],
+      aggregations: [],
       groups: {},
       time: {
         start: '',
@@ -75,7 +75,7 @@ class Influx extends Component {
 
   componentWillUpdate(nextProps, nextState) {
     const influxQL = influxdbService.getInfluxQL(nextState);
-    if (influxQL && this.ql) {
+    if (this.ql) {
       this.ql.value = influxQL;
     }
   }
@@ -161,7 +161,7 @@ class Influx extends Component {
           fields: [],
           tagValueDict: {},
           conditions: [],
-          cals: [],
+          aggregations: [],
           groups: {},
         };
         break;
@@ -176,7 +176,7 @@ class Influx extends Component {
           fields: [],
           tagValueDict: {},
           conditions: [],
-          cals: [],
+          aggregations: [],
           groups: {},
         };
         break;
@@ -187,7 +187,7 @@ class Influx extends Component {
           fields: [],
           tagValueDict: {},
           conditions: [],
-          cals: [],
+          aggregations: [],
           groups: {},
         };
         break;
@@ -218,9 +218,14 @@ class Influx extends Component {
       dispatch,
       id,
     } = this.props;
-    const keys = 'server database rp measurement conditions cals customConditions groups time view'.split(' ');
+    const keys = 'server database rp measurement conditions aggregations customConditions groups time view'.split(' ');
     const data = _.pick(this.state, keys);
-
+    if (!data.customConditions) {
+      delete data.customConditions;
+    }
+    if (_.isEmpty(data.groups)) {
+      delete data.groups;
+    }
     const name = this.influxName.value || '';
     data.name = name;
     data.desc = this.influxDesc.value || '';
@@ -242,42 +247,42 @@ class Influx extends Component {
   renderFieldCalSelectorList() {
     const {
       fields,
-      cals,
+      aggregations,
     } = this.state;
-    const cloneCals = cals.slice(0);
-    if (!cloneCals.length || (_.last(cloneCals).cal && _.last(cloneCals).field)) {
+    const cloneCals = aggregations.slice(0);
+    if (!cloneCals.length || (_.last(cloneCals).aggregation && _.last(cloneCals).field)) {
       cloneCals.push({});
     }
     const selectorCount = cloneCals.length;
     const removeCondition = (index) => {
-      const arr = cals.slice(0);
+      const arr = aggregations.slice(0);
       arr.splice(index, 1);
       this.setState({
-        cals: arr,
+        aggregations: arr,
       });
     };
     const calList = 'none count sum mean median min max spread stddev first last'.split(' ');
     return _.map(cloneCals, (calCondition, index) => {
       const {
         field,
-        cal,
+        aggregation,
       } = calCondition;
       const itemsList = [
         fields,
         calList,
       ];
       const onSelect = (item, i) => {
-        const arr = cals.slice(0);
+        const arr = aggregations.slice(0);
         if (!arr[index]) {
           arr[index] = {};
         }
         if (i === 0) {
           arr[index].field = item;
         } else {
-          arr[index].cal = item;
+          arr[index].aggregation = item;
         }
         this.setState({
-          cals: arr,
+          aggregations: arr,
         });
       };
       let clearItem = null;
@@ -286,17 +291,18 @@ class Influx extends Component {
           removeCondition(index);
         });
       }
+      const key = `field-${index}-${field || ''}-${(aggregation || '')}`;
       return (
         <div
           className="co-dropdown-selector-wrapper"
-          key={index + field + cal}
+          key={key}
         >
           {
             clearItem
           }
           <CoDropdownSelector
             itemsList={itemsList}
-            selected={[field, cal]}
+            selected={[field, aggregation]}
             placeholders={['Choose Field', 'Choose Function']}
             onSelect={(e, item, i) => onSelect(item, i)}
           />
@@ -377,6 +383,7 @@ class Influx extends Component {
           items={tags}
           type={'multi'}
           selected={groups.tags}
+          readOnly
           onClear={() => {
             delete groups.tags;
             this.setState({
@@ -384,7 +391,7 @@ class Influx extends Component {
             });
           }}
           onSelect={(e, item) => {
-            const groupTags = groups.tags || [];
+            const groupTags = (groups.tags || []).slice(0);
             groups.tags = groupTags;
             const index = _.indexOf(groupTags, item);
             if (index === -1) {
@@ -447,10 +454,11 @@ class Influx extends Component {
           removeCondition(index);
         });
       }
+      const key = `tag-${index}-${tag || ''}-${(value || '')}`;
       return (
         <div
           className="co-dropdown-selector-wrapper"
-          key={index + tag + value}
+          key={key}
         >
           {
             clearItem
