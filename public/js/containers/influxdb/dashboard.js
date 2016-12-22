@@ -219,7 +219,7 @@ class Dashboard extends Component {
     });
     const btnText = this.props.dashboard ? 'Update' : 'Add';
     return (
-      <div className="influx-dashboard-wrapper">
+      <div className="influx-dashboard-view">
         <div
           className="pt-control-group save-wrapper"
         >

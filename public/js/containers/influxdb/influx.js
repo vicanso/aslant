@@ -564,6 +564,7 @@ class Influx extends Component {
         className="co-dropdown-selector-wrapper"
       >
         <CoDropdownSelector
+          relation={'to'}
           itemsList={[times, times]}
           placeholders={['Start', 'End']}
           positions={[Position.RIGHT_BOTTOM, Position.RIGHT_BOTTOM]}
@@ -692,7 +693,7 @@ class Influx extends Component {
               placeholder={'Choose Measurement'}
               items={measurements}
               selected={measurement}
-              position={Position.RIGHT_TOP}
+              position={Position.RIGHT}
               onSelect={(e, item) => this.onSelectMeasurement(item)}
             />
             <h5>Filter By Tag</h5>

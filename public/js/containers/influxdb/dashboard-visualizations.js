@@ -105,7 +105,7 @@ class DashboardVisualizations extends Component {
           className={classnames(cls)}
         >
           <div
-            className="visualization-wrapper"
+            className="influx-visualization-view"
           >
             <h3
               title={config.name}

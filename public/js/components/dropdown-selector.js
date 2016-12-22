@@ -127,8 +127,9 @@ class DropdownSelector extends Component {
             placeholder={placeholder}
             className="pt-input"
             readOnly={readOnly}
-            onKeyUp={(e) => {
-              if (e.keyCode === 0x0d && filterItems.length) {
+            onKeyDown={(e) => {
+              const found = _.find([0x0d, 0x09], code => code === e.keyCode);
+              if (found && keyword && filterItems.length) {
                 this.onSelect(e, filterItems[0]);
               }
             }}

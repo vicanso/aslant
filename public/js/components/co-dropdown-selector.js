@@ -20,7 +20,9 @@ class CoDropdownSelector extends Component {
     const selectedHandler = onSelect || _.noop;
     return (
       <div className="co-dropdown-selector">
-        <div className="relation">{ relation || '=' }</div>
+        <div className="relation">
+          { relation || '=' }
+        </div>
         <div className="pure-u-1-2">
           <div
             style={{

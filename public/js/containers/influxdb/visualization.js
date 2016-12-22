@@ -6,7 +6,6 @@ import {
   Circle,
   d3,
 } from 'dcharts';
-import classnames from 'classnames';
 import * as _ from 'lodash';
 
 import Table from '../../components/table';
@@ -163,7 +162,7 @@ class Visualization extends Component {
       }
     }
   }
-  renderTable(cls) {
+  renderTable() {
     const {
       data,
       aggregations,
@@ -182,9 +181,7 @@ class Visualization extends Component {
       />
     ));
     return (
-      <div
-        className={classnames(cls)}
-      >
+      <div>
         { arr }
       </div>
     );
@@ -205,18 +202,15 @@ class Visualization extends Component {
         <p className="tac mtop10">数据加载中，请稍候...</p>
       );
     }
-    const cls = {};
     if (view.type === 'table') {
       if (this.chart) {
         this.chart.innerHTML = '';
       }
-      cls['table-wrapper'] = true;
-      return this.renderTable(cls);
+      return this.renderTable();
     }
-    cls['chart-wrapper'] = true;
     return (
       <div
-        className={classnames(cls)}
+        className="chart"
         ref={(c) => {
           this.chart = c;
           if (this.chart) {
@@ -232,7 +226,7 @@ class Visualization extends Component {
     } = this.props;
     this.startAutoRefresh(interval);
     return (
-      <div className="influx-visualization-wrapper">
+      <div className="influx-visualization">
         { this.renderVisualization() }
       </div>
     );

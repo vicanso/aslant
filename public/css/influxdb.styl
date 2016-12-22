@@ -15,41 +15,18 @@
     bottom 0
     z-index 9
     background-color rgba(0, 0, 0, 0.4)
-    
+    .influx-visualization-view
+      margin 0
   .interval-selector, .time-selector
     width 180px
     display inline-block
     margin 0 5px
-  .influx-visualization-wrapper
-    margin 0
-  .visualization-wrapper
-    margin 8px
-    background-color #fff
-    border 1px solid $COLOR_GRAY
-    border-radius 3px
-    h3
-      margin 0
-      line-height 32px
-      font-size 14px
-      text-indent 1em
-      font-weight normal
-      border-bottom 1px solid $COLOR_GRAY
-      color $COLOR_LIGHT_BLACK
-      background-color $COLOR_WHITE
-      white-space nowrap
-      text-overflow ellipsis
-      overflow hidden
-      a
-        text-indent 0
-        padding 0 7px
-        color $COLOR_LIGHT_BLACK
-        &:hover
-          color $COLOR_BLUE
-        .pt-icon-standard
-          font-size 12px
+  .influx-visualization-view
     .table
       thead
         border-top none
+    .influx-visualization
+      margin 0
 
 .server-status-wrapper
   .server-status
@@ -60,7 +37,6 @@
       line-height 2
       margin 0
     table
-      width 100%
       a
         margin 0 5px
   .dbs
@@ -93,15 +69,6 @@
     input
       width 100%
       line-height 18px
-  .influx-content-wrapper
-    position relative
-    .chart-wrapper
-      margin 15px
-      height 520px
-      svg
-        height 100%
-    .chart-config-wrapper
-      margin 15px
   .config-wrapper
     padding 0 30px 20px 10px
     overflow-scrolling touch
@@ -145,44 +112,6 @@
           margin-top 3px
           &:hover
             color #666
-    .co-dropdown-selector
-      position relative
-      &:hover
-        .remove-condition
-          display block
-      .dropdown-selector
-        width 100%
-      .remove-condition
-        position absolute
-        left 100%
-        padding-left 5px
-        margin-left -1px
-        display none
-        a
-          display block
-          border 1px solid $COLOR_GRAY
-          height 25px
-          width 25px
-          letter-spacing normal
-          background-color #fff
-          border-radius 3px
-          text-align center
-          line-height 24px
-          color #999
-          font-size 12px
-          margin-top 3px
-          &:hover
-            color #666
-      .relation
-        position absolute
-        left 50%
-        letter-spacing normal
-        margin-left -3px
-        margin-top 4px
-  .table-wrapper
-    .table th .pt-icon-standard
-      margin-left 5px
-      width 18px
   .date-picker-wrapper
     width 230px
     position absolute
@@ -198,18 +127,8 @@
     .confirm
       right 17px
     
-
-.influx-visualization-wrapper
-  margin 15px 0
-  .chart-wrapper
-    margin-bottom 15px
-    background-color #fff
-  .table-wrapper
-    .table th .pt-icon-standard
-      margin-left 5px
-      width 18px
       
-.influx-dashboard-wrapper
+.influx-dashboard-view
   margin 15px 0
   td 
     a.disabled
