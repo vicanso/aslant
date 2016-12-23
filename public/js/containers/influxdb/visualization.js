@@ -7,6 +7,7 @@ import {
   d3,
 } from 'dcharts';
 import * as _ from 'lodash';
+import classnames from 'classnames';
 
 import Table from '../../components/table';
 import * as influxdbService from '../../services/influxdb';
@@ -208,9 +209,13 @@ class Visualization extends Component {
       }
       return this.renderTable();
     }
+    const cls = {
+      chart: true,
+    };
+    cls[view.type] = true;
     return (
       <div
-        className="chart"
+        className={classnames(cls)}
         ref={(c) => {
           this.chart = c;
           if (this.chart) {

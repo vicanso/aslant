@@ -1,5 +1,6 @@
 const _ = require('lodash');
 
+const errors = localRequire('helpers/errors');
 const Models = localRequire('models');
 
 exports.add = (data) => {
