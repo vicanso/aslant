@@ -2,12 +2,17 @@ import React, { Component, PropTypes } from 'react';
 import classnames from 'classnames';
 import * as _ from 'lodash';
 
+import Pages from './pages';
+
 class Table extends Component {
   constructor(props) {
     super(props);
     this.state = {
       sort: '',
       sortBy: '',
+      page: 0,
+      // each page item size
+      size: 10,
     };
   }
   getData() {
@@ -38,16 +43,19 @@ class Table extends Component {
       if (sortBy !== 'desc') {
         this.setState({
           sortBy: 'desc',
+          page: 0,
         });
         return;
       }
       this.setState({
         sortBy: 'asc',
+        page: 0,
       });
     } else {
       this.setState({
         sort: key,
         sortBy: 'desc',
+        page: 0,
       });
     }
   }
@@ -92,9 +100,15 @@ class Table extends Component {
       </thead>
     );
   }
-  renderTbody() {
-    const items = this.getData();
-    const arr = _.map(items, (tmpArr, index) => {
+  renderTbody(items) {
+    const {
+      page,
+      size,
+    } = this.state;
+    const start = page * size;
+    const end = start + size;
+    const sliceItems = items.slice(start, end);
+    const arr = _.map(sliceItems, (tmpArr, index) => {
       const key = `${index}-${tmpArr.join('')}`;
       const tdList = _.map(tmpArr, (item, i) => {
         const tdKey = `${i}-${item}`;
@@ -115,12 +129,43 @@ class Table extends Component {
       </tbody>
     );
   }
-  render() {
+  renderPages(items) {
+    if (!items || !items.length) {
+      return null;
+    }
+    const {
+      size,
+      page,
+    } = this.state;
+    const max = Math.ceil(items.length / size);
+    if (max === 1) {
+      return null;
+    }
     return (
-      <table className="table">
-        { this.renderThead() }
-        { this.renderTbody() }
-      </table>
+      <Pages
+        max={max}
+        current={page}
+        onSelect={(e, selectedPage) => {
+          if (selectedPage === page) {
+            return;
+          }
+          this.setState({
+            page: selectedPage,
+          });
+        }}
+      />
+    );
+  }
+  render() {
+    const items = this.getData();
+    return (
+      <div>
+        <table className="table">
+          { this.renderThead() }
+          { this.renderTbody(items) }
+        </table>
+        { this.renderPages(items) }
+      </div>
     );
   }
 }
