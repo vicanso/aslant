@@ -27,6 +27,9 @@
         border-top none
     .influx-visualization
       margin 0
+  .date-time-range-picker
+    position absolute
+    right 10px
 
 .server-status-wrapper
   .server-status
@@ -112,21 +115,9 @@
           margin-top 3px
           &:hover
             color #666
-  .date-picker-wrapper
-    width 230px
+  .date-time-range-picker
+    top -280px
     position absolute
-    top -285px
-    .cancel, .confirm
-      position absolute
-      bottom 12px
-      color $COLOR_LIGHT_BLACK
-      &:hover
-        color $COLOR_BLUE
-    .cancel
-      left 17px
-    .confirm
-      right 17px
-    
       
 .influx-dashboard-view
   margin 15px 0

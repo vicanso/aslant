@@ -4,7 +4,9 @@ import classnames from 'classnames';
 import {
   Position,
 } from '@blueprintjs/core';
+import moment from 'moment';
 
+import DateTimeRangePicker from '../../components/date-time-range-picker';
 import DropdownSelector from '../../components/dropdown-selector';
 import InfluxVisualizationView from './visualization';
 import * as influxdbService from '../../services/influxdb';
@@ -39,6 +41,7 @@ class DashboardVisualizations extends Component {
       interval: 0,
       forceUpdatedAtList: [],
       fullScreenList: [],
+      showDateTimePicker: false,
     };
   }
   componentDidMount() {
@@ -67,6 +70,42 @@ class DashboardVisualizations extends Component {
         configs: _.sortBy(configs, config => _.indexOf(dashboard.configs, config._id)),
       });
     }).catch(showError);
+  }
+  renderDatetimePicker() {
+    const {
+      showDateTimePicker,
+      time,
+    } = this.state;
+    if (!showDateTimePicker) {
+      return null;
+    }
+    const getDate = (type) => {
+      const value = _.get(time, type) || new Date();
+      // not a date string
+      if (_.isString(value) && value.length !== 24) {
+        return new Date();
+      }
+      return moment(value).toDate();
+    };
+    return (
+      <DateTimeRangePicker
+        onSelect={(dateRange) => {
+          this.setState({
+            showDateTimePicker: false,
+            time: {
+              start: dateRange[0].toISOString(),
+              end: dateRange[1].toISOString(),
+            },
+          });
+        }}
+        onClose={() => {
+          this.setState({
+            showDateTimePicker: false,
+          });
+        }}
+        dateRange={[getDate('start'), getDate('end')]}
+      />
+    );
   }
   renderVisualizations() {
     const {
@@ -173,7 +212,12 @@ class DashboardVisualizations extends Component {
     } = this.state;
     return (
       <div className="influx-dashboard-visualizations-wrapper">
-        <div className="clearfix">
+        <div
+          className="clearfix"
+          style={{
+            position: 'relative',
+          }}
+        >
           <div
             className="pull-right"
             style={{
@@ -204,6 +248,9 @@ class DashboardVisualizations extends Component {
                 placeholder={'Choose time interval'}
                 onSelect={(e, item) => {
                   if (item.value === 'custom') {
+                    this.setState({
+                      showDateTimePicker: true,
+                    });
                     return;
                   }
                   this.setState({
@@ -215,6 +262,7 @@ class DashboardVisualizations extends Component {
               />
             </div>
           </div>
+          { this.renderDatetimePicker() }
         </div>
         <div
           style={{

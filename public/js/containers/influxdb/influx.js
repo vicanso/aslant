@@ -4,10 +4,7 @@ import {
   Toaster,
   Position,
 } from '@blueprintjs/core';
-import {
-  DateTimePicker,
-  TimePickerPrecision,
-} from '@blueprintjs/datetime';
+import moment from 'moment';
 
 import DropdownSelector from '../../components/dropdown-selector';
 import InfluxVisualizationView from './visualization';
@@ -15,6 +12,7 @@ import * as influxdbService from '../../services/influxdb';
 import * as influxdbAction from '../../actions/influxdb';
 import * as navigationAction from '../../actions/navigation';
 import CoDropdownSelector from '../../components/co-dropdown-selector';
+import DateTimeRangePicker from '../../components/date-time-range-picker';
 import {
   VIEW_INFLUX_CONFIGS,
   VIEW_ADD_SERVER,
@@ -67,7 +65,7 @@ class Influx extends Component {
         width: '100%',
       },
       data: null,
-      dateTimePicker: '',
+      showDateTimePicker: false,
       customConditions: '',
     };
     this.showError = props.showError;
@@ -475,66 +473,38 @@ class Influx extends Component {
   }
   renderDatetimePicker() {
     const {
-      dateTimePicker,
+      showDateTimePicker,
       time,
     } = this.state;
-    if (!dateTimePicker) {
+    if (!showDateTimePicker) {
       return null;
     }
-    const timeProps = {
-      precision: TimePickerPrecision.SECOND,
+    const getDate = (type) => {
+      const value = _.get(time, type) || new Date();
+      // not a date string
+      if (_.isString(value) && value.length !== 24) {
+        return new Date();
+      }
+      return moment(value).toDate();
     };
-    const style = {};
-    const type = dateTimePicker;
-    if (type === 'start') {
-      style.left = 0;
-    } else {
-      style.right = 0;
-    }
-    let selectedDate = '';
-    const selectedTime = time[type];
-    let defaultDate = new Date();
-    if (selectedTime && selectedTime.length === 24) {
-      defaultDate = new Date(selectedTime);
-    }
     return (
-      <div
-        className="date-picker-wrapper"
-        style={style}
-      >
-        <DateTimePicker
-          onChange={(date) => {
-            selectedDate = date.toISOString();
-          }}
-          defaultValue={defaultDate}
-          timePickerProps={timeProps}
-        />
-        <a
-          href="javascript:;"
-          className="cancel"
-          onClick={() => {
-            this.setState({
-              dateTimePicker: '',
-            });
-          }}
-        >
-          <span className="pt-icon-standard pt-icon-cross" />
-        </a>
-        <a
-          href="javascript:;"
-          className="confirm"
-          onClick={() => {
-            const tmp = {};
-            tmp[type] = selectedDate || (new Date().toISOString());
-            this.setState({
-              dateTimePicker: '',
-              time: _.extend({}, time, tmp),
-            });
-          }}
-        >
-          <span className="pt-icon-standard pt-icon-confirm" />
-        </a>
-      </div>
+      <DateTimeRangePicker
+        onSelect={(dateRange) => {
+          this.setState({
+            showDateTimePicker: false,
+            time: {
+              start: dateRange[0].toISOString(),
+              end: dateRange[1].toISOString(),
+            },
+          });
+        }}
+        onClose={() => {
+          this.setState({
+            showDateTimePicker: false,
+          });
+        }}
+        dateRange={[getDate('start'), getDate('end')]}
+      />
     );
   }
   renderTimeSelector() {
@@ -545,9 +515,9 @@ class Influx extends Component {
     const onSelect = (e, item, index) => {
       if (item.value === 'custom') {
         this.setState({
-          dateTimePicker: index === 0 ? 'start' : 'end',
+          showDateTimePicker: true,
         });
-        return false;
+        return;
       }
       if (index === 0) {
         time.start = item.value;
@@ -557,7 +527,7 @@ class Influx extends Component {
       this.setState({
         time,
       });
-      return true;
+      return;
     };
     return (
       <div
