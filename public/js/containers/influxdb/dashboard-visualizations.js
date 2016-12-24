@@ -74,7 +74,7 @@ class DashboardVisualizations extends Component {
     } = this.props;
     const {
       configs,
-      interval,
+      refreshInterval,
       time,
       forceUpdatedAtList,
       fullScreenList,
@@ -147,7 +147,7 @@ class DashboardVisualizations extends Component {
             <InfluxVisualizationView
               forceUpdatedAt={forceUpdatedAtList[index]}
               fullScreen={fullScreenList[index]}
-              interval={interval}
+              interval={refreshInterval && refreshInterval.value}
               config={config}
               time={time}
               showError={showError}
@@ -167,6 +167,10 @@ class DashboardVisualizations extends Component {
         <p className="pt-callout pt-icon-automatic-updates margin15">Loading...</p>
       );
     }
+    const {
+      refreshInterval,
+      time,
+    } = this.state;
     return (
       <div className="influx-dashboard-visualizations-wrapper">
         <div className="clearfix">
@@ -182,10 +186,11 @@ class DashboardVisualizations extends Component {
                 key={'auto-refresh-interval'}
                 items={AUTO_REFRESH_INTERVALS}
                 position={Position.BOTTOM}
+                selected={refreshInterval}
                 placeholder={'Choose refresh interval'}
                 onSelect={(e, item) => {
                   this.setState({
-                    interval: item.value,
+                    refreshInterval: item,
                   });
                 }}
               />
@@ -195,8 +200,12 @@ class DashboardVisualizations extends Component {
                 key={'time-interval'}
                 items={TIME_INTERVALS}
                 position={Position.BOTTOM}
+                selected={time && time.start}
                 placeholder={'Choose time interval'}
                 onSelect={(e, item) => {
+                  if (item.value === 'custom') {
+                    return;
+                  }
                   this.setState({
                     time: {
                       start: item.value,

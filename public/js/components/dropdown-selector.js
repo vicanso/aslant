@@ -17,7 +17,7 @@ class DropdownSelector extends Component {
     };
   }
   componentWillReceiveProps(nextProps) {
-    if (nextProps.selected !== this.props.selected && this.userInput) {
+    if (this.userInput && nextProps) {
       this.userInput.value = this.getSelectString(nextProps);
     }
   }
