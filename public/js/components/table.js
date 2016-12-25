@@ -4,6 +4,8 @@ import * as _ from 'lodash';
 
 import Pages from './pages';
 
+const defaultPageSize = 10;
+
 class Table extends Component {
   constructor(props) {
     super(props);
@@ -12,23 +14,41 @@ class Table extends Component {
       sortBy: '',
       page: 0,
       // each page item size
-      size: 10,
+      size: defaultPageSize,
     };
   }
   getData() {
     const {
       sort,
       sortBy,
+      keyword,
     } = this.state;
     const {
       items,
       keys,
     } = this.props;
+    let filterResult = items;
+    if (keyword) {
+      const keywords = keyword.split(':');
+      let filterIndex = -1;
+      let filterKeyword = keyword;
+      if (keywords.length === 2) {
+        filterIndex = _.indexOf(keys, keywords[0]);
+        filterKeyword = keywords[1];
+      }
+      const reg = new RegExp(filterKeyword, 'gi');
+      filterResult = _.filter(items, (arr) => {
+        if (filterIndex !== -1) {
+          return reg.test(`${arr[filterIndex]}`);
+        }
+        return reg.test(arr.join(''));
+      });
+    }
     const index = _.indexOf(keys, sort);
     if (index === -1) {
-      return items.slice(0);
+      return filterResult.slice(0);
     }
-    const result = _.sortBy(items, arr => arr[index]);
+    const result = _.sortBy(filterResult, arr => arr[index]);
     if (sortBy === 'desc') {
       return result.reverse();
     }
@@ -158,13 +178,82 @@ class Table extends Component {
   }
   render() {
     const items = this.getData();
+    const debouncePageSizgeChange = _.debounce(() => {
+      const size = parseInt(this.pageSizeInput && this.pageSizeInput.value, 10);
+      if (!_.isInteger(size)) {
+        this.setState({
+          size: defaultPageSize,
+        });
+        return;
+      }
+      this.setState({
+        size,
+      });
+    }, 500);
+
+    const debounceKeywordChange = _.debounce(() => {
+      const keyword = this.keywordInput && this.keywordInput.value;
+      this.setState({
+        keyword,
+      });
+    }, 1000);
     return (
       <div>
         <table className="table">
           { this.renderThead() }
           { this.renderTbody(items) }
         </table>
-        { this.renderPages(items) }
+        <div
+          className="clearfix"
+          style={{
+            margin: '10px 0',
+          }}
+        >
+          <div
+            className="pull-right"
+            style={{
+              marginTop: '3px',
+            }}
+          >
+            { this.renderPages(items) }
+          </div>
+          <div
+            className="pt-input-group pull-right mright5"
+          >
+            <span className="pt-icon pt-icon-helper-management" />
+            <input
+              className="pt-input"
+              type="number"
+              placeholder="Input page size"
+              dir="auto"
+              ref={(c) => {
+                this.pageSizeInput = c;
+              }}
+              onChange={debouncePageSizgeChange}
+              style={{
+                width: '160px',
+              }}
+            />
+          </div>
+          <div
+            className="pt-input-group pull-right mright5"
+          >
+            <span className="pt-icon pt-icon-search" />
+            <input
+              className="pt-input"
+              type="text"
+              placeholder="Input keyword"
+              dir="auto"
+              ref={(c) => {
+                this.keywordInput = c;
+              }}
+              onChange={debounceKeywordChange}
+              style={{
+                width: '160px',
+              }}
+            />
+          </div>
+        </div>
       </div>
     );
   }
