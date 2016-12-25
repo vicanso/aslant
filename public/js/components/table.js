@@ -198,17 +198,12 @@ class Table extends Component {
       });
     }, 1000);
     return (
-      <div>
+      <div className="table-view">
         <table className="table">
           { this.renderThead() }
           { this.renderTbody(items) }
         </table>
-        <div
-          className="clearfix"
-          style={{
-            margin: '10px 0',
-          }}
-        >
+        <div className="clearfix functions">
           <div
             className="pull-right"
             style={{
@@ -230,9 +225,6 @@ class Table extends Component {
                 this.pageSizeInput = c;
               }}
               onChange={debouncePageSizgeChange}
-              style={{
-                width: '160px',
-              }}
             />
           </div>
           <div
@@ -248,9 +240,6 @@ class Table extends Component {
                 this.keywordInput = c;
               }}
               onChange={debounceKeywordChange}
-              style={{
-                width: '160px',
-              }}
             />
           </div>
         </div>

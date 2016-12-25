@@ -1,31 +1,38 @@
 @import './common'
 @import './pure-grid.css'
 
-.table
+.table-view
   width 100%
-  border-collapse collapse
-  border-spacing 0
-  thead
+  .table
+    width 100%
+    border-collapse collapse
+    border-spacing 0
+    thead
+      border-top 1px solid $COLOR_GRAY
+      border-bottom 1px solid $COLOR_GRAY
+      background-color #f1f9fd
+    th, td
+      padding 10px 15px
+      border none
+      text-align center
+    td.switch-wrapper
+      position relative
+      .pt-switch
+        position absolute
+        top 50%
+        left 50%
+        margin-top -5px
+        margin-left -15px 
+    tbody tr
+      &:nth-child(even)
+        background-color #fff
+      &:nth-child(odd)
+        background-color #f4f8fb
+  .functions
+    padding 10px 0
     border-top 1px solid $COLOR_GRAY
-    border-bottom 1px solid $COLOR_GRAY
-    background-color #f1f9fd
-  th, td
-    padding 10px 15px
-    border none
-    text-align center
-  td.switch-wrapper
-    position relative
-    .pt-switch
-      position absolute
-      top 50%
-      left 50%
-      margin-top -5px
-      margin-left -15px 
-  tbody tr
-    &:nth-child(even)
-      background-color #fff
-    &:nth-child(odd)
-      background-color #f4f8fb
+    input
+      width 160px
 .dropdown-selector
   margin-bottom 15px
   position relative
