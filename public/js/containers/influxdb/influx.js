@@ -5,6 +5,7 @@ import {
   Position,
 } from '@blueprintjs/core';
 import moment from 'moment';
+import classnames from 'classnames';
 
 import DropdownSelector from '../../components/dropdown-selector';
 import InfluxVisualizationView from './visualization';
@@ -67,6 +68,9 @@ class Influx extends Component {
       data: null,
       showDateTimePicker: false,
       customConditions: '',
+      customFunctions: '',
+      showCustomFilterEditor: false,
+      showCustomFunctionEditor: false,
     };
     this.showError = props.showError;
   }
@@ -242,7 +246,7 @@ class Influx extends Component {
       .then(() => dispatch(navigationAction.to(VIEW_INFLUX_CONFIGS)))
       .catch(this.showError);
   }
-  renderFieldCalSelectorList() {
+  renderFieldFunctionList() {
     const {
       fields,
       aggregations,
@@ -307,6 +311,41 @@ class Influx extends Component {
         </div>
       );
     });
+  }
+  renderCustomFunctionEditor() {
+    const {
+      showCustomFunctionEditor,
+      customFunctions,
+    } = this.state;
+    if (!showCustomFunctionEditor) {
+      return null;
+    }
+    return (
+      <div>
+        <h5>Custom Functions</h5>
+        <textarea
+          placeholder={'bottom("water_level",3) | count("water_level")'}
+          style={{
+            width: '100%',
+            height: '60px',
+            padding: '7px',
+            fontSize: '14px',
+          }}
+          defaultValue={customFunctions}
+          ref={(c) => {
+            if (!c) {
+              return;
+            }
+            this.customFunctionInput = c;
+          }}
+          onChange={() => {
+            this.setState({
+              customFunctions: this.customFunctionInput.value,
+            });
+          }}
+        />
+      </div>
+    );
   }
   renderChartSetting() {
     const {
@@ -471,6 +510,41 @@ class Influx extends Component {
       );
     });
   }
+  renderCustomFilterEditor() {
+    const {
+      customConditions,
+      showCustomFilterEditor,
+    } = this.state;
+    if (!showCustomFilterEditor) {
+      return null;
+    }
+    return (
+      <div>
+        <h5>Custom Filter</h5>
+        <textarea
+          placeholder={'field=\'String\' and field = Number'}
+          style={{
+            width: '100%',
+            height: '60px',
+            padding: '7px',
+            fontSize: '14px',
+          }}
+          defaultValue={customConditions}
+          ref={(c) => {
+            if (!c) {
+              return;
+            }
+            this.customFilterInput = c;
+          }}
+          onChange={() => {
+            this.setState({
+              customConditions: this.customFilterInput.value,
+            });
+          }}
+        />
+      </div>
+    );
+  }
   renderDatetimePicker() {
     const {
       showDateTimePicker,
@@ -580,7 +654,8 @@ class Influx extends Component {
       measurements,
       measurement,
       desc,
-      customConditions,
+      showCustomFilterEditor,
+      showCustomFunctionEditor,
     } = this.state;
     if (!servers) {
       return (
@@ -624,6 +699,14 @@ class Influx extends Component {
       influxQL = influxdbService.getInfluxQL(this.state);
     }
 
+    const showCustomFilterEditorCls = {};
+    const showCustomFunctionEditorCls = {};
+    if (showCustomFilterEditor) {
+      showCustomFilterEditorCls.active = true;
+    }
+    if (showCustomFunctionEditor) {
+      showCustomFunctionEditorCls.active = true;
+    }
     return (
       <div className="add-influx-wrapper pure-g">
         <div className="pure-u-1-5">
@@ -666,32 +749,38 @@ class Influx extends Component {
               position={Position.RIGHT}
               onSelect={(e, item) => this.onSelectMeasurement(item)}
             />
-            <h5>Filter By Tag</h5>
+            <h5>Filter By Tag
+              <a
+                href="javascript:;"
+                className={classnames(showCustomFilterEditorCls)}
+                title="show the custom filter editor"
+                onClick={() => {
+                  this.setState({
+                    showCustomFilterEditor: !showCustomFilterEditor,
+                  });
+                }}
+              >
+                <span className="pt-icon-standard pt-icon-filter" />
+              </a>
+            </h5>
             { this.renderTagSelectorList() }
-            <h5>Custom filter</h5>
-            <textarea
-              placeholder={'field=\'String\' and field = Number'}
-              style={{
-                width: '100%',
-                height: '60px',
-                padding: '7px',
-                fontSize: '14px',
-              }}
-              defaultValue={customConditions}
-              ref={(c) => {
-                if (!c) {
-                  return;
-                }
-                this.customFilter = c;
-              }}
-              onChange={() => {
-                this.setState({
-                  customConditions: this.customFilter.value,
-                });
-              }}
-            />
-            <h5>Extract By</h5>
-            { this.renderFieldCalSelectorList() }
+            { this.renderCustomFilterEditor() }
+            <h5>Functions
+              <a
+                href="javascript:;"
+                className={classnames(showCustomFunctionEditorCls)}
+                title="show the custom function editor"
+                onClick={() => {
+                  this.setState({
+                    showCustomFunctionEditor: !showCustomFunctionEditor,
+                  });
+                }}
+              >
+                <span className="pt-icon-large pt-icon-variable" />
+              </a>
+            </h5>
+            { this.renderFieldFunctionList() }
+            { this.renderCustomFunctionEditor() }
             <h5>Group By</h5>
             { this.renderGroupSelectorList() }
             <h5>Time</h5>

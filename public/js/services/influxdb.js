@@ -216,6 +216,7 @@ export function getInfluxQL(options) {
     time,
     groups,
     customConditions,
+    customFunctions,
   } = options;
   if (!database || !measurement) {
     return '';
@@ -283,6 +284,10 @@ export function getInfluxQL(options) {
   });
   if (customConditions) {
     ql.condition(customConditions);
+  }
+  if (customFunctions) {
+    const arr = customFunctions.split('|');
+    _.forEach(arr, item => ql.addFunction(item.trim()));
   }
   if (groups && groups.interval) {
     ql.addGroup(`time(${groups.interval})`);

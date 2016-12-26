@@ -8,6 +8,26 @@
   bottom 0
   background-color $COLOR_DARK
   overflow-y auto
+  z-index 1
+  $minimizeSize = 25px
+  &.minimize
+    top 100%
+    left $minimizeSize - $MAIN_NAV_WIDTH
+    margin-top -($minimizeSize)
+    .toggle-nav
+      bottom auto
+      top 0
+  .toggle-nav
+    background-color $COLOR_DARK
+    position absolute
+    bottom 0
+    right 0
+    z-index 1
+    color #fff
+    width $minimizeSize
+    height @width
+    &:hover
+      color $COLOR_BLUE
   ul
     margin 0
     padding 0

@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { Router, Route } from 'react-enroute';
 import * as ReactRedux from 'react-redux';
 import * as _ from 'lodash';
+import classnames from 'classnames';
 import {
   Toaster,
   FocusStyleManager,
@@ -66,6 +67,7 @@ class App extends Component {
         title: '',
         handler: null,
       },
+      hiddenNav: false,
     };
     dispatch(userAction.me()).then(() => {
       this.setState({
@@ -397,6 +399,7 @@ class App extends Component {
   render() {
     const {
       isFetchingUserInfo,
+      hiddenNav,
     } = this.state;
     const {
       user,
@@ -406,6 +409,10 @@ class App extends Component {
       influxdb,
     } = this.props;
     const handleLink = this.handleLink;
+    const cls = {
+      'content-wrapper': true,
+      fill: hiddenNav,
+    };
     return (
       <div>
         <MainHeader
@@ -419,8 +426,14 @@ class App extends Component {
           handleLink={handleLink}
           navigation={navigation}
           configs={influxdb.configs}
+          hidden={hiddenNav || false}
+          onToggle={(hidden) => {
+            this.setState({
+              hiddenNav: hidden,
+            });
+          }}
         />
-        <div className="content-wrapper">
+        <div className={classnames(cls)}>
           <Router {...navigation}>
             <Route
               path={VIEW_LOGIN}

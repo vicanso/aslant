@@ -16,6 +16,7 @@ class MainNav extends Component {
     this.state = {
       active: '',
       subActive: '',
+      minimize: false,
     };
   }
   componentWillReceiveProps(nextProps) {
@@ -23,16 +24,9 @@ class MainNav extends Component {
       navigation,
     } = nextProps;
     const location = navigation.location;
-    const hiddenUrls = [
-      // add config
-      '/influxdb/configs/add',
-      // update config
-      '/influxdb/configs/',
-    ];
-    const found = _.find(hiddenUrls, url => location.indexOf(url) !== -1);
 
     this.setState({
-      hidden: !!found,
+      location,
       active: location === VIEW_ABOUT ? 'about' : this.state.active,
     });
   }
@@ -190,13 +184,7 @@ class MainNav extends Component {
       icon: 'pt-icon-horizontal-bar-chart',
     });
   }
-  render() {
-    const {
-      hidden,
-    } = this.state;
-    if (hidden) {
-      return null;
-    }
+  renderNav() {
     const renderAbout = () => this.renderList(null, {
       type: 'about',
       name: 'About',
@@ -205,16 +193,48 @@ class MainNav extends Component {
       hasChild: false,
     });
     return (
-      <div className="main-nav">
-        <ul
-          className="navigation"
+      <ul
+        className="navigation"
+      >
+        { this.renderDashboards() }
+        { this.renderConfigs() }
+        {
+          renderAbout()
+        }
+      </ul>
+    );
+  }
+  render() {
+    const {
+      onToggle,
+      hidden,
+    } = this.props;
+    const cls = {
+      'main-nav': true,
+    };
+    const iconCls = {
+      'pt-icon-standard': true,
+    };
+    if (hidden) {
+      cls.minimize = true;
+      iconCls['pt-icon-maximize'] = true;
+    } else {
+      iconCls['pt-icon-minimize'] = true;
+    }
+    return (
+      <div className={classnames(cls)}>
+        <a
+          href="javascript:;"
+          className="toggle-nav tac"
+          onClick={() => {
+            onToggle(!hidden);
+          }}
         >
-          { this.renderDashboards() }
-          { this.renderConfigs() }
-          {
-            renderAbout()
-          }
-        </ul>
+          <span className={classnames(iconCls)} />
+        </a>
+        {
+          !hidden && this.renderNav()
+        }
       </div>
     );
   }
@@ -225,6 +245,8 @@ MainNav.propTypes = {
   dashboards: PropTypes.array,
   handleLink: PropTypes.func.isRequired,
   configs: PropTypes.array,
+  onToggle: PropTypes.func.isRequired,
+  hidden: PropTypes.bool.isRequired,
 };
 
 export default MainNav;

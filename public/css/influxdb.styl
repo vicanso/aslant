@@ -62,7 +62,6 @@
     .column
       margin 8px
 .add-influx-wrapper
-  margin-left -($MAIN_NAV_WIDTH)
   .influx-ql-wrapper
     background-color #fff
     padding 10px
@@ -86,6 +85,12 @@
       color $COLOR_GRAY
       margn 0
       padding 8px 0
+      a
+        padding 0 5px
+        color $COLOR_ORANGE
+        margin-left 5px
+        &.active
+          color $COLOR_GREEN
     .visualization-name
       width 100%
       color $COLOR_LIGHT_BLACK
