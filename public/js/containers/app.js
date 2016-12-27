@@ -27,6 +27,7 @@ import {
   VIEW_INFLUX_EDIT_DASHBOARD,
   VIEW_INFLUX_DASHBOARD,
   VIEW_ABOUT,
+  VIEW_SETTING,
 } from '../constants/urls';
 
 import Login from './login';
@@ -44,12 +45,14 @@ import InfluxDashboardsView from './influxdb/dashboards';
 import InfluxDashboardVisualizationsView from './influxdb/dashboard-visualizations';
 import HomeView from './home';
 import AboutView from './about';
+import SettingView from './setting';
 
 import * as navigationAction from '../actions/navigation';
 import * as userAction from '../actions/user';
 import * as influxdbAction from '../actions/influxdb';
 import * as serverActions from '../actions/server';
 import * as dashboardActions from '../actions/dashboard';
+import * as settingActions from '../actions/setting';
 
 class App extends Component {
   constructor(props) {
@@ -101,6 +104,9 @@ class App extends Component {
           this.showError(err);
         });
         dispatch(serverActions.list()).catch((err) => {
+          this.showError(err);
+        });
+        dispatch(settingActions.get()).catch((err) => {
           this.showError(err);
         });
       } else {
@@ -187,6 +193,7 @@ class App extends Component {
     const {
       dispatch,
       servers,
+      setting,
     } = this.props;
     return (
       <InfluxView
@@ -194,6 +201,7 @@ class App extends Component {
         dispatch={dispatch}
         servers={servers}
         handleLink={this.handleLink}
+        setting={setting}
       />
     );
   }
@@ -357,6 +365,7 @@ class App extends Component {
   renderInfluxVisualization({ params: { id } }) {
     const {
       influxdb,
+      setting,
     } = this.props;
     if (!influxdb || !influxdb.configs) {
       return null;
@@ -366,6 +375,7 @@ class App extends Component {
       <InfluxVisualizationView
         key={id}
         config={found}
+        setting={setting}
         showError={this.showError}
       />
     );
@@ -496,6 +506,14 @@ class App extends Component {
               component={() => <AboutView />}
             />
             <Route
+              path={VIEW_SETTING}
+              component={() => <SettingView
+                setting={this.props.setting}
+                dispatch={dispatch}
+                showError={this.showError}
+              />}
+            />
+            <Route
               path="*"
               component={() => this.renderHome()}
             />
@@ -521,6 +539,7 @@ App.propTypes = {
   servers: PropTypes.array,
   dashboards: PropTypes.array,
   dispatch: PropTypes.func.isRequired,
+  setting: PropTypes.object,
 };
 
 function mapStateToProps(state) {
@@ -530,6 +549,7 @@ function mapStateToProps(state) {
     influxdb: state.influxdb,
     servers: state.server,
     dashboards: state.dashboard,
+    setting: state.setting,
   };
 }
 

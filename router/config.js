@@ -10,7 +10,7 @@ module.exports = [
   '[POST] [/api/sys/restart] [m.auth.admin & c.system.restart]',
 
   // page view
-  '[GET] [/,/login,/register,/about,/influxdb/*] [v.home & c.home]',
+  '[GET] [/,/login,/register,/about,/setting,/influxdb/*] [v.home & c.home]',
 
   // user
   '[GET] [/api/users/me] [m.session.read & c.user.me]',
@@ -35,6 +35,34 @@ module.exports = [
     ],
   },
   '[PUT] [/api/users/me] [m.session & c.user.refreshSession]',
+
+  {
+    methods: ['GET'],
+    urls: ['/api/users/me/settings'],
+    handlers: [
+      'm.session.isLogined',
+      'm.session.read',
+      'c.setting.get',
+    ],
+  },
+  {
+    methods: ['POST'],
+    urls: ['/api/users/me/settings'],
+    handlers: [
+      'm.session.isLogined',
+      'm.session.read',
+      'c.setting.add',
+    ],
+  },
+  {
+    methods: ['PUT'],
+    urls: ['/api/users/me/settings'],
+    handlers: [
+      'm.session.isLogined',
+      'm.session.read',
+      'c.setting.update',
+    ],
+  },
 
   // influxdb server route configs
   '[GET] [/api/influxdb/servers] [m.session.isLogined & m.session.read & c.server.list]',

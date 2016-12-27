@@ -168,6 +168,9 @@ class Visualization extends Component {
       data,
       aggregations,
     } = this.state;
+    const {
+      setting,
+    } = this.props;
     const tableData = influxdbService.toTableData(data, aggregations);
     if (!tableData || !tableData.length) {
       return (
@@ -179,6 +182,7 @@ class Visualization extends Component {
         key={item.name}
         keys={item.keys}
         items={item.items}
+        pageSize={_.get(setting, 'table.pageSize')}
       />
     ));
     return (
@@ -244,6 +248,7 @@ Visualization.propTypes = {
   showError: PropTypes.func.isRequired,
   interval: PropTypes.number,
   time: PropTypes.object,
+  setting: PropTypes.object,
   forceUpdatedAt: PropTypes.number,
 };
 

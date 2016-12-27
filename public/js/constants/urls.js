@@ -12,6 +12,8 @@ export const USER_LIKE = '/api/users/like';
 export const USER_REGISTER = '/api/users/register';
 export const USER_LOGOUT = '/api/users/logout';
 
+export const USER_SETTING = '/api/users/me/settings';
+
 export const INFLUXDB_SERVER = '/api/influxdb/servers';
 export const INFLUXDB_DATABASES = '/api/influxdb/server/:id/dbs';
 export const INFLUXDB_RPS = '/api/influxdb/server/:id/:db/rps';

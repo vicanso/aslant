@@ -1,16 +1,6 @@
 const Joi = require('joi');
-const _ = require('lodash');
 
 const serverService = localRequire('services/server');
-
-function mask(data) {
-  if (!data.password) {
-    return data;
-  }
-  return _.extend(data, {
-    password: '***',
-  });
-}
 
 function validateServer(data) {
   return Joi.validateThrow(data, {
@@ -28,7 +18,7 @@ exports.add = (ctx) => {
   data.account = ctx.session.user.account;
   return serverService.add(data).then((doc) => {
     /* eslint no-param-reassign:0 */
-    ctx.body = mask(doc);
+    ctx.body = doc;
   });
 };
 
@@ -39,7 +29,7 @@ exports.list = (ctx) => {
     enabled: true,
   }).then((data) => {
     /* eslint no-param-reassign:0 */
-    ctx.body = _.map(data, mask);
+    ctx.body = data;
   });
 };
 
@@ -54,7 +44,7 @@ exports.update = (ctx) => {
     token,
   }, data).then((doc) => {
     /* eslint no-param-reassign:0 */
-    ctx.body = mask(doc);
+    ctx.body = doc;
   });
 };
 

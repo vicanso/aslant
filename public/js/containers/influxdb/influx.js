@@ -635,6 +635,7 @@ class Influx extends Component {
       <InfluxVisualizationView
         data={this.state}
         showError={this.props.showError}
+        setting={this.props.setting}
       />
     );
   }
@@ -863,6 +864,7 @@ Influx.propTypes = {
   showError: PropTypes.func.isRequired,
   id: PropTypes.string,
   handleLink: PropTypes.func.isRequired,
+  setting: PropTypes.object,
 };
 
 export default Influx;

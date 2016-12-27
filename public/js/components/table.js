@@ -4,15 +4,16 @@ import * as _ from 'lodash';
 
 import Pages from './pages';
 
-const defaultPageSize = 10;
 
 class Table extends Component {
   constructor(props) {
     super(props);
+    const defaultPageSize = props.pageSize || 10;
     this.state = {
       sort: '',
       sortBy: '',
       page: 0,
+      defaultPageSize,
       // each page item size
       size: defaultPageSize,
     };
@@ -177,6 +178,9 @@ class Table extends Component {
     );
   }
   render() {
+    const {
+      defaultPageSize,
+    } = this.state;
     const items = this.getData();
     const debouncePageSizgeChange = _.debounce(() => {
       const size = parseInt(this.pageSizeInput && this.pageSizeInput.value, 10);
@@ -251,6 +255,7 @@ class Table extends Component {
 Table.propTypes = {
   keys: PropTypes.array.isRequired,
   items: PropTypes.array.isRequired,
+  pageSize: PropTypes.number,
 };
 
 export default Table;

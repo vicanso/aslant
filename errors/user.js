@@ -31,4 +31,8 @@ module.exports = {
     en: 'It is not allow to accessed',
     status: 403,
   },
+  109: {
+    en: 'Can not create multi setting',
+    status: 405,
+  },
 };

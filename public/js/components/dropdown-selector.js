@@ -8,6 +8,18 @@ import {
   Position,
 } from '@blueprintjs/core';
 
+
+function getSelectString(data = {}) {
+  const selected = data.selected;
+  if (!selected) {
+    return '';
+  }
+  if (_.isArray(selected)) {
+    return _.map(selected, item => item.name || item).join(',');
+  }
+  return selected.name || selected;
+}
+
 class DropdownSelector extends Component {
   constructor(props) {
     super(props);
@@ -18,7 +30,7 @@ class DropdownSelector extends Component {
   }
   componentWillReceiveProps(nextProps) {
     if (this.userInput && nextProps) {
-      this.userInput.value = this.getSelectString(nextProps);
+      this.userInput.value = getSelectString(nextProps);
     }
   }
   onSelect(e, item) {
@@ -27,21 +39,11 @@ class DropdownSelector extends Component {
       selected,
     } = this.props;
     if (item === selected) {
-      this.userInput.value = this.getSelectString();
+      this.userInput.value = getSelectString(this.props);
       return;
     }
     const fn = onSelect || _.noop;
     fn(e, item);
-  }
-  getSelectString(data = {}) {
-    const selected = data.selected || this.props.selected;
-    if (!selected) {
-      return '';
-    }
-    if (_.isArray(selected)) {
-      return _.map(selected, item => item.name || item).join(',');
-    }
-    return selected.name || selected;
   }
   clear() {
     const {
@@ -138,7 +140,7 @@ class DropdownSelector extends Component {
                 keyword: this.userInput.value,
               });
             }}
-            defaultValue={this.getSelectString()}
+            defaultValue={getSelectString(this.props)}
             ref={(c) => {
               if (!c) {
                 return;

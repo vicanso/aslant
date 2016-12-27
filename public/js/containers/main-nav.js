@@ -8,6 +8,7 @@ import {
   VIEW_INFLUX_VISUALIZATION,
   VIEW_ADD_INFLUX,
   VIEW_ABOUT,
+  VIEW_SETTING,
 } from '../constants/urls';
 
 class MainNav extends Component {
@@ -192,15 +193,21 @@ class MainNav extends Component {
       viewUrl: VIEW_ABOUT,
       hasChild: false,
     });
+    const renderViewSetting = () => this.renderList(null, {
+      type: 'setting',
+      name: 'Setting',
+      icon: 'pt-icon-cog',
+      viewUrl: VIEW_SETTING,
+      hasChild: false,
+    });
     return (
       <ul
         className="navigation"
       >
         { this.renderDashboards() }
         { this.renderConfigs() }
-        {
-          renderAbout()
-        }
+        { renderViewSetting() }
+        { renderAbout() }
       </ul>
     );
   }
