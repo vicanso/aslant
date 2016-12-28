@@ -1,0 +1,26 @@
+// 屏幕尺寸 360*640 1366*768 1920*1080 375*667 1280*800
+
+@media only screen and (max-width : 1200px)
+  .add-influx-wrapper
+    display flex
+    .config-wrapper
+      flex 1
+    .influx-content-wrapper
+      flex 2
+
+@media only screen and (max-width : 1000px)
+  .home-wrapper .columns .cloumn-wrapper
+    width 33.3333%
+  .add-influx-wrapper
+    display block
+
+@media only screen and (max-width: 640px)
+  .main-nav
+    display none
+  .content-wrapper
+    margin-left 0
+  .cloumn-wrapper
+    width 50%
+@media only screen and (max-width: 480px)
+  .home-wrapper .columns .cloumn-wrapper
+    width 100%

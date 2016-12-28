@@ -59,7 +59,7 @@ class Home extends Component {
       }
       return (
         <div
-          className="pure-u-1-4 cloumn-wrapper"
+          className="cloumn-wrapper"
           key={id}
         >
           <a
@@ -79,7 +79,7 @@ class Home extends Component {
       );
     });
     return (
-      <div className="columns">
+      <div className="columns clearfix">
         { arr }
       </div>
     );

@@ -12,6 +12,9 @@
     line-height 2em
   .columns
     margin 0 8px
+    .cloumn-wrapper
+      float left
+      width 25%
     .column
       margin 8px
       height 200px
@@ -33,10 +36,6 @@
       border-top 1px solid $COLOR_GRAY
       border-left 1px solid $COLOR_GRAY
       border-radius top left 3px
-      
-    @media only screen and (max-width : 1000px)
-      .cloumn-wrapper
-        width 33.3333%
-    @media only screen and (max-width : 800px)
-      .cloumn-wrapper
-        width 50%
+
+
+@import './media-query'

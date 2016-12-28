@@ -10,7 +10,7 @@ A powerful charting and visualization for influxdb
 
 有朋友问过我，有influxdata的`chronograf`，而且还有做得更好的`grafana`，为什么要自己吃力去写一个不完美的`aslant`？
 
-对于这个问题，首先我一开始使用`influxdb`的时候，我觉得自己不太会写`[influx-ql](https://github.com/vicanso/influx-ql)`，因此自己想偷懒的写了node.js的module来生成[influx-ql](https://github.com/vicanso/influx-ql)。后来在使用[node-influx](https://github.com/node-influx/node-influx)的时候，又觉得纠结于它的query查询，于是自己就着手写了[influxdb-nodejs](https://github.com/vicanso/influxdb-nodejs)。写着写着，觉得到了这个时候，都已经这样乱搞了，那么要不直接也写一个图形展示的吧，于是[aslant](https://github.com/vicanso/aslant)就这样诞生了。
+对于这个问题，首先我一开始使用`influxdb`的时候，我觉得自己不太会写`influx-ql`，因此自己想偷懒的写了node.js的module来生成[influx-ql](https://github.com/vicanso/influx-ql)。后来在使用[node-influx](https://github.com/node-influx/node-influx)的时候，又觉得纠结于它的query查询，于是自己就着手写了[influxdb-nodejs](https://github.com/vicanso/influxdb-nodejs)。写着写着，觉得到了这个时候，都已经这样乱搞了，那么要不直接也写一个图形展示的吧，于是[aslant](https://github.com/vicanso/aslant)就这样诞生了。
 
 好吧，其实上面说的理由都仅是理由，最真实的原因是平时休息闲着的时候总要做点什么有意义的事吧，就算最终没意义也好过啥都没做！
 

@@ -354,8 +354,12 @@ class Influx extends Component {
     const selectedChartType = _.find(CHART_TYPES, item => item.type === view.type);
     const selectedChartWidth = _.find(CHART_WIDTHS, item => item.width === view.width);
     return (
-      <div className="pure-g">
-        <div className="pure-u-1-2"><div className="mright5">
+      <div
+        style={{
+          display: 'flex',
+        }}
+      >
+        <div className="mright5">
           <DropdownSelector
             key={'chart-type'}
             placeholder={'Choose chart type'}
@@ -369,8 +373,8 @@ class Influx extends Component {
               });
             }}
           />
-        </div></div>
-        <div className="pure-u-1-2"><div className="mleft5">
+        </div>
+        <div className="mleft5">
           <DropdownSelector
             key={'chart-width'}
             placeholder={'Choose chart width'}
@@ -384,7 +388,7 @@ class Influx extends Component {
               });
             }}
           />
-        </div></div>
+        </div>
       </div>
     );
   }
@@ -709,96 +713,94 @@ class Influx extends Component {
       showCustomFunctionEditorCls.active = true;
     }
     return (
-      <div className="add-influx-wrapper pure-g">
-        <div className="pure-u-1-5">
-          <div className="config-wrapper">
-            <h4>Visualization Name</h4>
-            <input
-              className="visualization-name pt-input"
-              type="text"
-              placeholder="Pleace input visualization's name"
-              defaultValue={name}
-              ref={(c) => {
-                this.influxName = c;
-              }}
-            />
-            <h4>Influx Config</h4>
-            <DropdownSelector
-              placeholder={'Choose Server'}
-              items={sortedServers}
-              selected={selectedServer}
-              onSelect={(e, item) => this.onSelectServer(item)}
-            />
-            <DropdownSelector
-              placeholder={'Choose Database'}
-              items={dbs}
-              selected={database}
-              onSelect={(e, item) => this.onSelectDatabases(item)}
-            />
-            <DropdownSelector
-              placeholder={'Choose RP'}
-              items={rps}
-              selected={rp}
-              onSelect={(e, item) => this.setState({
-                rp: item,
-              })}
-            />
-            <DropdownSelector
-              placeholder={'Choose Measurement'}
-              items={measurements}
-              selected={measurement}
-              position={Position.RIGHT}
-              onSelect={(e, item) => this.onSelectMeasurement(item)}
-            />
-            <h5>Filter By Tag
-              <a
-                href="javascript:;"
-                className={classnames(showCustomFilterEditorCls)}
-                title="show the custom filter editor"
-                onClick={() => {
-                  this.setState({
-                    showCustomFilterEditor: !showCustomFilterEditor,
-                  });
-                }}
-              >
-                <span className="pt-icon-standard pt-icon-filter" />
-              </a>
-            </h5>
-            { this.renderTagSelectorList() }
-            { this.renderCustomFilterEditor() }
-            <h5>Functions
-              <a
-                href="javascript:;"
-                className={classnames(showCustomFunctionEditorCls)}
-                title="show the custom function editor"
-                onClick={() => {
-                  this.setState({
-                    showCustomFunctionEditor: !showCustomFunctionEditor,
-                  });
-                }}
-              >
-                <span className="pt-icon-large pt-icon-variable" />
-              </a>
-            </h5>
-            { this.renderFieldFunctionList() }
-            { this.renderCustomFunctionEditor() }
-            <h5>Group By</h5>
-            { this.renderGroupSelectorList() }
-            <h5>Time</h5>
-            <div
-              style={{
-                position: 'relative',
-                zIndex: '1',
+      <div className="add-influx-wrapper">
+        <div className="config-wrapper">
+          <h4>Visualization Name</h4>
+          <input
+            className="visualization-name pt-input"
+            type="text"
+            placeholder="Pleace input visualization's name"
+            defaultValue={name}
+            ref={(c) => {
+              this.influxName = c;
+            }}
+          />
+          <h4>Influx Config</h4>
+          <DropdownSelector
+            placeholder={'Choose Server'}
+            items={sortedServers}
+            selected={selectedServer}
+            onSelect={(e, item) => this.onSelectServer(item)}
+          />
+          <DropdownSelector
+            placeholder={'Choose Database'}
+            items={dbs}
+            selected={database}
+            onSelect={(e, item) => this.onSelectDatabases(item)}
+          />
+          <DropdownSelector
+            placeholder={'Choose RP'}
+            items={rps}
+            selected={rp}
+            onSelect={(e, item) => this.setState({
+              rp: item,
+            })}
+          />
+          <DropdownSelector
+            placeholder={'Choose Measurement'}
+            items={measurements}
+            selected={measurement}
+            position={Position.RIGHT}
+            onSelect={(e, item) => this.onSelectMeasurement(item)}
+          />
+          <h5>Filter By Tag
+            <a
+              href="javascript:;"
+              className={classnames(showCustomFilterEditorCls)}
+              title="show the custom filter editor"
+              onClick={() => {
+                this.setState({
+                  showCustomFilterEditor: !showCustomFilterEditor,
+                });
               }}
             >
-              { this.renderDatetimePicker() }
-              { this.renderTimeSelector() }
-            </div>
-            <h5>Chart Setting</h5>
-            { this.renderChartSetting() }
+              <span className="pt-icon-standard pt-icon-filter" />
+            </a>
+          </h5>
+          { this.renderTagSelectorList() }
+          { this.renderCustomFilterEditor() }
+          <h5>Functions
+            <a
+              href="javascript:;"
+              className={classnames(showCustomFunctionEditorCls)}
+              title="show the custom function editor"
+              onClick={() => {
+                this.setState({
+                  showCustomFunctionEditor: !showCustomFunctionEditor,
+                });
+              }}
+            >
+              <span className="pt-icon-large pt-icon-variable" />
+            </a>
+          </h5>
+          { this.renderFieldFunctionList() }
+          { this.renderCustomFunctionEditor() }
+          <h5>Group By</h5>
+          { this.renderGroupSelectorList() }
+          <h5>Time</h5>
+          <div
+            style={{
+              position: 'relative',
+              zIndex: '1',
+            }}
+          >
+            { this.renderDatetimePicker() }
+            { this.renderTimeSelector() }
           </div>
+          <h5>Chart Setting</h5>
+          { this.renderChartSetting() }
         </div>
-        <div className="influx-content-wrapper pure-u-4-5">
+        <div className="influx-content-wrapper">
           <div
             style={{
               margin: '15px',
