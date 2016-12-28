@@ -8,9 +8,6 @@ const About = () => (
     }}
   >
     <h3>Graphing and visualization application for influxdb</h3>
-    <p>
-      Influxdb is awesome.
-    </p>
   </div>
 );
 

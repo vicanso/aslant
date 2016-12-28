@@ -217,9 +217,15 @@ class Visualization extends Component {
       chart: true,
     };
     cls[view.type] = true;
+    const style = {};
+    const chartHeight = _.get(this.props, 'setting.chart.height');
+    if (chartHeight) {
+      style.height = `${chartHeight}px`;
+    }
     return (
       <div
         className={classnames(cls)}
+        style={style}
         ref={(c) => {
           this.chart = c;
           if (this.chart) {

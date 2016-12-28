@@ -26,9 +26,21 @@ class MainNav extends Component {
     } = nextProps;
     const location = navigation.location;
 
+    const locations = [
+      {
+        url: VIEW_ABOUT,
+        type: 'about',
+      },
+      {
+        url: VIEW_SETTING,
+        type: 'setting',
+      },
+    ];
+    const found = _.find(locations, item => item.url === location);
+
     this.setState({
       location,
-      active: location === VIEW_ABOUT ? 'about' : this.state.active,
+      active: found ? found.type : this.state.active,
     });
   }
   renderList(items, options) {

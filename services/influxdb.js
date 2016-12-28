@@ -3,8 +3,14 @@ const Influx = require('influxdb-nodejs');
 
 const Models = localRequire('models');
 const errors = localRequire('helpers/errors');
+const clientMap = new Map();
 
 function getInfluxClient(id, db = '_internal') {
+  const key = `${id}-${db}`;
+  const client = clientMap.get(key);
+  if (client) {
+    return Promise.resolve(client);
+  }
   const InfluxdbServer = Models.get('Server');
   return InfluxdbServer.findById(id).then((doc) => {
     if (!doc) {
@@ -17,9 +23,20 @@ function getInfluxClient(id, db = '_internal') {
       arr.push(`${config.username}:${config.password}@`)
     }
     arr.push(`${config.host}:${config.port}/${db}`);
-    return new Influx(arr.join(''));
+    const tmpClient = new Influx(arr.join(''));
+    tmpClient.timeout = 3000;
+    clientMap.set(key, tmpClient);
+    return tmpClient;
   });
 }
+
+exports.clearClientWithPrefix = (prefix) => {
+  clientMap.forEach((value, key) => {
+    if (key.indexOf(prefix) === 0) {
+      clientMap.delete(key);
+    }
+  });
+};
 
 
 exports.showDatabases = id => getInfluxClient(id).then(client => client.showDatabases());

@@ -2,6 +2,7 @@ const _ = require('lodash');
 
 const Models = localRequire('models');
 const errors = localRequire('helpers/errors');
+const influxdbService = localRequire('services/influxdb');
 
 
 function mask(data) {
@@ -38,6 +39,7 @@ exports.update = (conditon, data) => {
     if (!doc) {
       throw errors.get(4);
     }
+    influxdbService.clearClientWithPrefix(doc._id.toString());
     return mask(doc.toJSON());
   });
 };
