@@ -11,7 +11,7 @@ const {
 } = localRequire('helpers/utils');
 
 const pickUserInfo = (data) => {
-  const keys = 'account lastLoginedAt loginCount'.split(' ');
+  const keys = 'account lastLoginedAt loginCount loginType'.split(' ');
   return _.pick(data, keys);
 };
 
@@ -48,10 +48,11 @@ exports.login = (ctx) => {
   if (!token) {
     throw errors.get(102);
   }
-  const { account, password } = ctx.request.body;
-  return userService.get(account, password, token).then((doc) => {
+  const { account, password, type } = ctx.request.body;
+  return userService.get(account, password, token, type).then((doc) => {
     const user = pickUserInfo(doc);
     const ip = ctx.ip;
+    user.loginType = type;
     user.token = randomToken();
     user.loginCount += 1;
     /* eslint no-param-reassign:0 */

@@ -11,6 +11,7 @@ function validateSetting(data) {
     chart: Joi.object().keys({
       height: Joi.number().integer(),
     }).optional(),
+    gesture: Joi.string().optional(),
   });
 }
 

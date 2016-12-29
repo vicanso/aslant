@@ -27,7 +27,12 @@ export function add(account, password, email) {
   .then(res => res.body);
 }
 
-export function login(account, password) {
+export function login(loginData) {
+  const {
+    account,
+    password,
+    type,
+  } = loginData;
   return http.get(USER_LOGIN)
     .set('Cache-Control', 'no-cache')
     .then((res) => {
@@ -36,6 +41,7 @@ export function login(account, password) {
       return http.post(USER_LOGIN, {
         account,
         password: code,
+        type,
       }).set('Cache-Control', 'no-cache');
     }).then(res => res.body);
 }

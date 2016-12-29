@@ -227,6 +227,7 @@ class MainNav extends Component {
     const {
       onToggle,
       hidden,
+      style,
     } = this.props;
     const cls = {
       'main-nav': true,
@@ -241,7 +242,10 @@ class MainNav extends Component {
       iconCls['pt-icon-minimize'] = true;
     }
     return (
-      <div className={classnames(cls)}>
+      <div
+        style={style}
+        className={classnames(cls)}
+      >
         <a
           href="javascript:;"
           className="toggle-nav tac"
@@ -266,6 +270,7 @@ MainNav.propTypes = {
   configs: PropTypes.array,
   onToggle: PropTypes.func.isRequired,
   hidden: PropTypes.bool.isRequired,
+  style: PropTypes.object,
 };
 
 export default MainNav;

@@ -5,24 +5,49 @@ import {
   VIEW_REGISTER,
 } from '../constants/urls';
 import FormView from '../components/form';
+import GestureView from '../components/gesture';
 
 class Login extends FormView {
   constructor(props) {
     super(props);
-    this.state.fields = [
-      {
-        label: 'Username',
-        id: 'account',
-        autoFocus: true,
-        required: true,
-      },
-      {
-        label: 'Password',
-        id: 'password',
-        type: 'password',
-        required: true,
-      },
-    ];
+    const passwordLabel = (
+      <span>
+        Password
+        <a
+          href="javascript:;"
+          className="mleft5"
+          onClick={() => {
+            const fields = this.state.fields.slice(0);
+            fields.pop();
+            this.setState({
+              showGesture: true,
+              fields,
+              type: 'gesture',
+            });
+          }}
+        >
+          <span className="pt-icon-hand" />
+        </a>
+      </span>
+    );
+    this.state = {
+      fields: [
+        {
+          label: 'Username',
+          id: 'account',
+          autoFocus: true,
+          required: true,
+        },
+        {
+          label: passwordLabel,
+          id: 'password',
+          type: 'password',
+          required: true,
+        },
+      ],
+      showGesture: false,
+      type: 'password',
+    };
   }
   getSubmitText() {
     const {
@@ -37,6 +62,7 @@ class Login extends FormView {
     e.preventDefault();
     const {
       status,
+      type,
     } = this.state;
     if (status === 'submitting') {
       return;
@@ -51,7 +77,7 @@ class Login extends FormView {
       password,
     } = data;
     let error = '';
-    if (password.length < 6) {
+    if (type === 'password' && password.length < 6) {
       error = 'Password catn\'t be less than 6 character!';
     }
     if (account.length < 4) {
@@ -64,7 +90,16 @@ class Login extends FormView {
     this.setState({
       status: 'submitting',
     });
-    dispatch(userAction.login(account, password))
+    const loginData = {
+      account,
+      type,
+    };
+    if (type === 'password') {
+      loginData.password = password;
+    } else {
+      loginData.password = this.gesture.join('');
+    }
+    dispatch(userAction.login(loginData))
       .then(() => {
         dispatch(navigationAction.back());
       })
@@ -74,6 +109,21 @@ class Login extends FormView {
         });
         this.showError(err.response.body.message);
       });
+  }
+  renderOtherFields() {
+    const {
+      showGesture,
+    } = this.state;
+    if (!showGesture) {
+      return null;
+    }
+    return (
+      <GestureView
+        onFininsh={(gesture) => {
+          this.gesture = gesture;
+        }}
+      />
+    );
   }
   render() {
     const { dispatch } = this.props;

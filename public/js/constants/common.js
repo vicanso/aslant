@@ -32,47 +32,47 @@ export const CHART_WIDTHS = [
   {
     width: '20%',
     name: '20% view area',
-    className: 'pure-u-1-5',
+    className: 'column-1-5',
   },
   {
     width: '25%',
     name: '25% view area',
-    className: 'pure-u-1-4',
+    className: 'column-1-4',
   },
   {
     width: '33%',
     name: '33% view area',
-    className: 'pure-u-1-3',
+    className: 'column-1-3',
   },
   {
     width: '40%',
     name: '40% view area',
-    className: 'pure-u-2-5',
+    className: 'column-2-5',
   },
   {
     width: '50%',
     name: '50% view area',
-    className: 'pure-u-1-2',
+    className: 'column-1-2',
   },
   {
     width: '60%',
     name: '60% view area',
-    className: 'pure-u-3-5',
+    className: 'column-3-5',
   },
   {
     width: '75%',
     name: '75% view area',
-    className: 'pure-u-3-4',
+    className: 'column-3-4',
   },
   {
     width: '80%',
     name: '80% view area',
-    className: 'pure-u-4-5',
+    className: 'column-4-5',
   },
   {
     width: '100%',
     name: '100% view area',
-    className: 'pure-u-1',
+    className: 'column-1',
   },
 ];
 

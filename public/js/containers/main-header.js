@@ -19,6 +19,7 @@ import {
   VIEW_INFLUX_CONFIGS,
   VIEW_ADD_DASHBOARD,
   VIEW_INFLUX_DASHBOARDS,
+  VIEW_SETTING,
 } from '../constants/urls';
 import * as userAction from '../actions/user';
 import * as navigationAction from '../actions/navigation';
@@ -108,6 +109,12 @@ class MainHeader extends Component {
         href: VIEW_SERVERS,
       },
       {
+        icon: 'pt-icon-cog',
+        name: 'Setting',
+        action: 'redirect',
+        href: VIEW_SETTING,
+      },
+      {
         type: 'divider',
       },
       {
@@ -176,6 +183,7 @@ class MainHeader extends Component {
   render() {
     const {
       handleLink,
+      toggleNav,
     } = this.props;
     return (
       <header
@@ -187,6 +195,13 @@ class MainHeader extends Component {
           onClick={handleLink(VIEW_HOME)}
         >Aslant</a>
         <div className="logo-bar" />
+        <a
+          className="show-nav"
+          href="javascript:;"
+          onClick={toggleNav}
+        >
+          <span className="pt-icon-standard pt-icon-control" />
+        </a>
         <div
           className="pull-right user-infos"
         >
@@ -207,6 +222,7 @@ MainHeader.propTypes = {
   isFetchingUserInfo: PropTypes.bool.isRequired,
   handleLink: PropTypes.func.isRequired,
   dispatch: PropTypes.func.isRequired,
+  toggleNav: PropTypes.func.isRequired,
 };
 
 export default MainHeader;

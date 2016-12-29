@@ -120,6 +120,7 @@ class Visualization extends Component {
       chart.innerHTML = '<svg></svg>';
       const item = new Fn(chart.children[0]);
       item.set({
+        'title.height': 0,
         'disabled.legend': true,
         duration: 0,
       });
@@ -217,7 +218,9 @@ class Visualization extends Component {
       chart: true,
     };
     cls[view.type] = true;
-    const style = {};
+    const style = {
+      margin: '10px',
+    };
     const chartHeight = _.get(this.props, 'setting.chart.height');
     if (chartHeight) {
       style.height = `${chartHeight}px`;

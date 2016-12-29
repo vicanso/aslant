@@ -3,6 +3,11 @@ import * as _ from 'lodash';
 
 import * as settingActions from '../actions/setting';
 import * as navigationAction from '../actions/navigation';
+import GestureView from '../components/gesture';
+import * as crypto from '../helpers/crypto';
+
+/* eslint no-undef:0*/
+const app = (window.CONFIG && window.CONFIG.app) || 'unknown';
 
 const configs = [
   {
@@ -25,12 +30,14 @@ class Setting extends Component {
   constructor(props) {
     super(props);
     this.inputs = {};
+    this.gesture = null;
   }
   update() {
     const {
       dispatch,
       setting,
       showError,
+      user,
     } = this.props;
     const data = {};
     _.forEach(configs, (item) => {
@@ -43,6 +50,10 @@ class Setting extends Component {
       }
       _.set(data, item.value, value);
     });
+    if (this.gesture) {
+      const code = crypto.sha256(`${user.account}-${this.gesture.join('')}-${app}`);
+      data.gesture = code;
+    }
     let fn = null;
     /* eslint no-underscore-dangle:0 */
     const id = setting._id;
@@ -55,6 +66,23 @@ class Setting extends Component {
       dispatch(navigationAction.home());
     }).catch(showError);
   }
+  renderGesture() {
+    return (
+      <div
+        className="setting tac"
+        style={{
+          width: '100%',
+        }}
+      >
+        <span className="pt-label">Set user gesture password</span>
+        <GestureView
+          onFininsh={(gesture) => {
+            this.gesture = gesture;
+          }}
+        />
+      </div>
+    );
+  }
   render() {
     const {
       setting,
@@ -66,7 +94,7 @@ class Setting extends Component {
     }
     const arr = _.map(configs, item => (
       <div
-        className="setting pure-u-1-3"
+        className="setting"
         key={item.name}
       >
         <label
@@ -89,9 +117,10 @@ class Setting extends Component {
     ));
     return (
       <div
-        className="setting-wrapper pure-g"
+        className="setting-wrapper clearfix"
       >
         { arr }
+        { this.renderGesture() }
         <button
           type="button"
           className="pt-button pt-fill pt-intent-primary mtop10"
@@ -108,6 +137,7 @@ Setting.propTypes = {
   dispatch: PropTypes.func.isRequired,
   setting: PropTypes.object,
   showError: PropTypes.func.isRequired,
+  user: PropTypes.object,
 };
 
 export default Setting;

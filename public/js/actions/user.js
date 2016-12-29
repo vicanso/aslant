@@ -3,8 +3,8 @@ import {
 } from '../constants/action-types';
 import * as user from '../services/user';
 
-export function login(account, password) {
-  return dispatch => user.login(account, password).then(data => dispatch({
+export function login(loginData) {
+  return dispatch => user.login(loginData).then(data => dispatch({
     type: USER_INFO,
     user: data,
   }));

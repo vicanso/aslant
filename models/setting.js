@@ -16,6 +16,7 @@ module.exports = {
     token: String,
     table: Schema.Types.Mixed,
     chart: Schema.Types.Mixed,
+    gesture: String,
     createdAt: String,
     updatedAt: String,
   },

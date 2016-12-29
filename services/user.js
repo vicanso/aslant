@@ -3,6 +3,7 @@ const _ = require('lodash');
 
 const Models = localRequire('models');
 const errors = localRequire('helpers/errors');
+const settingServcice = localRequire('services/setting');
 
 const isExists = (condition) => {
   const User = Models.get('User');
@@ -33,7 +34,7 @@ exports.add = (data) => {
   });
 };
 
-exports.get = (account, password, token) => {
+exports.get = (account, password, token, type) => {
   const User = Models.get('User');
   return User.findOne({
     account,
@@ -42,8 +43,22 @@ exports.get = (account, password, token) => {
     if (!doc) {
       throw incorrectError;
     }
-    const hash = crypto.createHash('sha256');
-    if (hash.update(doc.password + token).digest('hex') !== password) {
+    const validatePassword = (value) => {
+      const hash = crypto.createHash('sha256');
+      if (hash.update(value + token).digest('hex') !== password) {
+        return false;
+      }
+      return true;
+    }
+    if (type === 'gesture') {
+      return settingServcice.getByAccount(account).then((setting) => {
+        if (!validatePassword(setting.gesture)) {
+          throw incorrectError;
+        }
+        return doc.toJSON();
+      });
+    }
+    if (!validatePassword(doc.password)) {
       throw incorrectError;
     }
     return doc.toJSON();

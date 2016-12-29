@@ -71,6 +71,7 @@ class App extends Component {
         handler: null,
       },
       hiddenNav: false,
+      forceToShowNav: false,
     };
     dispatch(userAction.me()).then(() => {
       this.setState({
@@ -410,6 +411,7 @@ class App extends Component {
     const {
       isFetchingUserInfo,
       hiddenNav,
+      forceToShowNav,
     } = this.state;
     const {
       user,
@@ -423,6 +425,10 @@ class App extends Component {
       'content-wrapper': true,
       fill: hiddenNav,
     };
+    const mainNavStyle = {};
+    if (forceToShowNav) {
+      mainNavStyle.display = 'block';
+    }
     return (
       <div>
         <MainHeader
@@ -430,8 +436,15 @@ class App extends Component {
           isFetchingUserInfo={isFetchingUserInfo}
           handleLink={handleLink}
           dispatch={dispatch}
+          toggleNav={() => {
+            // for mobile
+            this.setState({
+              forceToShowNav: !forceToShowNav,
+            });
+          }}
         />
         <MainNav
+          style={mainNavStyle}
           dashboards={dashboards}
           handleLink={handleLink}
           navigation={navigation}
@@ -511,6 +524,7 @@ class App extends Component {
                 setting={this.props.setting}
                 dispatch={dispatch}
                 showError={this.showError}
+                user={this.props.user}
               />}
             />
             <Route

@@ -292,7 +292,7 @@ class Status extends Component {
       return (
         <div
           key={name}
-          className="pure-u-1-5"
+          className="column-wrapper"
         >
           <div className="column">
             <h4>{name}</h4>
@@ -313,7 +313,7 @@ class Status extends Component {
         {
           renderStatus(status, error)
         }
-        <div className="pure-g columns">
+        <div className="columns clearfix">
           { arr }
         </div>
       </div>

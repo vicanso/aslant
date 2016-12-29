@@ -118,7 +118,8 @@ class Form extends Component {
         onSubmit={e => this.handleSubmit(e)}
       >
         <fieldset>
-          {fieldsList}
+          { fieldsList }
+          { this.renderOtherFields && this.renderOtherFields() }
           <div>
             <input
               type="submit"

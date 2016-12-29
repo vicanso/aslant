@@ -7,20 +7,39 @@
       flex 1
     .influx-content-wrapper
       flex 2
+  
+  .server-status-wrapper .server-status .column-wrapper
+    width 33.3333%
 
 @media only screen and (max-width : 1000px)
   .home-wrapper .columns .cloumn-wrapper
     width 33.3333%
   .add-influx-wrapper
     display block
+  .setting-wrapper .setting
+    width 50%
+    &:nth-child(2n)
+      padding-right 0
+  .server-status-wrapper .server-status .column-wrapper
+    width 50%
 
 @media only screen and (max-width: 640px)
+  .main-header .show-nav
+    display block
   .main-nav
     display none
+    .toggle-nav
+      display none
   .content-wrapper
     margin-left 0
   .cloumn-wrapper
     width 50%
+  .server-status-wrapper .server-status .column-wrapper
+    width 100%
+
 @media only screen and (max-width: 480px)
   .home-wrapper .columns .cloumn-wrapper
     width 100%
+  .setting-wrapper .setting
+    width 100%
+    padding-right 0

@@ -265,6 +265,7 @@ class DashboardVisualizations extends Component {
           { this.renderDatetimePicker() }
         </div>
         <div
+          className="clearfix"
           style={{
             margin: '8px',
           }}
