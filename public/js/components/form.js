@@ -20,6 +20,9 @@ class Form extends Component {
     const data = {};
     const errors = [];
     _.forEach(this.state.fields, (field) => {
+      if (field.type === 'custom' || field.hidden) {
+        return;
+      }
       const required = field.required;
       const key = field.id;
       const ref = inputs[key];
@@ -68,6 +71,12 @@ class Form extends Component {
       },
     };
     const fieldsList = _.map(fields, (field, index) => {
+      if (field.hidden) {
+        return null;
+      }
+      if (field.type === 'custom') {
+        return field.render();
+      }
       const id = field.id;
       if (field.type === 'switch') {
         this.inputs[id] = field.value;
@@ -119,7 +128,6 @@ class Form extends Component {
       >
         <fieldset>
           { fieldsList }
-          { this.renderOtherFields && this.renderOtherFields() }
           <div>
             <input
               type="submit"

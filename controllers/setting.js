@@ -40,8 +40,14 @@ exports.get = (ctx) => {
 
 exports.update = (ctx) => {
   const token = ctx.get('X-Token');
-  const account = ctx.session.user.account;
+  const {
+    account,
+    loginType,
+  } = ctx.session.user;
   const data = validateSetting(ctx.request.body);
+  if (loginType !== 'password' && data.gesture) {
+    throw errors.get(110);
+  }
   return settingService.update({
     account,
     token,

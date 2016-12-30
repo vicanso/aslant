@@ -35,4 +35,8 @@ module.exports = {
     en: 'Can not create multi setting',
     status: 405,
   },
+  110: {
+    en: 'Should login by password to change gesture',
+    status: 403,
+  },
 };

@@ -1,4 +1,6 @@
 import React, { PropTypes } from 'react';
+import * as _ from 'lodash';
+
 import * as userAction from '../actions/user';
 import * as navigationAction from '../actions/navigation';
 import {
@@ -6,21 +8,26 @@ import {
 } from '../constants/urls';
 import FormView from '../components/form';
 import GestureView from '../components/gesture';
+import * as storageService from '../services/storage';
+
+const userStorageKey = 'user';
 
 class Login extends FormView {
   constructor(props) {
     super(props);
+    const user = storageService.get(userStorageKey);
+    const loginType = _.get(user, 'loginType', 'password');
     const passwordLabel = (
       <span>
         Password
         <a
           href="javascript:;"
-          className="mleft5"
+          className="mleft10"
           onClick={() => {
             const fields = this.state.fields.slice(0);
-            fields.pop();
+            fields[1].hidden = true;
+            fields[2].hidden = false;
             this.setState({
-              showGesture: true,
               fields,
               type: 'gesture',
             });
@@ -37,16 +44,22 @@ class Login extends FormView {
           id: 'account',
           autoFocus: true,
           required: true,
+          value: _.get(user, 'account'),
         },
         {
           label: passwordLabel,
           id: 'password',
           type: 'password',
           required: true,
+          hidden: loginType === 'gesture',
+        },
+        {
+          type: 'custom',
+          hidden: loginType !== 'gesture',
+          render: () => this.renderGesture(),
         },
       ],
-      showGesture: false,
-      type: 'password',
+      type: loginType,
     };
   }
   getSubmitText() {
@@ -59,7 +72,9 @@ class Login extends FormView {
     return 'Sign In';
   }
   handleSubmit(e) {
-    e.preventDefault();
+    if (e) {
+      e.preventDefault();
+    }
     const {
       status,
       type,
@@ -101,6 +116,10 @@ class Login extends FormView {
     }
     dispatch(userAction.login(loginData))
       .then(() => {
+        storageService.set(userStorageKey, {
+          account,
+          loginType: type,
+        });
         dispatch(navigationAction.back());
       })
       .catch((err) => {
@@ -110,19 +129,39 @@ class Login extends FormView {
         this.showError(err.response.body.message);
       });
   }
-  renderOtherFields() {
-    const {
-      showGesture,
-    } = this.state;
-    if (!showGesture) {
-      return null;
-    }
+  renderGesture() {
     return (
-      <GestureView
-        onFininsh={(gesture) => {
-          this.gesture = gesture;
-        }}
-      />
+      <div
+        key="gesture"
+      >
+        <label
+          htmlFor="gesture"
+        >
+          Gesture password
+          <a
+            href="javascript:;"
+            className="mleft10"
+            onClick={() => {
+              const fields = this.state.fields.slice(0);
+              fields[1].hidden = false;
+              fields[2].hidden = true;
+              this.setState({
+                fields,
+                type: 'password',
+              });
+            }}
+          >
+            <span className="pt-icon-annotation" />
+          </a>
+        </label>
+        <GestureView
+          id="gesture"
+          onFininsh={(gesture) => {
+            this.gesture = gesture;
+            this.handleSubmit();
+          }}
+        />
+      </div>
     );
   }
   render() {

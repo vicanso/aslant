@@ -85,7 +85,7 @@ class MainHeader extends Component {
         href: VIEW_INFLUX_CONFIGS,
       },
       {
-        icon: 'pt-icon-plus',
+        icon: 'pt-icon-add',
         name: 'Add Influx Dashboard',
         action: 'redirect',
         href: VIEW_ADD_DASHBOARD,
@@ -97,13 +97,13 @@ class MainHeader extends Component {
         href: VIEW_INFLUX_DASHBOARDS,
       },
       {
-        icon: 'pt-icon-insert',
+        icon: 'pt-icon-new-object',
         name: 'Add Server',
         action: 'redirect',
         href: VIEW_ADD_SERVER,
       },
       {
-        icon: 'pt-icon-duplicate',
+        icon: 'pt-icon-database',
         name: 'Servers',
         action: 'redirect',
         href: VIEW_SERVERS,
@@ -145,8 +145,7 @@ class MainHeader extends Component {
     const {
       dispatch,
     } = this.props;
-    const onSelect = (e, item) => {
-      e.preventDefault();
+    const onSelect = (item) => {
       if (item.action === 'redirect') {
         dispatch(navigationAction.to(item.href));
       } else if (item.action === 'logout') {
@@ -168,7 +167,7 @@ class MainHeader extends Component {
           iconName={item.icon}
           key={index}
           text={item.name}
-          onClick={e => onSelect(e, item)}
+          onClick={() => onSelect(item)}
         />
       );
     });

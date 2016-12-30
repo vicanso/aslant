@@ -78,7 +78,7 @@ class Register extends FormView {
         this.setState({
           status: '',
         });
-        this.showError(err.response.body.message);
+        this.showError(err);
       });
   }
   render() {

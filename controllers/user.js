@@ -52,7 +52,7 @@ exports.login = (ctx) => {
   return userService.get(account, password, token, type).then((doc) => {
     const user = pickUserInfo(doc);
     const ip = ctx.ip;
-    user.loginType = type;
+    user.loginType = type || 'password';
     user.token = randomToken();
     user.loginCount += 1;
     /* eslint no-param-reassign:0 */

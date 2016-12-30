@@ -3,13 +3,48 @@ import classnames from 'classnames';
 import * as _ from 'lodash';
 
 import {
+  VIEW_HOME,
   VIEW_INFLUX_DASHBOARD,
   VIEW_ADD_DASHBOARD,
   VIEW_INFLUX_VISUALIZATION,
   VIEW_ADD_INFLUX,
   VIEW_ABOUT,
   VIEW_SETTING,
+  VIEW_ADD_SERVER,
 } from '../constants/urls';
+
+const NAV_ITEMS = [
+  {
+    type: 'add-influx',
+    name: 'Add Influx',
+    icon: 'pt-icon-add-to-artifact',
+    viewUrl: VIEW_ADD_INFLUX,
+  },
+  {
+    type: 'add-dashboard',
+    name: 'Add Dashboard',
+    icon: 'pt-icon-add',
+    viewUrl: VIEW_ADD_DASHBOARD,
+  },
+  {
+    type: 'add-server',
+    name: 'Add Server',
+    icon: 'pt-icon-new-object',
+    viewUrl: VIEW_ADD_SERVER,
+  },
+  {
+    type: 'setting',
+    name: 'Setting',
+    icon: 'pt-icon-cog',
+    viewUrl: VIEW_SETTING,
+  },
+  {
+    type: 'about',
+    name: 'About',
+    icon: 'pt-icon-applications',
+    viewUrl: VIEW_ABOUT,
+  },
+];
 
 class MainNav extends Component {
   constructor(props) {
@@ -25,18 +60,13 @@ class MainNav extends Component {
       navigation,
     } = nextProps;
     const location = navigation.location;
-
-    const locations = [
-      {
-        url: VIEW_ABOUT,
-        type: 'about',
-      },
-      {
-        url: VIEW_SETTING,
-        type: 'setting',
-      },
-    ];
-    const found = _.find(locations, item => item.url === location);
+    if (location === VIEW_HOME) {
+      this.setState({
+        location,
+        active: '',
+      });
+    }
+    const found = _.find(NAV_ITEMS, item => item.viewUrl === location);
 
     this.setState({
       location,
@@ -197,29 +227,20 @@ class MainNav extends Component {
       icon: 'pt-icon-horizontal-bar-chart',
     });
   }
+  renderSingleItem(options) {
+    return this.renderList(null, _.extend({
+      hasChild: false,
+    }, options));
+  }
   renderNav() {
-    const renderAbout = () => this.renderList(null, {
-      type: 'about',
-      name: 'About',
-      icon: 'pt-icon-applications',
-      viewUrl: VIEW_ABOUT,
-      hasChild: false,
-    });
-    const renderViewSetting = () => this.renderList(null, {
-      type: 'setting',
-      name: 'Setting',
-      icon: 'pt-icon-cog',
-      viewUrl: VIEW_SETTING,
-      hasChild: false,
-    });
+    const arr = _.map(NAV_ITEMS, item => this.renderSingleItem(item));
     return (
       <ul
         className="navigation"
       >
         { this.renderDashboards() }
         { this.renderConfigs() }
-        { renderViewSetting() }
-        { renderAbout() }
+        { arr }
       </ul>
     );
   }
