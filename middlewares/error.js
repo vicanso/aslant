@@ -18,7 +18,6 @@ module.exports = (ctx, next) => next().then(_.noop, (err) => {
     message: error.message,
     expected: false,
   };
-  if (_.isObject()) {}
   _.forEach(error, (v, k) => {
     data[k] = v;
   });
