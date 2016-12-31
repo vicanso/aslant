@@ -23,7 +23,7 @@ class CoDropdownSelector extends Component {
         <div className="relation">
           { relation || '=' }
         </div>
-        <div className="pure-u-1-2">
+        <div className="column-1-2">
           <div
             style={{
               marginRight: '15px',
@@ -38,7 +38,7 @@ class CoDropdownSelector extends Component {
             />
           </div>
         </div>
-        <div className="pure-u-1-2">
+        <div className="column-1-2">
           <div
             style={{
               marginLeft: '15px',

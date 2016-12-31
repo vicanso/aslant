@@ -98,7 +98,7 @@ class DropdownSelector extends Component {
       </Menu>
     );
     let fixPosition = this.props.position;
-    if (_.isUndefined(this.props.position)) {
+    if (_.isNil(this.props.position)) {
       fixPosition = Position.RIGHT;
       if (filterItems.length > 20) {
         fixPosition = Position.BOTTOM;

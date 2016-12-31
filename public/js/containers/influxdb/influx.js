@@ -246,7 +246,7 @@ class Influx extends Component {
       .then(() => dispatch(navigationAction.to(VIEW_INFLUX_CONFIGS)))
       .catch(this.showError);
   }
-  renderFieldFunctionList() {
+  renderFieldFunctionList(isSmallWindow) {
     const {
       fields,
       aggregations,
@@ -263,6 +263,13 @@ class Influx extends Component {
         aggregations: arr,
       });
     };
+    let positions = null;
+    if (isSmallWindow) {
+      positions = [
+        Position.RIGHT,
+        Position.LEFT,
+      ];
+    }
     const calList = 'none count sum mean median min max spread stddev first last'.split(' ');
     return _.map(cloneCals, (calCondition, index) => {
       const {
@@ -305,6 +312,7 @@ class Influx extends Component {
           <CoDropdownSelector
             itemsList={itemsList}
             selected={[field, aggregation]}
+            positions={positions}
             placeholders={['Choose Field', 'Choose Function']}
             onSelect={(e, item, i) => onSelect(item, i)}
           />
@@ -347,7 +355,7 @@ class Influx extends Component {
       </div>
     );
   }
-  renderChartSetting() {
+  renderChartSetting(isSmallWindow) {
     const {
       view,
     } = this.state;
@@ -380,7 +388,7 @@ class Influx extends Component {
             placeholder={'Choose chart width'}
             items={CHART_WIDTHS}
             selected={selectedChartWidth}
-            position={Position.RIGHT_BOTTOM}
+            position={isSmallWindow ? Position.LEFT_BOTTOM : Position.RIGHT_BOTTOM}
             onSelect={(e, item) => {
               view.width = item.width;
               this.setState({
@@ -392,7 +400,7 @@ class Influx extends Component {
       </div>
     );
   }
-  renderGroupSelectorList() {
+  renderGroupSelectorList(defaultPosition) {
     const {
       tags,
       groups,
@@ -405,6 +413,7 @@ class Influx extends Component {
           placeholder={'Choose group interval'}
           items={intervalList}
           selected={groups.interval}
+          position={defaultPosition}
           onClear={() => {
             delete groups.interval;
             this.setState({
@@ -423,6 +432,7 @@ class Influx extends Component {
           placeholder={'Choose group tag'}
           items={tags}
           type={'multi'}
+          position={defaultPosition}
           selected={groups.tags}
           readOnly
           onClear={() => {
@@ -448,7 +458,7 @@ class Influx extends Component {
       </div>
     );
   }
-  renderTagSelectorList() {
+  renderTagSelectorList(isSmallWindow) {
     const {
       tags,
       tagValueDict,
@@ -466,6 +476,13 @@ class Influx extends Component {
         conditions: arr,
       });
     };
+    let positions = null;
+    if (isSmallWindow) {
+      positions = [
+        Position.RIGHT,
+        Position.LEFT,
+      ];
+    }
     return _.map(cloneConditions, (condition, index) => {
       const {
         tag,
@@ -507,6 +524,7 @@ class Influx extends Component {
           <CoDropdownSelector
             itemsList={itemsList}
             selected={[tag, value]}
+            positions={positions}
             placeholders={['Choose Tag', 'Choose Value']}
             onSelect={(e, item, i) => onSelect(item, i)}
           />
@@ -585,7 +603,7 @@ class Influx extends Component {
       />
     );
   }
-  renderTimeSelector() {
+  renderTimeSelector(isSmallWindow) {
     const times = TIME_INTERVALS;
     const {
       time,
@@ -607,6 +625,16 @@ class Influx extends Component {
       });
       return;
     };
+    let positions = [
+      Position.RIGHT_BOTTOM,
+      Position.RIGHT_BOTTOM,
+    ];
+    if (isSmallWindow) {
+      positions = [
+        Position.RIGHT_BOTTOM,
+        Position.LEFT_BOTTOM,
+      ];
+    }
     return (
       <div
         className="co-dropdown-selector-wrapper"
@@ -615,7 +643,7 @@ class Influx extends Component {
           relation={'to'}
           itemsList={[times, times]}
           placeholders={['Start', 'End']}
-          positions={[Position.RIGHT_BOTTOM, Position.RIGHT_BOTTOM]}
+          positions={positions}
           onSelect={onSelect}
           selected={[time.start, time.end]}
         />
@@ -706,6 +734,13 @@ class Influx extends Component {
 
     const showCustomFilterEditorCls = {};
     const showCustomFunctionEditorCls = {};
+
+    let defaultPosition;
+    /* eslint no-undef:0 */
+    const isSmallWindow = window.screen.width < 800;
+    if (isSmallWindow) {
+      defaultPosition = Position.BOTTOM;
+    }
     if (showCustomFilterEditor) {
       showCustomFilterEditorCls.active = true;
     }
@@ -730,18 +765,21 @@ class Influx extends Component {
             placeholder={'Choose Server'}
             items={sortedServers}
             selected={selectedServer}
+            position={defaultPosition}
             onSelect={(e, item) => this.onSelectServer(item)}
           />
           <DropdownSelector
             placeholder={'Choose Database'}
             items={dbs}
             selected={database}
+            position={defaultPosition}
             onSelect={(e, item) => this.onSelectDatabases(item)}
           />
           <DropdownSelector
             placeholder={'Choose RP'}
             items={rps}
             selected={rp}
+            position={defaultPosition}
             onSelect={(e, item) => this.setState({
               rp: item,
             })}
@@ -750,7 +788,7 @@ class Influx extends Component {
             placeholder={'Choose Measurement'}
             items={measurements}
             selected={measurement}
-            position={Position.RIGHT}
+            position={defaultPosition || Position.RIGHT}
             onSelect={(e, item) => this.onSelectMeasurement(item)}
           />
           <h5>Filter By Tag
@@ -767,7 +805,7 @@ class Influx extends Component {
               <span className="pt-icon-standard pt-icon-filter" />
             </a>
           </h5>
-          { this.renderTagSelectorList() }
+          { this.renderTagSelectorList(isSmallWindow) }
           { this.renderCustomFilterEditor() }
           <h5>Functions
             <a
@@ -783,10 +821,10 @@ class Influx extends Component {
               <span className="pt-icon-large pt-icon-variable" />
             </a>
           </h5>
-          { this.renderFieldFunctionList() }
+          { this.renderFieldFunctionList(isSmallWindow) }
           { this.renderCustomFunctionEditor() }
           <h5>Group By</h5>
-          { this.renderGroupSelectorList() }
+          { this.renderGroupSelectorList(defaultPosition) }
           <h5>Time</h5>
           <div
             style={{
@@ -795,10 +833,10 @@ class Influx extends Component {
             }}
           >
             { this.renderDatetimePicker() }
-            { this.renderTimeSelector() }
+            { this.renderTimeSelector(isSmallWindow) }
           </div>
           <h5>Chart Setting</h5>
-          { this.renderChartSetting() }
+          { this.renderChartSetting(isSmallWindow) }
         </div>
         <div className="influx-content-wrapper">
           <div
