@@ -67,15 +67,10 @@ function fillData(opts, data) {
     if (data[key]) {
       return;
     }
-    switch (type) {
-      case 'date':
-        result[key] = new Date().toISOString();
-        break;
-      case 'ulid':
-        result[key] = ulid();
-        break;
-      default:
-        return;
+    if (type === 'date') {
+      result[key] = new Date().toISOString();
+    } else if (type === 'ulid') {
+      result[key] = ulid();
     }
   });
 }

@@ -20,8 +20,7 @@ webpackConfig.plugins.push(
     mangle: {
       except: ['$super', '$', 'exports', 'require'],
     },
-  })
-);
+  }));
 
 const assetsPath = 'assets';
 // 保存静态文件的crc32版本号
@@ -86,8 +85,7 @@ gulp.task('stylus', ['del:assets', 'del:build'], () => gulp.src('public/**/*.sty
   }))
   .pipe(base64())
   .pipe(cssmin())
-  .pipe(gulp.dest('build'))
-);
+  .pipe(gulp.dest('build')));
 
 gulp.task('copy:others', ['del:assets', 'del:build'], () => gulp.src([
   'public/**/*',
@@ -114,13 +112,11 @@ gulp.task('static:css', ['stylus', 'copy:others'], () => gulp.src(['build/**/*.c
   .pipe(base64())
   .pipe(cssmin())
   .pipe(version())
-  .pipe(gulp.dest(assetsPath))
-);
+  .pipe(gulp.dest(assetsPath)));
 
 gulp.task('static:js', ['copy:others'], () => gulp.src(['public/bundle/*.js'])
   .pipe(version())
-  .pipe(gulp.dest(assetsPath))
-);
+  .pipe(gulp.dest(assetsPath)));
 
 gulp.task('webpack:bundle', (cb) => {
   webpack(webpackConfig, cb);
@@ -129,18 +125,15 @@ gulp.task('webpack:bundle', (cb) => {
 gulp.task('static:webpack-compile', ['webpack:bundle'], () => gulp.src(['public/bundle/*'])
   .pipe(copy('build', {
     prefix: 1,
-  }))
-);
+  })));
 gulp.task('static:webpack', ['static:webpack-compile'], () => gulp.src(['build/bundle/*.js'])
   .pipe(copy(assetsPath, {
     prefix: 1,
-  }))
-);
+  })));
 gulp.task('static:webpack-sourcemap', ['webpack:bundle'], () => gulp.src(['public/bundle/*.map'])
   .pipe(copy(assetsPath, {
     prefix: 1,
-  }))
-);
+  })));
 gulp.task('static:webpack-version', ['static:webpack', 'static:webpack-sourcemap'], () => gulp.src([`${assetsPath}/bundle/*.js`])
   .pipe(through.obj((file, encoding, cb) => {
     const fileName = file.path.replace(path.join(__dirname, assetsPath), '');
@@ -149,8 +142,7 @@ gulp.task('static:webpack-version', ['static:webpack', 'static:webpack-sourcemap
     crc32Versions[fileName] = `${v}`;
     arr.splice(1, 0, v);
     fs.rename(file.path, file.path.replace(fileName, arr.join('.')), cb);
-  }))
-);
+  })));
 
 gulp.task('static:img', ['copy:others'], () => {
   const maxSize = 10 * 1024;

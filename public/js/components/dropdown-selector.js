@@ -67,6 +67,7 @@ class DropdownSelector extends Component {
       type,
       readOnly,
       selected,
+      onChange,
     } = this.props;
 
     const multi = type === 'multi';
@@ -135,10 +136,14 @@ class DropdownSelector extends Component {
                 this.onSelect(e, filterItems[0]);
               }
             }}
-            onChange={() => {
+            onChange={(e) => {
+              const v = this.userInput.value;
               this.setState({
-                keyword: this.userInput.value,
+                keyword: v,
               });
+              if (onChange) {
+                onChange(e, v);
+              }
             }}
             defaultValue={getSelectString(this.props)}
             ref={(c) => {
@@ -157,6 +162,7 @@ class DropdownSelector extends Component {
 DropdownSelector.propTypes = {
   items: PropTypes.array.isRequired,
   onSelect: PropTypes.func,
+  onChange: PropTypes.func,
   placeholder: PropTypes.string,
   selected: PropTypes.any,
   type: PropTypes.string,

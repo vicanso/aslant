@@ -217,6 +217,7 @@ export function getInfluxQL(options) {
     groups,
     customConditions,
     customFunctions,
+    fill,
   } = options;
   if (!database || !measurement) {
     return '';
@@ -294,6 +295,9 @@ export function getInfluxQL(options) {
   }
   if (groups && groups.tags && groups.tags.length) {
     ql.addGroup(...groups.tags);
+  }
+  if (fill) {
+    ql.fill = fill;
   }
   return ql.toSelect();
 }

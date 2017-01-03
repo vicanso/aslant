@@ -199,6 +199,7 @@ class Table extends Component {
       const keyword = this.keywordInput && this.keywordInput.value;
       this.setState({
         keyword,
+        page: 0,
       });
     }, 1000);
     return (

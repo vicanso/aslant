@@ -63,16 +63,15 @@ class DateTimeRangePicker extends Component {
     switch (type) {
       case 'start': {
         start.time = moment(data).format(formatTime);
-        return;
+        break;
       }
       case 'end': {
         end.time = moment(data).format(formatTime);
-        return;
+        break;
       }
       default: {
         start.date = moment(data[0]).format(formatDate);
         end.date = moment(data[1]).format(formatDate);
-        return;
       }
     }
   }

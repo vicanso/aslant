@@ -575,5 +575,4 @@ function mapDispatchToProps(dispatch) {
 
 export default ReactRedux.connect(
   mapStateToProps,
-  mapDispatchToProps
-)(App);
+  mapDispatchToProps)(App);

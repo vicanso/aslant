@@ -49,6 +49,7 @@ class Influx extends Component {
       database: '',
       rps: [],
       rp: '',
+      fill: '',
       measurements: [],
       measurement: '',
       tags: [],
@@ -220,7 +221,7 @@ class Influx extends Component {
       dispatch,
       id,
     } = this.props;
-    const keys = 'server database rp measurement conditions aggregations customConditions groups time view'.split(' ');
+    const keys = 'server database rp measurement fill conditions aggregations customConditions groups time view'.split(' ');
     const data = _.pick(this.state, keys);
     if (!data.customConditions) {
       delete data.customConditions;
@@ -623,7 +624,6 @@ class Influx extends Component {
       this.setState({
         time,
       });
-      return;
     };
     let positions = [
       Position.RIGHT_BOTTOM,
@@ -687,6 +687,7 @@ class Influx extends Component {
       measurements,
       measurement,
       desc,
+      fill,
       showCustomFilterEditor,
       showCustomFunctionEditor,
     } = this.state;
@@ -835,6 +836,19 @@ class Influx extends Component {
             { this.renderDatetimePicker() }
             { this.renderTimeSelector(isSmallWindow) }
           </div>
+          <h5>Fill Option</h5>
+          <DropdownSelector
+            placeholder={'Choose Fill'}
+            selected={fill}
+            items={['linear', 'none', 'null', 'previous']}
+            position={defaultPosition}
+            onSelect={(e, item) => this.setState({
+              fill: item,
+            })}
+            onChange={(e, value) => this.setState({
+              fill: value,
+            })}
+          />
           <h5>Chart Setting</h5>
           { this.renderChartSetting(isSmallWindow) }
         </div>

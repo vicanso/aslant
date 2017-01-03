@@ -33,6 +33,8 @@ module.exports = {
       type: String,
       required: true,
     },
+    rp: String,
+    fill: String,
     conditions: [Schema.Types.Mixed],
     customConditions: String,
     aggregations: [Schema.Types.Mixed],

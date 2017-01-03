@@ -33,8 +33,7 @@ module.exports = (port) => {
   // htt connection limit
   const limitOptions = config.connectLimitOptions;
   app.use(localRequire('middlewares/limit')(_.omit(limitOptions, 'interval'),
-    limitOptions.interval
-  ));
+    limitOptions.interval));
   const staticOptions = config.staticOptions;
   // 开发环境中，实时编译stylus
   /* istanbul ignore if */
@@ -44,8 +43,7 @@ module.exports = (port) => {
       /* eslint global-require:0 */
       require('koa-stylus-parser')(staticOptions.path, {
         'include css': true,
-      })
-    ));
+      })));
   }
   const denyQuerystring = config.env !== 'development';
   // static file
@@ -55,8 +53,7 @@ module.exports = (port) => {
       denyQuerystring,
       maxAge: staticOptions.maxAge,
       headers: staticOptions.headers,
-    })
-  ));
+    })));
 
   app.use(require('koa-methodoverride')());
   app.use(require('koa-bodyparser')());
