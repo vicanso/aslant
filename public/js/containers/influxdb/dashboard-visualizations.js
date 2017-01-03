@@ -110,6 +110,7 @@ class DashboardVisualizations extends Component {
   renderVisualizations() {
     const {
       showError,
+      setting,
     } = this.props;
     const {
       configs,
@@ -190,6 +191,7 @@ class DashboardVisualizations extends Component {
               config={config}
               time={time}
               showError={showError}
+              setting={setting}
             />
           </div>
         </div>
@@ -221,11 +223,16 @@ class DashboardVisualizations extends Component {
           <div
             className="pull-right"
             style={{
-              margin: '10px 0',
-              height: '20px',
+              marginTop: '10px',
             }}
           >
-            <div className="interval-selector">
+            <div
+              className="interval-selector"
+              style={{
+                height: '30px',
+                overflow: 'hidden',
+              }}
+            >
               <DropdownSelector
                 key={'auto-refresh-interval'}
                 items={AUTO_REFRESH_INTERVALS}
@@ -239,7 +246,13 @@ class DashboardVisualizations extends Component {
                 }}
               />
             </div>
-            <div className="time-selector">
+            <div
+              className="time-selector"
+              style={{
+                height: '30px',
+                overflow: 'hidden',
+              }}
+            >
               <DropdownSelector
                 key={'time-interval'}
                 items={TIME_INTERVALS}
@@ -267,7 +280,7 @@ class DashboardVisualizations extends Component {
         <div
           className="clearfix"
           style={{
-            margin: '8px',
+            margin: '0 8px 8px',
           }}
         >
           { this.renderVisualizations() }
@@ -280,6 +293,7 @@ class DashboardVisualizations extends Component {
 DashboardVisualizations.propTypes = {
   dashboard: PropTypes.object,
   showError: PropTypes.func.isRequired,
+  setting: PropTypes.object,
 };
 
 export default DashboardVisualizations;

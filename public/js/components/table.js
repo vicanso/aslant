@@ -210,10 +210,7 @@ class Table extends Component {
         </table>
         <div className="clearfix functions">
           <div
-            className="pull-right"
-            style={{
-              marginTop: '3px',
-            }}
+            className="pages-wrapper"
           >
             { this.renderPages(items) }
           </div>

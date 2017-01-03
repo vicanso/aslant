@@ -384,6 +384,7 @@ class App extends Component {
   renderInfluxDashboardVisualizations({ params: { id } }) {
     const {
       dashboards,
+      setting,
     } = this.props;
     /* eslint no-underscore-dangle:0 */
     const result = _.find(dashboards, item => item._id === id);
@@ -391,6 +392,7 @@ class App extends Component {
       <InfluxDashboardVisualizationsView
         dashboard={result}
         showError={this.showError}
+        setting={setting}
       />
     );
   }
