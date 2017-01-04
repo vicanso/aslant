@@ -11,6 +11,9 @@ const maxQueueLength = 100;
 
 function flush() {
   const count = client.writeQueueLength;
+  if (!count) {
+    return;
+  }
   client.syncWrite()
     .then(() => console.info(`influxdb write ${count} records sucess`))
     .catch(err => console.error(`influxdb write fail, ${err.message}`));
@@ -21,6 +24,16 @@ if (client) {
   _.forEach(schemas, (schema, measurement) => {
     client.schema(measurement, schema.fields, schema.options);
   });
+
+  client.on('writeQueue', () => {
+    // sync write queue if the length is 100
+    if (client.writeQueueLength === maxQueueLength) {
+      flush();
+    } else {
+      debounceFlush();
+    }
+  });
+
 }
 
 exports.client = client;
@@ -30,11 +43,6 @@ exports.write = (measurement, fields, ...args) => {
   if (!client) {
     debug('measurement:%s, fields:%j, args:%j', measurement, fields, args);
     return null;
-  }
-  if (client.writeQueueLength >= maxQueueLength) {
-    flush();
-  } else {
-    debounceFlush();
   }
   const writer = client.write(measurement)
     .field(fields);
