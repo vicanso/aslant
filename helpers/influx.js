@@ -33,7 +33,6 @@ if (client) {
       debounceFlush();
     }
   });
-
 }
 
 exports.client = client;
