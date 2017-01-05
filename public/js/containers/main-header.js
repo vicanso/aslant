@@ -20,6 +20,7 @@ import {
   VIEW_ADD_DASHBOARD,
   VIEW_INFLUX_DASHBOARDS,
   VIEW_SETTING,
+  VIEW_CHANGE_PASSWORD,
 } from '../constants/urls';
 import * as userAction from '../actions/user';
 import * as navigationAction from '../actions/navigation';
@@ -116,6 +117,12 @@ class MainHeader extends Component {
       },
       {
         type: 'divider',
+      },
+      {
+        icon: 'pt-icon-helper-management',
+        name: 'Change password',
+        action: 'redirect',
+        href: VIEW_CHANGE_PASSWORD,
       },
       {
         icon: 'pt-icon-log-out',

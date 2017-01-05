@@ -6,24 +6,20 @@ import {
   VIEW_LOGIN,
 } from '../constants/urls';
 
-class Register extends FormView {
+class ChangePassword extends FormView {
   constructor(props) {
     super(props);
     this.state.fields = [
       {
-        label: 'Username',
-        id: 'account',
+        label: 'Current Password',
+        id: 'password',
+        type: 'password',
         autoFocus: true,
         required: true,
       },
       {
-        label: 'Email Address',
-        id: 'email',
-        required: true,
-      },
-      {
         label: 'Password',
-        id: 'password',
+        id: 'newPassword',
         type: 'password',
         required: true,
       },
@@ -40,9 +36,9 @@ class Register extends FormView {
       status,
     } = this.state;
     if (status === 'submitting') {
-      return 'Creating an account...';
+      return 'Update password...';
     }
-    return 'Create an account';
+    return 'Update password';
   }
   handleSubmit(e) {
     e.preventDefault();
@@ -57,20 +53,15 @@ class Register extends FormView {
     if (!data) {
       return;
     }
-    const { account, password, email, confirmPassword } = data;
+    const { newPassword, password, confirmPassword } = data;
     let error = '';
-    if (!account || !password || !email) {
-      error = 'Account Password and Email can\'t be empty';
-    } else {
-      if (password.length < 6) {
-        error = 'Password catn\'t be less than 6 character!';
-      }
-      if (account.length < 4) {
-        error = 'Account catn\'t be less than 4 character!';
-      }
+    if (!newPassword || !password) {
+      error = 'Current password and new password can\'t be empty';
+    } else if (newPassword.length < 6) {
+      error = 'Password catn\'t be less than 6 character!';
     }
-    if (password !== confirmPassword) {
-      error = 'The password is not the same';
+    if (newPassword !== confirmPassword) {
+      error = 'The new password is not the same';
     }
     if (error) {
       this.showError(error);
@@ -79,7 +70,7 @@ class Register extends FormView {
     this.setState({
       status: 'submitting',
     });
-    dispatch(userAction.register(account, password, email))
+    dispatch(userAction.updatePassword(password, newPassword))
       .then(() => {
         dispatch(navigationAction.home());
       })
@@ -94,7 +85,7 @@ class Register extends FormView {
     const { dispatch } = this.props;
     return (
       <div className="login-register-container">
-        <h3 className="tac">Join Aslant</h3>
+        <h3 className="tac">Change Password</h3>
         {
           super.render()
         }
@@ -111,9 +102,9 @@ class Register extends FormView {
   }
 }
 
-Register.propTypes = {
+ChangePassword.propTypes = {
   dispatch: PropTypes.func.isRequired,
   showError: PropTypes.func,
 };
 
-export default Register;
+export default ChangePassword;

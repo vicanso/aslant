@@ -30,3 +30,10 @@ export function logout() {
     user: data,
   }));
 }
+
+export function updatePassword(password, newPassword) {
+  return dispatch => user.updatePassword(password, newPassword).then(data => dispatch({
+    type: USER_INFO,
+    user: data,
+  }));
+}

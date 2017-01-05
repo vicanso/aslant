@@ -10,7 +10,7 @@ module.exports = [
   '[POST] [/api/sys/restart] [m.auth.admin & c.system.restart]',
 
   // page view
-  '[GET] [/,/login,/register,/about,/setting,/influxdb/*] [v.home & c.home]',
+  '[GET] [/,/login,/register,/about,/setting,/change-password,/influxdb/*] [v.home & c.home]',
 
   // user
   '[GET] [/api/users/me] [m.session.read & c.user.me]',
@@ -35,6 +35,7 @@ module.exports = [
     ],
   },
   '[PUT] [/api/users/me] [m.session & c.user.refreshSession]',
+  '[GET,PUT] [/api/users/update-password] [m.session.isLogined & c.user.updatePassword]',
 
   {
     methods: ['GET'],

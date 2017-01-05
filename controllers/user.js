@@ -146,6 +146,41 @@ exports.register = (ctx) => {
   });
 };
 
+exports.updatePassword = (ctx) => {
+  const session = ctx.session;
+  const user = session.user;
+  if (user.loginType !== 'password') {
+    throw errors.get(112);
+  }
+  if (ctx.method === 'GET') {
+    user.token = randomToken();
+    session.user = user;
+    ctx.set('Cache-Control', 'no-store');
+    /* eslint no-param-reassign:0 */
+    ctx.body = _.pick(user, ['account', 'token']);
+    return null;
+  }
+  const {
+    account,
+    token,
+  } = user;
+  if (!token) {
+    throw errors.get(102);
+  }
+  const { newPassword, password } = ctx.request.body;
+  return userService.get(account, password, token, 'password').then((doc) => {
+    if (!doc) {
+      throw errors.get(111);
+    }
+    return userService.update(doc._id, {
+      password: newPassword,
+    });
+  }).then((doc) => {
+    ctx.body = pickUserInfo(doc);
+  });
+};
+
+
 exports.like = (ctx) => {
   const {
     version,

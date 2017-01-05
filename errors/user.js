@@ -39,4 +39,12 @@ module.exports = {
     en: 'Should login by password to change gesture',
     status: 403,
   },
+  111: {
+    en: 'Password is incorrect',
+    status: 400,
+  },
+  112: {
+    en: 'Should login by password to change password',
+    status: 400,
+  },
 };

@@ -28,10 +28,12 @@ import {
   VIEW_INFLUX_DASHBOARD,
   VIEW_ABOUT,
   VIEW_SETTING,
+  VIEW_CHANGE_PASSWORD,
 } from '../constants/urls';
 
 import Login from './login';
 import Register from './register';
+import ChangePassword from './change-password';
 import MainHeader from './main-header';
 import MainNav from './main-nav';
 import ServerView from './influxdb/server';
@@ -467,6 +469,15 @@ class App extends Component {
             <Route
               path={VIEW_REGISTER}
               component={() => this.renderRegister()}
+            />
+            <Route
+              path={VIEW_CHANGE_PASSWORD}
+              component={() => (
+                <ChangePassword
+                  showError={this.showError}
+                  dispatch={dispatch}
+                />
+              )}
             />
             <Route
               path={VIEW_ADD_SERVER}

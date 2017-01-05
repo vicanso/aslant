@@ -5,6 +5,7 @@ import {
   USER_LOGIN,
   USER_REGISTER,
   USER_LOGOUT,
+  USER_CHANGE_PASSWORD,
 } from '../constants/urls';
 
 /* eslint no-undef:0*/
@@ -56,4 +57,23 @@ export function refresh() {
   return http.put(USER_ME)
     .set('Cache-Control', 'no-cache')
     .then(res => res.body);
+}
+
+export function updatePassword(password, newPassword) {
+  return http.get(USER_CHANGE_PASSWORD)
+    .set('Cache-Control', 'no-cache')
+    .then((res) => {
+      const {
+        account,
+        token,
+      } = res.body;
+      const code = crypto.sha256(crypto.sha256(`${account}-${password}-${app}`) + token);
+      const pwd = crypto.sha256(`${account}-${newPassword}-${app}`);
+      return http.put(USER_CHANGE_PASSWORD)
+        .set('Cache-Control', 'no-cache')
+        .send({
+          password: code,
+          newPassword: pwd,
+        });
+    }).then(res => res.body);
 }
