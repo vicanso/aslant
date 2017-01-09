@@ -271,7 +271,7 @@ class Influx extends Component {
         Position.LEFT,
       ];
     }
-    const calList = 'none count sum mean median min max spread stddev first last'.split(' ');
+    const calList = 'none count distinct integral mean median mode spread stddev sum bottom first last max min percentile sample top '.split(' ');
     return _.map(cloneCals, (calCondition, index) => {
       const {
         field,
