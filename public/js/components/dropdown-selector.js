@@ -124,6 +124,7 @@ class DropdownSelector extends Component {
           content={menu}
           position={fixPosition}
           autoFocus={false}
+          inline
         >
           <input
             type="text"

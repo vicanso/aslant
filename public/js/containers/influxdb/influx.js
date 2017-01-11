@@ -55,7 +55,8 @@ class Influx extends Component {
       tags: [],
       fields: [],
       tagValueDict: {},
-      conditions: [],
+      tagConditions: [],
+      fieldConditions: [],
       aggregations: [],
       groups: {},
       time: {
@@ -64,7 +65,7 @@ class Influx extends Component {
       },
       view: {
         type: 'line',
-        width: '100%',
+        width: '12',
       },
       data: null,
       showDateTimePicker: false,
@@ -163,7 +164,8 @@ class Influx extends Component {
           tags: [],
           fields: [],
           tagValueDict: {},
-          conditions: [],
+          tagConditions: [],
+          fieldConditions: [],
           aggregations: [],
           groups: {},
         };
@@ -178,7 +180,8 @@ class Influx extends Component {
           tags: [],
           fields: [],
           tagValueDict: {},
-          conditions: [],
+          tagConditions: [],
+          fieldConditions: [],
           aggregations: [],
           groups: {},
         };
@@ -189,7 +192,8 @@ class Influx extends Component {
           tags: [],
           fields: [],
           tagValueDict: {},
-          conditions: [],
+          tagConditions: [],
+          fieldConditions: [],
           aggregations: [],
           groups: {},
         };
@@ -221,7 +225,7 @@ class Influx extends Component {
       dispatch,
       id,
     } = this.props;
-    const keys = 'server database rp measurement fill conditions aggregations customConditions groups time view'.split(' ');
+    const keys = 'server database rp measurement fill tagConditions fieldConditions aggregations customConditions groups time view'.split(' ');
     const data = _.pick(this.state, keys);
     if (!data.customConditions) {
       delete data.customConditions;
@@ -315,7 +319,7 @@ class Influx extends Component {
             selected={[field, aggregation]}
             positions={positions}
             placeholders={['Choose Field', 'Choose Function']}
-            onSelect={(e, item, i) => onSelect(item, i)}
+            onSelect={(item, i) => onSelect(item, i)}
           />
         </div>
       );
@@ -459,23 +463,24 @@ class Influx extends Component {
       </div>
     );
   }
-  renderTagSelectorList(isSmallWindow) {
+  renderConditionSelectorList(options) {
     const {
-      tags,
-      tagValueDict,
-      conditions,
-    } = this.state;
-    const cloneConditions = conditions.slice(0);
-    if (!conditions.length || (_.last(conditions).tag && _.last(conditions).value)) {
-      cloneConditions.push({});
+      isSmallWindow,
+      type,
+      placeholders,
+      getValues,
+    } = options;
+    const conditions = this.state[type].slice(0);
+    if (!conditions.length || (_.last(conditions).key && _.last(conditions).value)) {
+      conditions.push({});
     }
-    const selectorCount = cloneConditions.length;
+    const selectorCount = conditions.length;
     const removeCondition = (index) => {
       const arr = conditions.slice(0);
       arr.splice(index, 1);
-      this.setState({
-        conditions: arr,
-      });
+      const result = {};
+      result[type] = arr;
+      this.setState(result);
     };
     let positions = null;
     if (isSmallWindow) {
@@ -484,28 +489,29 @@ class Influx extends Component {
         Position.LEFT,
       ];
     }
-    return _.map(cloneConditions, (condition, index) => {
+
+    const operators = '= != > >= < <= =~ !~'.split(' ');
+
+    return _.map(conditions, (condition, index) => {
       const {
-        tag,
+        key,
         value,
+        operator,
       } = condition;
-      const values = tagValueDict[condition.tag] || [];
-      const itemsList = [
-        tags,
-        values,
-      ];
-      const onSelect = (item, i) => {
+      const itemsList = getValues(condition);
+      const onSelect = (item, i, op) => {
         const arr = conditions.slice(0);
         if (i === 0) {
           arr[index] = {
-            tag: item,
+            key: item,
           };
-        } else {
+        } else if (i === 1) {
           arr[index].value = item;
         }
-        this.setState({
-          conditions: arr,
-        });
+        arr[index].operator = op;
+        const result = {};
+        result[type] = arr;
+        this.setState(result);
       };
       let clearItem = null;
       if (index !== (selectorCount - 1)) {
@@ -513,24 +519,56 @@ class Influx extends Component {
           removeCondition(index);
         });
       }
-      const key = `tag-${index}-${tag || ''}-${(value || '')}`;
+      const id = `condition-${index}-${key || ''}-${(value || '')}`;
       return (
         <div
           className="co-dropdown-selector-wrapper"
-          key={key}
+          key={id}
         >
           {
             clearItem
           }
           <CoDropdownSelector
             itemsList={itemsList}
-            selected={[tag, value]}
+            selected={[key, value]}
             positions={positions}
-            placeholders={['Choose Tag', 'Choose Value']}
-            onSelect={(e, item, i) => onSelect(item, i)}
+            relation={operators}
+            selectedRelation={operator}
+            placeholders={placeholders}
+            onSelect={onSelect}
           />
         </div>
       );
+    });
+  }
+  renderFieldSelectorList(isSmallWindow) {
+    const {
+      fields,
+    } = this.state;
+    return this.renderConditionSelectorList({
+      isSmallWindow,
+      type: 'fieldConditions',
+      placeholders: ['Choose Field', 'Input field value'],
+      getValues: () => [fields],
+    });
+  }
+  renderTagSelectorList(isSmallWindow) {
+    const {
+      tags,
+      tagValueDict,
+    } = this.state;
+
+    return this.renderConditionSelectorList({
+      isSmallWindow,
+      type: 'tagConditions',
+      placeholders: ['Choose Tag', 'Choose Value'],
+      getValues: (condition) => {
+        const values = tagValueDict[condition.key] || [];
+        return [
+          tags,
+          values,
+        ];
+      },
     });
   }
   renderCustomFilterEditor() {
@@ -609,7 +647,7 @@ class Influx extends Component {
     const {
       time,
     } = this.state;
-    const onSelect = (e, item, index) => {
+    const onSelect = (item, index) => {
       if (item.value === 'custom') {
         this.setState({
           showDateTimePicker: true,
@@ -640,7 +678,7 @@ class Influx extends Component {
         className="co-dropdown-selector-wrapper"
       >
         <CoDropdownSelector
-          relation={'to'}
+          relation={['to']}
           itemsList={[times, times]}
           placeholders={['Start', 'End']}
           positions={positions}
@@ -792,7 +830,9 @@ class Influx extends Component {
             position={defaultPosition || Position.RIGHT}
             onSelect={(e, item) => this.onSelectMeasurement(item)}
           />
-          <h5>Filter By Tag
+          <h5>Filter By Tag</h5>
+          { this.renderTagSelectorList(isSmallWindow) }
+          <h5>Filter By Field
             <a
               href="javascript:;"
               className={classnames(showCustomFilterEditorCls)}
@@ -806,7 +846,7 @@ class Influx extends Component {
               <span className="pt-icon-standard pt-icon-filter" />
             </a>
           </h5>
-          { this.renderTagSelectorList(isSmallWindow) }
+          { this.renderFieldSelectorList() }
           { this.renderCustomFilterEditor() }
           <h5>Functions
             <a

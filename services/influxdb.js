@@ -24,7 +24,7 @@ function getInfluxClient(id, db = '_internal') {
     }
     arr.push(`${config.host}:${config.port}/${db}`);
     const tmpClient = new Influx(arr.join(''));
-    tmpClient.timeout = 3000;
+    tmpClient.timeout = 30000;
     clientMap.set(key, tmpClient);
     return tmpClient;
   });

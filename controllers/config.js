@@ -19,9 +19,15 @@ function validateConfig(data) {
     rp: Joi.string().empty('').optional(),
     measurement: Joi.string().required(),
     fill: Joi.string().empty('').optional(),
-    conditions: Joi.array().items(Joi.object().keys({
-      tag: Joi.string().empty('').optional(),
+    tagConditions: Joi.array().items(Joi.object().keys({
+      key: Joi.string().empty('').optional(),
       value: Joi.string().empty('').optional(),
+      operator: Joi.string().empty('').optional(),
+    })).optional(),
+    fieldConditions: Joi.array().items(Joi.object().keys({
+      key: Joi.string().empty('').optional(),
+      value: Joi.string().empty('').optional(),
+      operator: Joi.string().empty('').optional(),
     })).optional(),
     customConditions: Joi.string().optional(),
     aggregations: Joi.array().items(Joi.object().keys({

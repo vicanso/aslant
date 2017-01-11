@@ -74,17 +74,13 @@ module.exports = (port) => {
 
   app.on('error', _.noop);
 
-  /* istanbul ignore if */
-  if (!port) {
-    return app.listen();
-  }
-
-  const server = app.listen(port, (err) => {
+  const server = app.listen(port || 0, (err) => {
+    const address = server.address();
     /* istanbul ignore if */
     if (err) {
-      console.error(`server listen on http://127.0.0.1:${port}/ fail, err:${err.message}`);
+      console.error(`server listen on http://127.0.0.1:${address.port}/ fail, err:${err.message}`);
     } else {
-      console.info(`server listen on http://127.0.0.1:${port}/`);
+      console.info(`server listen on http://127.0.0.1:${address.port}/`);
     }
   });
   return server;

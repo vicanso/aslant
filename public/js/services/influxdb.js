@@ -210,7 +210,8 @@ export function getInfluxQL(options) {
   const {
     database,
     measurement,
-    conditions,
+    tagConditions,
+    fieldConditions,
     aggregations,
     rp,
     time,
@@ -225,15 +226,17 @@ export function getInfluxQL(options) {
   const ql = new InfluxQL(database);
   ql.measurement = measurement;
   ql.RP = _.get(rp, 'name', '');
+  const conditions = _.compact(_.flatten([fieldConditions, tagConditions]));
   _.forEach(conditions, (item) => {
     const {
-      tag,
+      key,
       value,
+      operator,
     } = item;
-    if (_.isUndefined(tag) || _.isUndefined(value)) {
+    if (_.isUndefined(key) || _.isUndefined(value)) {
       return;
     }
-    ql.condition(tag, value);
+    ql.where(key, value, operator);
   });
   _.forEach(aggregations, (item) => {
     const {
@@ -284,7 +287,7 @@ export function getInfluxQL(options) {
     }
   });
   if (customConditions) {
-    ql.condition(customConditions);
+    ql.where(customConditions);
   }
   if (customFunctions) {
     const arr = customFunctions.split('|');
