@@ -219,6 +219,9 @@ export function getInfluxQL(options) {
     customConditions,
     customFunctions,
     fill,
+    limit,
+    offset,
+    order,
   } = options;
   if (!database || !measurement) {
     return '';
@@ -301,6 +304,15 @@ export function getInfluxQL(options) {
   }
   if (fill) {
     ql.fill = fill;
+  }
+  if (_.isNumber(limit)) {
+    ql.limit = limit;
+  }
+  if (_.isNumber(offset)) {
+    ql.offset = offset;
+  }
+  if (order) {
+    ql.order = order;
   }
   return ql.toSelect();
 }

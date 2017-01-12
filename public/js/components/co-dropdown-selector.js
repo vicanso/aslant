@@ -80,6 +80,7 @@ class CoDropdownSelector extends Component {
       onSelect,
       selected,
       positions,
+      onClear,
     } = this.props;
     const {
       selectedRelation,
@@ -103,6 +104,12 @@ class CoDropdownSelector extends Component {
         />
       );
     }
+    let clearItem;
+    if (_.isFunction(onClear)) {
+      clearItem = () => {
+        onClear(index);
+      };
+    }
     return (
       <DropdownSelector
         items={items}
@@ -110,6 +117,7 @@ class CoDropdownSelector extends Component {
         selected={selected && selected[index]}
         position={positions && positions[index]}
         onSelect={(e, item) => selectedHandler(item, index, selectedRelation)}
+        onClear={clearItem}
       />
     );
   }
@@ -145,6 +153,7 @@ CoDropdownSelector.propTypes = {
   itemsList: PropTypes.array.isRequired,
   placeholders: PropTypes.array,
   onSelect: PropTypes.func,
+  onClear: PropTypes.func,
   selected: PropTypes.array,
   positions: PropTypes.array,
   selectedRelation: PropTypes.string,

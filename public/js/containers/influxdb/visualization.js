@@ -221,7 +221,7 @@ class Visualization extends Component {
     const style = {
       margin: '10px',
     };
-    const chartHeight = _.get(this.props, 'setting.chart.height');
+    const chartHeight = view.height || _.get(this.props, 'setting.chart.height');
     // the height of circle chart is fixed
     if (chartHeight && view.type !== 'circle') {
       style.height = `${chartHeight}px`;

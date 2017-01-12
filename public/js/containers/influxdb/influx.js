@@ -59,6 +59,9 @@ class Influx extends Component {
       fieldConditions: [],
       aggregations: [],
       groups: {},
+      limit: 1000,
+      offset: 0,
+      order: '',
       time: {
         start: '',
         end: '',
@@ -66,6 +69,7 @@ class Influx extends Component {
       view: {
         type: 'line',
         width: '12',
+        height: '',
       },
       data: null,
       showDateTimePicker: false,
@@ -75,6 +79,7 @@ class Influx extends Component {
       showCustomFunctionEditor: false,
     };
     this.showError = props.showError;
+    this.inputs = {};
   }
 
   componentWillUpdate(nextProps, nextState) {
@@ -225,7 +230,7 @@ class Influx extends Component {
       dispatch,
       id,
     } = this.props;
-    const keys = 'server database rp measurement fill tagConditions fieldConditions aggregations customConditions groups time view'.split(' ');
+    const keys = 'server database rp measurement fill limit offset tagConditions fieldConditions aggregations customConditions groups time view'.split(' ');
     const data = _.pick(this.state, keys);
     if (!data.customConditions) {
       delete data.customConditions;
@@ -305,7 +310,7 @@ class Influx extends Component {
           removeCondition(index);
         });
       }
-      const key = `field-${index}-${field || ''}-${(aggregation || '')}`;
+      const key = `field-${index}-${field || ''}-${aggregation || ''}`;
       return (
         <div
           className="co-dropdown-selector-wrapper"
@@ -366,6 +371,7 @@ class Influx extends Component {
     } = this.state;
     const selectedChartType = _.find(CHART_TYPES, item => item.type === view.type);
     const selectedChartWidth = _.find(CHART_WIDTHS, item => item.width === view.width);
+    const cloneView = _.extend({}, view);
     return (
       <div
         style={{
@@ -380,9 +386,9 @@ class Influx extends Component {
             selected={selectedChartType}
             position={Position.RIGHT_BOTTOM}
             onSelect={(e, item) => {
-              view.type = item.type;
+              cloneView.type = item.type;
               this.setState({
-                view,
+                view: cloneView,
               });
             }}
           />
@@ -395,10 +401,30 @@ class Influx extends Component {
             selected={selectedChartWidth}
             position={isSmallWindow ? Position.LEFT_BOTTOM : Position.RIGHT_BOTTOM}
             onSelect={(e, item) => {
-              view.width = item.width;
+              cloneView.width = item.width;
               this.setState({
-                view,
+                view: cloneView,
               });
+            }}
+          />
+        </div>
+        <div className="mleft5">
+          <input
+            type="number"
+            className="pt-input pt-fill"
+            placeholder="view height"
+            defaultValue={view.height}
+            ref={(c) => {
+              this.inputs.viewHeight = c;
+            }}
+            onChange={() => {
+              const v = parseInt(this.inputs.viewHeight.value, 10);
+              if (v) {
+                cloneView.height = v;
+                this.setState({
+                  view: cloneView,
+                });
+              }
             }}
           />
         </div>
@@ -647,6 +673,7 @@ class Influx extends Component {
     const {
       time,
     } = this.state;
+    const cloneTime = _.extend({}, time);
     const onSelect = (item, index) => {
       if (item.value === 'custom') {
         this.setState({
@@ -655,12 +682,12 @@ class Influx extends Component {
         return;
       }
       if (index === 0) {
-        time.start = item.value;
+        cloneTime.start = item.value;
       } else {
-        time.end = item.value;
+        cloneTime.end = item.value;
       }
       this.setState({
-        time,
+        time: cloneTime,
       });
     };
     let positions = [
@@ -684,6 +711,16 @@ class Influx extends Component {
           positions={positions}
           onSelect={onSelect}
           selected={[time.start, time.end]}
+          onClear={(index) => {
+            if (index === 0) {
+              cloneTime.start = '';
+            } else {
+              cloneTime.end = '';
+            }
+            this.setState({
+              time: cloneTime,
+            });
+          }}
         />
       </div>
     );
@@ -709,6 +746,103 @@ class Influx extends Component {
       />
     );
   }
+  renderOtherOptions(defaultPosition) {
+    const {
+      fill,
+      offset,
+      limit,
+      order,
+    } = this.state;
+    return (
+      <div className="other-options-wrapper">
+        <div
+          className="column-1-2"
+          key="limit-option"
+        ><div>
+          <input
+            placeholder="limit"
+            type="number"
+            className="pt-input pt-fill"
+            defaultValue={limit}
+            ref={(c) => {
+              this.inputs.limitOption = c;
+            }}
+            onChange={() => {
+              const v = parseInt(this.inputs.limitOption.value, 10);
+              if (!v) {
+                return;
+              }
+              this.setState({
+                limit: v,
+              });
+            }}
+          />
+        </div></div>
+        <div
+          className="column-1-2"
+          key="offset-option"
+        ><div>
+          <input
+            placeholder="offset"
+            type="number"
+            className="pt-input pt-fill"
+            defaultValue={offset}
+            ref={(c) => {
+              this.inputs.offsetOption = c;
+            }}
+            onChange={() => {
+              const v = parseInt(this.inputs.offsetOption.value, 10);
+              if (!v) {
+                return;
+              }
+              this.setState({
+                offset: v,
+              });
+            }}
+          />
+        </div></div>
+        <div
+          className="column-1-2"
+          key="fill-option"
+        ><div>
+          <DropdownSelector
+            placeholder={'Fill'}
+            selected={fill}
+            items={['linear', 'none', 'null', 'previous']}
+            position={defaultPosition}
+            onSelect={(e, item) => this.setState({
+              fill: item,
+            })}
+            onChange={(e, value) => this.setState({
+              fill: value,
+            })}
+            onClear={() => this.setState({
+              fill: '',
+            })}
+          />
+        </div></div>
+        <div
+          className="column-1-2"
+          key="order-option"
+        ><div>
+          <DropdownSelector
+            placeholder={'Order'}
+            selected={order}
+            items={['asc', 'desc']}
+            position={defaultPosition}
+            onClear={() => {
+              this.setState({
+                order: '',
+              });
+            }}
+            onSelect={(e, item) => this.setState({
+              order: item,
+            })}
+          />
+        </div></div>
+      </div>
+    );
+  }
   render() {
     const {
       servers,
@@ -725,7 +859,6 @@ class Influx extends Component {
       measurements,
       measurement,
       desc,
-      fill,
       showCustomFilterEditor,
       showCustomFunctionEditor,
     } = this.state;
@@ -876,19 +1009,8 @@ class Influx extends Component {
             { this.renderDatetimePicker() }
             { this.renderTimeSelector(isSmallWindow) }
           </div>
-          <h5>Fill Option</h5>
-          <DropdownSelector
-            placeholder={'Choose Fill'}
-            selected={fill}
-            items={['linear', 'none', 'null', 'previous']}
-            position={defaultPosition}
-            onSelect={(e, item) => this.setState({
-              fill: item,
-            })}
-            onChange={(e, value) => this.setState({
-              fill: value,
-            })}
-          />
+          <h5>Other Options</h5>
+          { this.renderOtherOptions(defaultPosition) }
           <h5>Chart Setting</h5>
           { this.renderChartSetting(isSmallWindow) }
         </div>

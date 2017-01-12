@@ -66,7 +66,7 @@
     "lodash": "^4.17.4",
     "moment": "^2.15.2",
     "mongoose": "^4.7.5",
-    "performance-nodejs": "^1.0.4",
+    "performance-nodejs": "^1.0.5",
     "pug": "^2.0.0-beta6",
     "react": "^15.3.2",
     "react-addons-css-transition-group": "^15.3.2",

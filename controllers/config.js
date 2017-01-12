@@ -19,6 +19,9 @@ function validateConfig(data) {
     rp: Joi.string().empty('').optional(),
     measurement: Joi.string().required(),
     fill: Joi.string().empty('').optional(),
+    limit: Joi.number().integer().optional(),
+    offset: Joi.number().integer().optional(),
+    order: Joi.string().empty('').optional(),
     tagConditions: Joi.array().items(Joi.object().keys({
       key: Joi.string().empty('').optional(),
       value: Joi.string().empty('').optional(),
@@ -45,6 +48,7 @@ function validateConfig(data) {
     view: Joi.object().keys({
       width: Joi.string().required(),
       type: Joi.string().required(),
+      height: Joi.number().integer().optional(),
     }).required(),
   });
 }
