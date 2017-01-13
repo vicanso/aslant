@@ -5,7 +5,6 @@ import {
   Position,
 } from '@blueprintjs/core';
 import moment from 'moment';
-import classnames from 'classnames';
 
 import DropdownSelector from '../../components/dropdown-selector';
 import InfluxVisualizationView from './visualization';
@@ -75,8 +74,6 @@ class Influx extends Component {
       showDateTimePicker: false,
       customConditions: '',
       customFunctions: '',
-      showCustomFilterEditor: false,
-      showCustomFunctionEditor: false,
     };
     this.showError = props.showError;
     this.inputs = {};
@@ -332,12 +329,8 @@ class Influx extends Component {
   }
   renderCustomFunctionEditor() {
     const {
-      showCustomFunctionEditor,
       customFunctions,
     } = this.state;
-    if (!showCustomFunctionEditor) {
-      return null;
-    }
     return (
       <div>
         <h5>Custom Functions</h5>
@@ -381,6 +374,7 @@ class Influx extends Component {
         <div className="mright5">
           <DropdownSelector
             key={'chart-type'}
+            title="Choose chart type"
             placeholder={'Choose chart type'}
             items={CHART_TYPES}
             selected={selectedChartType}
@@ -396,6 +390,7 @@ class Influx extends Component {
         <div className="mleft5">
           <DropdownSelector
             key={'chart-width'}
+            title="Choose chart width"
             placeholder={'Choose chart width'}
             items={CHART_WIDTHS}
             selected={selectedChartWidth}
@@ -411,8 +406,9 @@ class Influx extends Component {
         <div className="mleft5">
           <input
             type="number"
+            title="View height"
             className="pt-input pt-fill"
-            placeholder="view height"
+            placeholder="View height"
             defaultValue={view.height}
             ref={(c) => {
               this.inputs.viewHeight = c;
@@ -600,11 +596,7 @@ class Influx extends Component {
   renderCustomFilterEditor() {
     const {
       customConditions,
-      showCustomFilterEditor,
     } = this.state;
-    if (!showCustomFilterEditor) {
-      return null;
-    }
     return (
       <div>
         <h5>Custom Filter</h5>
@@ -859,8 +851,6 @@ class Influx extends Component {
       measurements,
       measurement,
       desc,
-      showCustomFilterEditor,
-      showCustomFunctionEditor,
     } = this.state;
     if (!servers) {
       return (
@@ -904,20 +894,11 @@ class Influx extends Component {
       influxQL = influxdbService.getInfluxQL(this.state);
     }
 
-    const showCustomFilterEditorCls = {};
-    const showCustomFunctionEditorCls = {};
-
     let defaultPosition;
     /* eslint no-undef:0 */
     const isSmallWindow = window.screen.width < 800;
     if (isSmallWindow) {
       defaultPosition = Position.BOTTOM;
-    }
-    if (showCustomFilterEditor) {
-      showCustomFilterEditorCls.active = true;
-    }
-    if (showCustomFunctionEditor) {
-      showCustomFunctionEditorCls.active = true;
     }
     return (
       <div className="add-influx-wrapper">
@@ -965,38 +946,12 @@ class Influx extends Component {
           />
           <h5>Filter By Tag</h5>
           { this.renderTagSelectorList(isSmallWindow) }
-          <h5>Filter By Field
-            <a
-              href="javascript:;"
-              className={classnames(showCustomFilterEditorCls)}
-              title="show the custom filter editor"
-              onClick={() => {
-                this.setState({
-                  showCustomFilterEditor: !showCustomFilterEditor,
-                });
-              }}
-            >
-              <span className="pt-icon-standard pt-icon-filter" />
-            </a>
-          </h5>
+          <h5>Filter By Field </h5>
           { this.renderFieldSelectorList() }
-          { this.renderCustomFilterEditor() }
-          <h5>Functions
-            <a
-              href="javascript:;"
-              className={classnames(showCustomFunctionEditorCls)}
-              title="show the custom function editor"
-              onClick={() => {
-                this.setState({
-                  showCustomFunctionEditor: !showCustomFunctionEditor,
-                });
-              }}
-            >
-              <span className="pt-icon-large pt-icon-variable" />
-            </a>
-          </h5>
+          <h5>Functions</h5>
           { this.renderFieldFunctionList(isSmallWindow) }
           { this.renderCustomFunctionEditor() }
+          { this.renderCustomFilterEditor() }
           <h5>Group By</h5>
           { this.renderGroupSelectorList(defaultPosition) }
           <h5>Time</h5>
