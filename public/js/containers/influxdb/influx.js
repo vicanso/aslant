@@ -421,10 +421,12 @@ class Influx extends Component {
               const v = parseInt(this.inputs.viewHeight.value, 10);
               if (v) {
                 cloneView.height = v;
-                this.setState({
-                  view: cloneView,
-                });
+              } else {
+                delete cloneView.height;
               }
+              this.setState({
+                view: cloneView,
+              });
             }}
           />
         </div>

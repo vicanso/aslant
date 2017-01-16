@@ -427,6 +427,7 @@ class App extends Component {
     const handleLink = this.handleLink;
     const cls = {
       'content-wrapper': true,
+      clearfix: true,
       fill: hiddenNav,
     };
     const mainNavStyle = {};
