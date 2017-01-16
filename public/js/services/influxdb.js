@@ -236,7 +236,7 @@ export function getInfluxQL(options) {
       value,
       operator,
     } = item;
-    if (_.isUndefined(key) || _.isUndefined(value)) {
+    if (_.isUndefined(key) || _.isUndefined(value) || value === '') {
       return;
     }
     ql.where(key, value, operator);
