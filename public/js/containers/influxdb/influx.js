@@ -68,7 +68,7 @@ class Influx extends Component {
       view: {
         type: 'line',
         width: '12',
-        height: '',
+        // height: null,
       },
       data: null,
       showDateTimePicker: false,
@@ -262,7 +262,6 @@ class Influx extends Component {
     if (!cloneCals.length || (_.last(cloneCals).aggregation && _.last(cloneCals).field)) {
       cloneCals.push({});
     }
-    const selectorCount = cloneCals.length;
     const removeCondition = (index) => {
       const arr = aggregations.slice(0);
       arr.splice(index, 1);
@@ -301,12 +300,9 @@ class Influx extends Component {
           aggregations: arr,
         });
       };
-      let clearItem = null;
-      if (index !== (selectorCount - 1)) {
-        clearItem = getClearItem(() => {
-          removeCondition(index);
-        });
-      }
+      const clearItem = getClearItem(() => {
+        removeCondition(index);
+      });
       const key = `field-${index}-${field || ''}-${aggregation || ''}`;
       return (
         <div
@@ -498,7 +494,6 @@ class Influx extends Component {
     if (!conditions.length || (_.last(conditions).key && _.last(conditions).value)) {
       conditions.push({});
     }
-    const selectorCount = conditions.length;
     const removeCondition = (index) => {
       const arr = conditions.slice(0);
       arr.splice(index, 1);
@@ -537,12 +532,9 @@ class Influx extends Component {
         result[type] = arr;
         this.setState(result);
       };
-      let clearItem = null;
-      if (index !== (selectorCount - 1)) {
-        clearItem = getClearItem(() => {
-          removeCondition(index);
-        });
-      }
+      const clearItem = getClearItem(() => {
+        removeCondition(index);
+      });
       const id = `condition-${index}-${key || ''}-${(value || '')}`;
       return (
         <div

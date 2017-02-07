@@ -1,0 +1,17 @@
+version: "3"
+services:
+  aslant-mongo:
+    image: "mongo"
+  aslant-redis:
+    image: "redis:alpine"
+  aslant:
+    build: .
+    depends_on:
+      - aslant-mongo
+      - aslant-redis
+    environment:
+      - "NODE_ENV=production"
+      - "MONGO=mongodb://aslant-mongo/aslant"
+      - "REDIS=redis://aslant-redis/"
+    ports:
+      - "5018:5018"
