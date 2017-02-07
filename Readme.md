@@ -22,7 +22,11 @@ docker build -t vicanso/aslant .
 
 ### docker run
 
-docker run -d -p 5018:5018 -e NODE_ENV=production -e MONGO=mongodb://127.0.0.1/aslant -e REDIS=redis://127.0.0.1/ -e INFLUX=http://127.0.0.1:8086/aslant aslant
+docker run -d -p 5018:5018 -e NODE_ENV=production -e MONGO=mongodb://127.0.0.1/aslant -e REDIS=redis://127.0.0.1/ -e INFLUX=http://127.0.0.1:8086/aslant vicanso/aslant
+
+### docker compose
+
+docker-compose up -d .
 
 ## License
 
