@@ -2,6 +2,8 @@ version: "3"
 services:
   aslant-mongo:
     image: "mongo"
+    volumes:
+      - $HOME/aslant-mongo:/data
   aslant-redis:
     image: "redis:alpine"
   aslant:

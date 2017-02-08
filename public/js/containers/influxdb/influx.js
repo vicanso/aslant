@@ -778,7 +778,7 @@ class Influx extends Component {
             }}
             onChange={() => {
               const v = parseInt(this.inputs.offsetOption.value, 10);
-              if (!v) {
+              if (!_.isNumber(v)) {
                 return;
               }
               this.setState({
