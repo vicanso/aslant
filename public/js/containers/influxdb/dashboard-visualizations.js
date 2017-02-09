@@ -230,7 +230,6 @@ class DashboardVisualizations extends Component {
               className="interval-selector"
               style={{
                 height: '30px',
-                overflow: 'hidden',
               }}
             >
               <DropdownSelector
@@ -250,7 +249,6 @@ class DashboardVisualizations extends Component {
               className="time-selector"
               style={{
                 height: '30px',
-                overflow: 'hidden',
               }}
             >
               <DropdownSelector

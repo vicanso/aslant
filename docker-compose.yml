@@ -3,7 +3,7 @@ services:
   aslant-mongo:
     image: "mongo"
     volumes:
-      - $HOME/aslant-mongo:/data
+      - aslant-mongo-volume:/data
   aslant-redis:
     image: "redis:alpine"
   aslant:
@@ -17,3 +17,5 @@ services:
       - "REDIS=redis://aslant-redis/"
     ports:
       - "5018:5018"
+volumes:
+  aslant-mongo-volume: {}
