@@ -26,6 +26,7 @@ exports.showRetentionPolicies = (ctx) => {
 };
 
 exports.addRetentionPolicy = (ctx) => {
+  const timing = ctx.state.timing;
   const data = Joi.validateThrow(ctx.request.body, {
     name: Joi.string().required(),
     duration: Joi.string().required(),
@@ -39,34 +40,44 @@ exports.addRetentionPolicy = (ctx) => {
     id,
     db,
   } = ctx.params;
+  timing.start('getServer');
   return serverService.getById(id).then((doc) => {
+    timing.end('getServer');
     if (doc.account !== account) {
       throw errors.get(108);
     }
+    timing.start('addRetentionPolicy');
     return influxdbService.addRetentionPolicy(id, db, data);
   }).then(() => {
     ctx.status = 201;
+    timing.end('addRetentionPolicy');
   });
 };
 
 exports.removeRetentionPolicy = (ctx) => {
+  const timing = ctx.state.timing;
   const account = ctx.session.user.account;
   const {
     id,
     db,
     rp,
   } = ctx.params;
+  timing.start('getServer');
   return serverService.getById(id).then((doc) => {
+    timing.end('getServer');
     if (doc.account !== account) {
       throw errors.get(108);
     }
+    timing.start('dropRetentionPolicy');
     return influxdbService.dropRetentionPolicy(id, db, rp);
   }).then(() => {
     ctx.body = null;
+    timing.end('dropRetentionPolicy');
   });
 };
 
 exports.updateRetentionPolicy = (ctx) => {
+  const timing = ctx.state.timing;
   const data = Joi.validateThrow(ctx.request.body, {
     duration: Joi.string().optional(),
     shardDuration: Joi.string().optional(),
@@ -80,12 +91,16 @@ exports.updateRetentionPolicy = (ctx) => {
     db,
   } = ctx.params;
   data.name = ctx.params.rp;
+  timing.start('getServer');
   return serverService.getById(id).then((doc) => {
+    timing.end('getServer');
     if (doc.account !== account) {
       throw errors.get(108);
     }
+    timing.start('updateRetentionPolicy');
     return influxdbService.updateRetentionPolicy(id, db, data);
   }).then(() => {
+    timing.end('updateRetentionPolicy');
     ctx.status = 201;
   });
 };

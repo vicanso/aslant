@@ -70,7 +70,7 @@ _.defer(() => {
   globarErrorCatch();
   statistics();
   initRender();
-  http.timeout = 10 * 1000;
+  http.timeout(10 * 1000);
   _.delay(() => {
     userService.refresh();
   }, 3000);

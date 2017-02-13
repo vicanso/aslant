@@ -15,7 +15,15 @@ request.Request.prototype.version = function version(v) {
 };
 
 // request timeout(ms)
-export const timeout = 0;
+let requestTimeout = 0;
+
+export function timeout(ms) {
+  if (_.isNumber(ms)) {
+    requestTimeout = ms;
+  }
+  return requestTimeout;
+}
+
 // plugin for superagent
 const plugins = [];
 export function use(fn) {
@@ -44,8 +52,8 @@ function sortQuery(query) {
 }
 
 function defaultHandle(req, query) {
-  if (timeout) {
-    req.timeout(timeout);
+  if (requestTimeout) {
+    req.timeout(requestTimeout);
   }
   if (query) {
     req.query(sortQuery(query));

@@ -57,8 +57,10 @@ exports.cacheMaxAge = maxAge => (ctx, next) => next().then(() => {
 
 
 exports.routeStats = (ctx, next) => {
+  const end = ctx.state.timing.start('route');
   const start = Date.now();
   return next().then(() => {
+    end();
     const use = Date.now() - start;
     const method = ctx.method.toUpperCase();
     const layer = _.find(ctx.matched, tmp => _.indexOf(tmp.methods, method) !== -1);

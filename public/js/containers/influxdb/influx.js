@@ -238,7 +238,7 @@ class Influx extends Component {
     const name = this.influxName.value || '';
     data.name = name;
     data.desc = this.influxDesc.value || '';
-    const emptyKeys = _.filter('name server database measurement'.split(' '), key => !data[key]);
+    const emptyKeys = _.filter('name server database measurement desc'.split(' '), key => !data[key]);
     if (emptyKeys.length) {
       this.showError(`${emptyKeys.join(',')} can not be null`);
       return;
@@ -1013,7 +1013,9 @@ class Influx extends Component {
               <button
                 className="pt-button pt-intent-primary pt-fill"
                 onClick={() => this.saveInfluxConfig()}
-              >Save</button>
+              >
+                { id ? 'Update' : 'Save' }
+              </button>
             </div>
           </div>
           { this.renderStatsView() }

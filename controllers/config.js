@@ -87,6 +87,7 @@ exports.list = (ctx) => {
 };
 
 exports.get = (ctx) => {
+  const timing = ctx.state.timing;
   const query = Joi.validateThrow(ctx.query, {
     fill: Joi.string().optional(),
   });
@@ -113,15 +114,19 @@ exports.get = (ctx) => {
       measurement,
     } = doc;
     if (server && needToFill('dbs')) {
+      const fillDbEnd = timing.start('fillDB');
       const fn = influxdbService.showDatabases(server).then((dbs) => {
         doc.dbs = dbs.sort();
+        fillDbEnd();
       });
       fns.push(fn);
     }
     if (database && needToFill('measurements')) {
       const args = [server, database];
+      const showMeasurementsEnd = timing.start('showMeasurements');
       const fn1 = influxdbService.showMeasurements(...args).then((measurements) => {
         doc.measurements = measurements.sort();
+        showMeasurementsEnd();
       });
 
       const fn2 = influxdbService.showRetentionPolicies(...args).then((rps) => {
@@ -132,14 +137,18 @@ exports.get = (ctx) => {
     if (measurement) {
       const args = [server, database, measurement];
       if (needToFill('series')) {
+        const showSeriesEnd = timing.start('showSeries');
         const fn1 = influxdbService.showSeries(...args).then((series) => {
           doc.series = series;
+          showSeriesEnd();
         });
         fns.push(fn1);
       }
       if (needToFill('field-keys')) {
+        const showFieldKeysEnd = timing.start('showFieldKeys');
         const fn2 = influxdbService.showFieldKeys(...args).then((data) => {
           doc.fields = _.map(_.get(data, '[0].values'), item => item.key);
+          showFieldKeysEnd();
         });
         fns.push(fn2);
       }

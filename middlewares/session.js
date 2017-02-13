@@ -20,10 +20,15 @@ const sessionMiddleware = session({
 });
 
 const normal = (ctx, next) => {
+  if (ctx.session) {
+    return next();
+  }
   if (ctx.get('Cache-Control') !== 'no-cache' && ctx.query.cache !== 'false') {
     throw errors.get(6);
   }
   const startAt = process.hrtime();
+  const timing = ctx.state.timing;
+  const end = timing.start('session');
   return sessionMiddleware(ctx, () => {
     const diff = process.hrtime(startAt);
     const time = (diff[0] * 1e3) + (diff[1] * 1e-6);
@@ -31,6 +36,7 @@ const normal = (ctx, next) => {
     if (time > 10) {
       console.info(`get session user:${account} use:${time.toFixed(2)}ms`);
     }
+    end();
     return next();
   });
 };
