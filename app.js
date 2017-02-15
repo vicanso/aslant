@@ -1,20 +1,42 @@
 require('./helpers/local-require');
 
+
+const config = localRequire('config');
+const utils = localRequire('helpers/utils');
+
+function initLogger() {
+  const logger = require('timtam-logger');
+  logger.set('app', config.app);
+  logger.wrap(console);
+  logger.add(config.udpLog);
+}
+
+if (config.udpLog) {
+  initLogger();
+}
+
 localRequire('helpers/bluebird');
 localRequire('helpers/joi');
 localRequire('models');
 
-const utils = localRequire('helpers/utils');
-const config = localRequire('config');
 
 localRequire('helpers/server')(config.port);
 localRequire('tasks');
 
+function gracefulExit() {
+  console.info('the application will be restart by SIGINT');
+  utils.checkToExit(3);
+}
 process.on('unhandledRejection', (err) => {
   console.error(`unhandledRejection:${err.message}, stack:${err.stack}`);
-  utils.checkToExit(3);
+  gracefulExit();
 });
 process.on('uncaughtException', (err) => {
   console.error(`uncaughtException:${err.message}, stack:${err.stack}`);
-  utils.checkToExit(3);
+  gracefulExit();
 });
+
+if (config.env !== 'development') {
+  process.on('SIGINT', gracefulExit);
+  process.on('SIGQUIT', gracefulExit);
+}
