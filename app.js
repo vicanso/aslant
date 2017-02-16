@@ -6,7 +6,10 @@ const utils = localRequire('helpers/utils');
 
 function initLogger() {
   const logger = require('timtam-logger');
-  logger.set('app', config.app);
+  logger.set({
+    app: config.app,
+    prefix: config.name,
+  });
   logger.wrap(console);
   logger.add(config.udpLog);
 }

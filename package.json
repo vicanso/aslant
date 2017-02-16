@@ -80,7 +80,7 @@
     "simple-stringify": "^1.0.0",
     "superagent": "^3.4.2",
     "supertiming": "^1.0.1",
-    "timtam-logger": "^1.0.0",
+    "timtam-logger": "^1.1.0",
     "ulid": "^0.1.0",
     "url-join": "^1.1.0"
   },
