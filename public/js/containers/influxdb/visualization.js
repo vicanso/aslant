@@ -28,6 +28,9 @@ class Visualization extends Component {
     const different = nextProps.time !== time;
     const updated = nextProps.forceUpdatedAt && nextProps.forceUpdatedAt !== forceUpdatedAt;
     if (different || updated) {
+      this.setState({
+        status: 'fetching',
+      });
       this.getData(nextProps);
     }
   }
@@ -42,7 +45,9 @@ class Visualization extends Component {
       config,
       showError,
     } = this.props;
-    const result = {};
+    const result = {
+      status: '',
+    };
     /* eslint no-underscore-dangle:0 */
     influxdbService.getConfig(config._id, {
       fill: ['series'].join(','),
@@ -82,6 +87,7 @@ class Visualization extends Component {
     }
     const {
       time,
+      showError,
     } = this.props;
     const {
       server,
@@ -93,10 +99,19 @@ class Visualization extends Component {
     const ql = influxdbService.getInfluxQL(config);
     if (interval) {
       this.timer = setInterval(() => {
+        this.setState({
+          status: 'fetching',
+        });
         influxdbService.query(server, database, ql).then((data) => {
           this.setState({
             data,
+            status: '',
           });
+        }).catch((err) => {
+          this.setState({
+            status: '',
+          });
+          showError(err);
         });
       }, interval * 1000);
     }
@@ -243,9 +258,15 @@ class Visualization extends Component {
     const {
       interval,
     } = this.props;
+    const {
+      status,
+    } = this.state;
     this.startAutoRefresh(interval);
     return (
       <div className="influx-visualization">
+        {
+          status === 'fetching' && <div className="fetching">Fetching...</div>
+        }
         { this.renderVisualization() }
       </div>
     );
