@@ -39,6 +39,7 @@ exports.update = (conditon, data) => {
     if (!doc) {
       throw errors.get(4);
     }
+    /* eslint no-underscore-dangle:0 */
     influxdbService.clearClientWithPrefix(doc._id.toString());
     return mask(doc.toJSON());
   });

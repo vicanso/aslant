@@ -13,7 +13,7 @@ const isExists = (condition) => {
 exports.add = (data) => {
   const User = Models.get('User');
   return isExists({
-    account: data.account
+    account: data.account,
   }).then((exists) => {
     if (exists) {
       throw errors.get(104);
@@ -24,7 +24,7 @@ exports.add = (data) => {
   }).then((exists) => {
     if (exists) {
       throw errors.get(105);
-    }    
+    }
     const userData = _.clone(data);
     const date = (new Date()).toISOString();
     userData.createdAt = date;
@@ -49,7 +49,7 @@ exports.get = (account, password, token, type) => {
         return false;
       }
       return true;
-    }
+    };
     if (type === 'gesture') {
       return settingServcice.getByAccount(account).then((setting) => {
         if (!validatePassword(setting.gesture)) {
@@ -67,16 +67,14 @@ exports.get = (account, password, token, type) => {
 
 exports.update = (id, data) => {
   const User = Models.get('User');
-  return User.findByIdAndUpdate(id, data).then((doc) => {
-    return doc.toJSON();
-  });
+  return User.findByIdAndUpdate(id, data).then(doc => doc.toJSON());
 };
 
 exports.addLoginRecord = (data) => {
   const Login = Models.get('Login');
+  /* eslint no-param-reassign:0 */
   data.createdAt = (new Date()).toISOString();
-  return (new Login(data)).save().catch(err => {
-    console.error(`add login record fail, account:${data.account}`);
+  return (new Login(data)).save().catch((err) => {
+    console.error(`add login record fail, account:${data.account}, err:${err.message}`);
   });
 };
-

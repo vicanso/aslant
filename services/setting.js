@@ -1,4 +1,3 @@
-const _ = require('lodash');
 
 const errors = localRequire('helpers/errors');
 const Models = localRequire('models');
@@ -8,16 +7,13 @@ exports.add = (data) => {
   return (new Setting(data)).save().then(doc => doc.toJSON());
 };
 
-exports.getByAccount = (account) => {
-  return Models.get('Setting').findOne({
-    account,
-  }).then((doc) => {
+exports.getByAccount = account => Models.get('Setting').findOne({ account })
+  .then((doc) => {
     if (!doc) {
       return null;
     }
     return doc.toJSON();
   });
-};
 
 exports.update = (condition, data) => {
   const Setting = Models.get('Setting');

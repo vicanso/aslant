@@ -24,7 +24,7 @@
   "scripts": {
     "size": "t=\"$(npm pack .)\"; wc -c \"${t}\"; tar tvf \"${t}\"; rm \"${t}\";",
     "eslint-es6": "node ./node_modules/.bin/eslint public/js/*.js public/js/*/*.js public/js/*/*/*.js",
-    "eslint-node": "node ./node_modules/.bin/eslint *.js helpers/*.js middlewares/*.js router/*.js controllers/*.js models/*.js",
+    "eslint-node": "node ./node_modules/.bin/eslint *.js helpers/*.js middlewares/*.js router/*.js controllers/*.js models/*.js services/*.js",
     "eslint": "npm run eslint-node && npm run eslint-es6",
     "build": "NODE_ENV=production node ./node_modules/.bin/gulp",
     "watch": "node node_modules/.bin/webpack --progress --colors --watch",
@@ -46,7 +46,7 @@
     "influxdb-nodejs": "^2.5.1",
     "joi": "^10.2.2",
     "jtfileimporter": "^1.0.0",
-    "koa": "^2.0.0-alpha.8",
+    "koa": "^2.0.1",
     "koa-bodyparser": "^3.2.0",
     "koa-connection-limit": "^2.0.5",
     "koa-convert": "^1.2.0",
@@ -79,7 +79,7 @@
     "require-tree": "^1.1.1",
     "simple-stringify": "^1.0.0",
     "superagent": "^3.4.2",
-    "supertiming": "^1.0.1",
+    "supertiming": "^1.0.2",
     "timtam-logger": "^1.1.0",
     "ulid": "^0.1.0",
     "url-join": "^1.1.0"

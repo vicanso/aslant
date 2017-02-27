@@ -258,9 +258,9 @@ class MainNav extends Component {
     };
     if (hidden) {
       cls.minimize = true;
-      iconCls['pt-icon-maximize'] = true;
+      iconCls['pt-icon-align-justify'] = true;
     } else {
-      iconCls['pt-icon-minimize'] = true;
+      iconCls['pt-icon-align-center'] = true;
     }
     return (
       <div
@@ -277,7 +277,7 @@ class MainNav extends Component {
           <span className={classnames(iconCls)} />
         </a>
         {
-          !hidden && this.renderNav()
+          this.renderNav()
         }
       </div>
     );
@@ -292,6 +292,7 @@ MainNav.propTypes = {
   onToggle: PropTypes.func.isRequired,
   hidden: PropTypes.bool.isRequired,
   style: PropTypes.object,
+  navigation: PropTypes.object,
 };
 
 export default MainNav;

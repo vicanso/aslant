@@ -1,6 +1,7 @@
 const _ = require('lodash');
 
 const Models = localRequire('models');
+const errors = localRequire('errors');
 
 exports.list = (conditions) => {
   const InfluxDashboard = Models.get('Dashboard');

@@ -13,14 +13,12 @@ exports.list = (conditions, sort) => {
   return InfluxConfig.find(conditions).sort(sort).then(docs => _.map(docs, item => item.toJSON()));
 };
 
-exports.get = (id) => {
-  return Models.get('Config').findById(id).then((doc) => {
-    if (!doc) {
-      return null;
-    }
-    return doc.toJSON();
-  });
-};
+exports.get = id => Models.get('Config').findById(id).then((doc) => {
+  if (!doc) {
+    return null;
+  }
+  return doc.toJSON();
+});
 
 exports.update = (condition, data) => {
   const InfluxConfig = Models.get('Config');

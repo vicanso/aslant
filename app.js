@@ -1,3 +1,6 @@
+const logger = require('timtam-logger');
+const stringify = require('simple-stringify');
+
 require('./helpers/local-require');
 
 
@@ -5,7 +8,6 @@ const config = localRequire('config');
 const utils = localRequire('helpers/utils');
 
 function initLogger() {
-  const logger = require('timtam-logger');
   logger.set({
     app: config.app,
     prefix: config.name,
@@ -43,3 +45,6 @@ if (config.env !== 'development') {
   process.on('SIGINT', gracefulExit);
   process.on('SIGQUIT', gracefulExit);
 }
+
+// set stringify mask
+stringify.isSecret = key => key === 'password';

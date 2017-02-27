@@ -18,9 +18,9 @@ function getInfluxClient(id, db = '_internal') {
     }
     const config = doc.toJSON();
     const arr = [];
-    arr.push(config.ssl? 'https://' : 'http://');
+    arr.push(config.ssl ? 'https://' : 'http://');
     if (config.username && config.password) {
-      arr.push(`${config.username}:${config.password}@`)
+      arr.push(`${config.username}:${config.password}@`);
     }
     arr.push(`${config.host}:${config.port}/${db}`);
     const tmpClient = new Influx(arr.join(''));
@@ -39,38 +39,51 @@ exports.clearClientWithPrefix = (prefix) => {
 };
 
 
-exports.showDatabases = id => getInfluxClient(id).then(client => client.showDatabases());
+exports.showDatabases = id => getInfluxClient(id)
+  .then(client => client.showDatabases());
 
-exports.showRetentionPolicies = (id, db) => getInfluxClient(id, db).then(client => client.showRetentionPolicies());
+exports.showRetentionPolicies = (id, db) => getInfluxClient(id, db)
+  .then(client => client.showRetentionPolicies());
 
-exports.addRetentionPolicy = (id, db, data) => {
-  return getInfluxClient(id, db).then((client) => {
-    return client.createRetentionPolicy(data.name, data.duration, data.replication, data.default);
+exports.addRetentionPolicy = (id, db, data) => getInfluxClient(id, db)
+  .then((client) => {
+    const {
+      name,
+      duration,
+      replication,
+    } = data;
+    return client.createRetentionPolicy(name, duration, replication, data.default);
   });
-};
 
-exports.dropRetentionPolicy = (id, db, rp) => {
-  return getInfluxClient(id, db).then((client) => {
-    return client.dropRetentionPolicy(rp);
+exports.dropRetentionPolicy = (id, db, rp) => getInfluxClient(id, db)
+  .then(client => client.dropRetentionPolicy(rp));
+
+
+exports.updateRetentionPolicy = (id, db, data) => getInfluxClient(id, db)
+  .then((client) => {
+    const {
+      name,
+      duration,
+      replication,
+      shardDuration,
+    } = data;
+    return client.updateRetentionPolicy(name, duration, replication, shardDuration, data.default);
   });
-};
 
-exports.updateRetentionPolicy = (id, db, data) => {
-  return getInfluxClient(id, db).then((client) => {
-    return client.updateRetentionPolicy(data.name, data.duration, data.replication, data.shardDuration, data.default);
-  });
-};
+exports.showMeasurements = (id, db) => getInfluxClient(id, db)
+  .then(client => client.showMeasurements());
 
-exports.showMeasurements = (id, db) => getInfluxClient(id, db).then(client => client.showMeasurements());
+exports.showTagKeys = (id, db, measurement) => getInfluxClient(id, db)
+  .then(client => client.showTagKeys(measurement));
 
-exports.showTagKeys = (id, db, measurement) => getInfluxClient(id, db).then(client => client.showTagKeys(measurement));
+exports.showFieldKeys = (id, db, measurement) => getInfluxClient(id, db)
+  .then(client => client.showFieldKeys(measurement));
 
-exports.showFieldKeys = (id, db, measurement) => getInfluxClient(id, db).then(client => client.showFieldKeys(measurement));
+exports.showSeries = (id, db, measurement) => getInfluxClient(id, db)
+  .then(client => client.showSeries(measurement));
 
-exports.showSeries = (id, db, measurement) => getInfluxClient(id, db).then(client => client.showSeries(measurement));
-
-exports.select = (id, db, measurement, query) => {
-  return getInfluxClient(id, db).then((client) => {
+exports.select = (id, db, measurement, query) => getInfluxClient(id, db)
+  .then((client) => {
     const reader = client.query(measurement);
     _.forEach(query, (v, k) => {
       switch (k) {
@@ -87,10 +100,6 @@ exports.select = (id, db, measurement, query) => {
     });
     return reader;
   });
-};
 
-exports.query = (id, db, ql) => {
-  return getInfluxClient(id, db).then((client) => {
-    return client.queryRaw(ql);
-  });
-};
+exports.query = (id, db, ql) => getInfluxClient(id, db)
+  .then(client => client.queryRaw(ql));

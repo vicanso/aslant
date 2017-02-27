@@ -11,23 +11,23 @@
   z-index 1
   $minimizeSize = 25px
   &.minimize
-    top 100%
-    left $minimizeSize - $MAIN_NAV_WIDTH
-    margin-top -($minimizeSize)
-    .toggle-nav
-      bottom auto
-      top 0
+    width $MAIN_NAV_MIN_WIDHT
+    overflow hidden
+    .navigation
+      a
+        white-space nowrap
+        .pt-icon-standard
+          margin-right 15px
+          margin-left -2px
   .toggle-nav
-    background-color $COLOR_DARK
-    position absolute
-    bottom 0
-    right 0
-    z-index 1
-    color #fff
-    width $minimizeSize
-    height @width
+    background-color #4a5064
+    display block
+    line-height $minimizeSize
+    color $COLOR_GRAY
     &:hover
-      color $COLOR_BLUE
+      color $COLOR_WHITE
+    .pt-icon-standard
+      font-size 12px
   ul
     margin 0
     padding 0
@@ -48,9 +48,10 @@
       a
         color #aaa
         text-decoration none
-        padding 8px 10px
+        padding 8px 15px
         display block
         &:hover
+          color $COLOR_WHITE
           background-color $COLOR_BLUE
     > li.active
       border-left 2px solid $COLOR_BLUE
