@@ -955,8 +955,8 @@ class Influx extends Component {
               zIndex: '1',
             }}
           >
-            { this.renderDatetimePicker() }
             { this.renderTimeSelector(isSmallWindow) }
+            { this.renderDatetimePicker() }
           </div>
           <h5>Other Options</h5>
           { this.renderOtherOptions(defaultPosition) }
