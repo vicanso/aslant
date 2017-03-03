@@ -227,7 +227,7 @@ class Influx extends Component {
       dispatch,
       id,
     } = this.props;
-    const keys = 'server database rp measurement fill limit offset tagConditions fieldConditions aggregations customConditions groups time view'.split(' ');
+    const keys = 'server database rp measurement fill limit offset tagConditions fieldConditions aggregations customConditions customFunctions groups time view'.split(' ');
     const data = _.pick(this.state, keys);
     if (!data.customConditions) {
       delete data.customConditions;
