@@ -41,6 +41,7 @@ module.exports = {
     tagConditions: [Schema.Types.Mixed],
     fieldConditions: [Schema.Types.Mixed],
     customConditions: String,
+    customFunctions: String,
     aggregations: [Schema.Types.Mixed],
     groups: Schema.Types.Mixed,
     time: Schema.Types.Mixed,

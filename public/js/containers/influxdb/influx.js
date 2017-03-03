@@ -229,9 +229,6 @@ class Influx extends Component {
     } = this.props;
     const keys = 'server database rp measurement fill limit offset tagConditions fieldConditions aggregations customConditions customFunctions groups time view'.split(' ');
     const data = _.pick(this.state, keys);
-    if (!data.customConditions) {
-      delete data.customConditions;
-    }
     if (_.isEmpty(data.groups)) {
       delete data.groups;
     }

@@ -32,8 +32,8 @@ function validateConfig(data) {
       value: Joi.string().empty('').optional(),
       operator: Joi.string().empty('').optional(),
     })).optional(),
-    customConditions: Joi.string().optional(),
-    customFunctions: Joi.string().optional(),
+    customConditions: Joi.string().empty('').default(''),
+    customFunctions: Joi.string().empty('').default(''),
     aggregations: Joi.array().items(Joi.object().keys({
       field: Joi.string().empty('').optional(),
       aggregation: Joi.string().empty('').optional(),
