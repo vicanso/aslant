@@ -7,6 +7,13 @@
     padding-right 15px
     float left
     width 33.33%
+    @media only screen and (max-width : $SCREEN_NORMAL)
+      width 50%
+      &:nth-child(2n)
+        padding-right 0
+    @media only screen and (max-width : $SCREEN_TINY)
+      width 100%
+      padding-right 0
     &:nth-child(3n)
       padding-right 0
     input

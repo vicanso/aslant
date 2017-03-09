@@ -9,6 +9,8 @@
   background-color $COLOR_DARK
   overflow-y auto
   z-index 1
+  @media only screen and (max-width: $SCREEN_SMALL)
+    display none
   $minimizeSize = 25px
   &.minimize
     width $MAIN_NAV_MIN_WIDHT
@@ -24,6 +26,8 @@
     display block
     line-height $minimizeSize
     color $COLOR_GRAY
+    @media only screen and (max-width: $SCREEN_SMALL)
+      display none
     &:hover
       color $COLOR_WHITE
     .pt-icon-standard

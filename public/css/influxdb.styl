@@ -39,6 +39,12 @@
     .column-wrapper
       float left
       width 20%
+      @media only screen and (max-width : $SCREEN_BIG)
+        width 33.3333%
+      @media only screen and (max-width : $SCREEN_NORMAL)
+        width 50%
+      @media only screen and (max-width : $SCREEN_SMALL)
+        width 100%
     h3
       line-height 2
       margin 0
@@ -65,11 +71,8 @@
     .column
       margin 8px
 .add-influx-wrapper
-  display flex
-  .config-wrapper
-    flex 1
-  .influx-content-wrapper
-    flex 4
+  @media only screen and (max-width : $SCREEN_MEDIUM)
+    display block
   .influx-ql-wrapper
     background-color #fff
     padding 10px
@@ -80,56 +83,62 @@
       width 100%
       line-height 18px
   .config-wrapper
-    padding 0 30px 20px 10px
     overflow-scrolling touch
     background-color $COLOR_DARK
     color $COLOR_GRAY
-    min-height 100%
     border-left 1px solid $COLOR_WHITE
+    position fixed
+    bottom 0
+    right 0
+    height 400px
+    left $MAIN_NAV_WIDTH
+    overflow-y auto
+    padding-left 10px
+    @media only screen and (max-width: $SCREEN_SMALL)
+      left 0
     h4
       color $COLOR_GRAY
       margin 0
       padding 10px 0
     h5
       color $COLOR_GRAY
-      margn 0
+      margin 0
       padding 8px 0
     .visualization-name
       width 100%
       color $COLOR_LIGHT_BLACK
-    .co-dropdown-selector-wrapper
-      position relative
-      &:hover
+    .basic-selectors
+      display flex
+      .dropdown-selector
+        flex 1
+        margin-right: 10px
+
+    .query-selectors
+      .co-dropdown-selector-wrapper
+        $ctrlItemWidth = 30px
         .remove-condition
-          display block
-      .remove-condition
-        position absolute
-        left 100%
-        padding-left 5px
-        margin-left -1px
-        display none
-        a
-          display block
-          border 1px solid $COLOR_GRAY
-          height 25px
-          width 25px
-          letter-spacing normal
-          background-color #fff
-          border-radius 3px
-          text-align center
-          line-height 24px
-          color #999
-          font-size 12px
-          margin-top 3px
-          &:hover
-            color #666
+          float right
+          margin-right 10px
+          a
+            display block
+            border 1px solid $COLOR_GRAY
+            height 29px
+            width @height
+            letter-spacing normal
+            background-color #fff
+            border-radius 3px
+            text-align center
+            line-height @height - 1
+            color #999
+            font-size 12px
+            &:hover
+              color #666
+        .co-dropdown-selector
+          margin-right $ctrlItemWidth + 20px
     .other-options-wrapper
-      .column-1-2
+      .column-1-2, .s-column-1-2
         margin-bottom 10px
-        &:nth-child(2n + 1) > div
-          margin-right 7px
-        &:nth-child(2n) > div
-          margin-left 7px
+        padding-right 10px
   .date-time-range-picker
     top -280px
     position absolute

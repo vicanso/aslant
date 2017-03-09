@@ -351,7 +351,7 @@ class Influx extends Component {
       </div>
     );
   }
-  renderChartSetting(isSmallWindow) {
+  renderChartSetting() {
     const {
       view,
     } = this.state;
@@ -364,14 +364,19 @@ class Influx extends Component {
           display: 'flex',
         }}
       >
-        <div className="mright5">
+        <div
+          className="mright5"
+          style={{
+            flex: 1,
+          }}
+        >
           <DropdownSelector
             key={'chart-type'}
             title="Choose chart type"
             placeholder={'Choose chart type'}
             items={CHART_TYPES}
             selected={selectedChartType}
-            position={Position.RIGHT_BOTTOM}
+            position={Position.BOTTOM}
             onSelect={(e, item) => {
               cloneView.type = item.type;
               this.setState({
@@ -380,14 +385,19 @@ class Influx extends Component {
             }}
           />
         </div>
-        <div className="mleft5">
+        <div
+          className="mright5"
+          style={{
+            flex: 1,
+          }}
+        >
           <DropdownSelector
             key={'chart-width'}
             title="Choose chart width"
             placeholder={'Choose chart width'}
             items={CHART_WIDTHS}
             selected={selectedChartWidth}
-            position={isSmallWindow ? Position.LEFT_BOTTOM : Position.RIGHT_BOTTOM}
+            position={Position.BOTTOM}
             onSelect={(e, item) => {
               cloneView.width = item.width;
               this.setState({
@@ -396,7 +406,11 @@ class Influx extends Component {
             }}
           />
         </div>
-        <div className="mleft5">
+        <div
+          style={{
+            flex: 1,
+          }}
+        >
           <input
             type="number"
             title="View height"
@@ -430,53 +444,62 @@ class Influx extends Component {
     const intervalList = GROUP_INTERVALS;
     return (
       <div>
-        <DropdownSelector
-          key={'group-by-interval'}
-          placeholder={'Choose group interval'}
-          items={intervalList}
-          selected={groups.interval}
-          position={defaultPosition}
-          onClear={() => {
-            delete groups.interval;
-            this.setState({
-              groups,
-            });
+        <div
+          className="column-1-2"
+          style={{
+            paddingRight: '10px',
           }}
-          onSelect={(e, item) => {
-            groups.interval = item;
-            this.setState({
-              groups,
-            });
-          }}
-        />
-        <DropdownSelector
-          key={'group-by-tag'}
-          placeholder={'Choose group tag'}
-          items={tags}
-          type={'multi'}
-          position={defaultPosition}
-          selected={groups.tags}
-          readOnly
-          onClear={() => {
-            delete groups.tags;
-            this.setState({
-              groups,
-            });
-          }}
-          onSelect={(e, item) => {
-            const groupTags = (groups.tags || []).slice(0);
-            groups.tags = groupTags;
-            const index = _.indexOf(groupTags, item);
-            if (index === -1) {
-              groupTags.push(item);
-            } else {
-              groupTags.splice(index, 1);
-            }
-            this.setState({
-              groups,
-            });
-          }}
-        />
+        >
+          <DropdownSelector
+            key={'group-by-interval'}
+            placeholder={'Choose group interval'}
+            items={intervalList}
+            selected={groups.interval}
+            position={defaultPosition}
+            onClear={() => {
+              delete groups.interval;
+              this.setState({
+                groups,
+              });
+            }}
+            onSelect={(e, item) => {
+              groups.interval = item;
+              this.setState({
+                groups,
+              });
+            }}
+          />
+        </div>
+        <div className="column-1-2">
+          <DropdownSelector
+            key={'group-by-tag'}
+            placeholder={'Choose group tag'}
+            items={tags}
+            type={'multi'}
+            position={defaultPosition}
+            selected={groups.tags}
+            readOnly
+            onClear={() => {
+              delete groups.tags;
+              this.setState({
+                groups,
+              });
+            }}
+            onSelect={(e, item) => {
+              const groupTags = (groups.tags || []).slice(0);
+              groups.tags = groupTags;
+              const index = _.indexOf(groupTags, item);
+              if (index === -1) {
+                groupTags.push(item);
+              } else {
+                groupTags.splice(index, 1);
+              }
+              this.setState({
+                groups,
+              });
+            }}
+          />
+        </div>
       </div>
     );
   }
@@ -651,7 +674,7 @@ class Influx extends Component {
       />
     );
   }
-  renderTimeSelector(isSmallWindow) {
+  renderTimeSelector() {
     const times = TIME_INTERVALS;
     const {
       time,
@@ -673,16 +696,10 @@ class Influx extends Component {
         time: cloneTime,
       });
     };
-    let positions = [
-      Position.RIGHT_BOTTOM,
-      Position.RIGHT_BOTTOM,
+    const positions = [
+      Position.BOTTOM,
+      Position.BOTTOM,
     ];
-    if (isSmallWindow) {
-      positions = [
-        Position.RIGHT_BOTTOM,
-        Position.LEFT_BOTTOM,
-      ];
-    }
     return (
       <div
         className="co-dropdown-selector-wrapper"
@@ -736,10 +753,11 @@ class Influx extends Component {
       limit,
       order,
     } = this.state;
+    const itemCls = 'column-1-4 s-column-1-2';
     return (
       <div className="other-options-wrapper">
         <div
-          className="column-1-2"
+          className={itemCls}
           key="limit-option"
         ><div>
           <input
@@ -762,7 +780,7 @@ class Influx extends Component {
           />
         </div></div>
         <div
-          className="column-1-2"
+          className={itemCls}
           key="offset-option"
         ><div>
           <input
@@ -785,7 +803,7 @@ class Influx extends Component {
           />
         </div></div>
         <div
-          className="column-1-2"
+          className={itemCls}
           key="fill-option"
         ><div>
           <DropdownSelector
@@ -805,7 +823,7 @@ class Influx extends Component {
           />
         </div></div>
         <div
-          className="column-1-2"
+          className={itemCls}
           key="order-option"
         ><div>
           <DropdownSelector
@@ -826,7 +844,78 @@ class Influx extends Component {
       </div>
     );
   }
-  render() {
+  renderContentWrapper() {
+    const {
+      desc,
+    } = this.state;
+    const {
+      id,
+    } = this.props;
+    let influxQL = '';
+    if (id) {
+      influxQL = influxdbService.getInfluxQL(this.state);
+    }
+    return (
+      <div className="influx-content-wrapper">
+        <div
+          style={{
+            margin: '15px',
+          }}
+        >
+          <div
+            className="influx-ql-wrapper clearfix"
+          >
+            <span
+              className="pull-left"
+              style={{
+                marginTop: '4px',
+              }}
+            >Influx QL</span>
+            <button
+              className="pt-button pt-intent-primary pull-right"
+              onClick={() => this.query()}
+            >
+              Query
+            </button>
+            <div className="ql-input">
+              <input
+                className="pt-input"
+                type="text"
+                defaultValue={influxQL}
+                ref={(c) => {
+                  this.ql = c;
+                }}
+              />
+            </div>
+          </div>
+          <input
+            style={{
+              margin: '15px 0',
+            }}
+            ref={(c) => {
+              this.influxDesc = c;
+            }}
+            defaultValue={desc}
+            className="pt-fill pt-input"
+            type="text"
+            placeholder="Input influx description"
+          />
+          <div
+            className="save"
+          >
+            <button
+              className="pt-button pt-intent-primary pt-fill"
+              onClick={() => this.saveInfluxConfig()}
+            >
+              { id ? 'Update' : 'Save' }
+            </button>
+          </div>
+        </div>
+        { this.renderStatsView() }
+      </div>
+    );
+  }
+  renderConfigWrapper() {
     const {
       servers,
       id,
@@ -841,7 +930,6 @@ class Influx extends Component {
       rp,
       measurements,
       measurement,
-      desc,
     } = this.state;
     if (!servers) {
       return (
@@ -880,10 +968,6 @@ class Influx extends Component {
     if (_.isString(selectedServer)) {
       selectedServer = _.find(sortedServers, item => item._id === server);
     }
-    let influxQL = '';
-    if (id) {
-      influxQL = influxdbService.getInfluxQL(this.state);
-    }
 
     let defaultPosition;
     /* eslint no-undef:0 */
@@ -892,8 +976,13 @@ class Influx extends Component {
       defaultPosition = Position.BOTTOM;
     }
     return (
-      <div className="add-influx-wrapper">
-        <div className="config-wrapper">
+      <div className="config-wrapper">
+        <div
+          className="column-1-2"
+          style={{
+            paddingRight: '10px',
+          }}
+        >
           <h4>Visualization Name</h4>
           <input
             className="visualization-name pt-input"
@@ -904,7 +993,18 @@ class Influx extends Component {
               this.influxName = c;
             }}
           />
-          <h4>Influx Config</h4>
+        </div>
+        <div
+          className="column-1-2"
+          style={{
+            paddingRight: '10px',
+          }}
+        >
+          <h4>Chart Setting</h4>
+          { this.renderChartSetting(isSmallWindow) }
+        </div>
+        <h4>Influx Config</h4>
+        <div className="basic-selectors">
           <DropdownSelector
             placeholder={'Choose Server'}
             items={sortedServers}
@@ -932,19 +1032,49 @@ class Influx extends Component {
             placeholder={'Choose Measurement'}
             items={measurements}
             selected={measurement}
-            position={defaultPosition || Position.RIGHT}
+            position={defaultPosition}
             onSelect={(e, item) => this.onSelectMeasurement(item)}
           />
+        </div>
+        <div className="column-1-3 m-column-1-2 s-column-1">
           <h5>Filter By Tag</h5>
-          { this.renderTagSelectorList(isSmallWindow) }
+          <div className="query-selectors">
+            { this.renderTagSelectorList(isSmallWindow) }
+          </div>
+        </div>
+        <div className="column-1-3 m-column-1-2 s-column-1">
           <h5>Filter By Field </h5>
-          { this.renderFieldSelectorList() }
+          <div className="query-selectors">
+            { this.renderFieldSelectorList() }
+          </div>
+        </div>
+        <div className="column-1-3 m-column-1-2 s-column-1">
           <h5>Functions</h5>
-          { this.renderFieldFunctionList(isSmallWindow) }
+          <div className="query-selectors">
+            { this.renderFieldFunctionList(isSmallWindow) }
+          </div>
+        </div>
+        <div
+          className="column-1-2 m-column-1"
+          style={{
+            paddingRight: '10px',
+          }}
+        >
           { this.renderCustomFunctionEditor() }
+        </div>
+        <div className="column-1-2 m-column-1">
           { this.renderCustomFilterEditor() }
+        </div>
+        <div
+          className="column-1-2 m-column-1"
+          style={{
+            paddingRight: '10px',
+          }}
+        >
           <h5>Group By</h5>
           { this.renderGroupSelectorList(defaultPosition) }
+        </div>
+        <div className="column-1-2 m-column-1">
           <h5>Time</h5>
           <div
             style={{
@@ -955,68 +1085,17 @@ class Influx extends Component {
             { this.renderTimeSelector(isSmallWindow) }
             { this.renderDatetimePicker() }
           </div>
-          <h5>Other Options</h5>
-          { this.renderOtherOptions(defaultPosition) }
-          <h5>Chart Setting</h5>
-          { this.renderChartSetting(isSmallWindow) }
         </div>
-        <div className="influx-content-wrapper">
-          <div
-            style={{
-              margin: '15px',
-            }}
-          >
-            <div
-              className="influx-ql-wrapper clearfix"
-            >
-              <span
-                className="pull-left"
-                style={{
-                  marginTop: '4px',
-                }}
-              >Influx QL</span>
-              <button
-                className="pt-button pt-intent-primary pull-right"
-                onClick={() => this.query()}
-              >
-                Query
-              </button>
-              <div className="ql-input">
-                <input
-                  className="pt-input"
-                  type="text"
-                  defaultValue={influxQL}
-                  ref={(c) => {
-                    this.ql = c;
-                  }}
-                />
-              </div>
-            </div>
-            <input
-              style={{
-                margin: '15px 0',
-              }}
-              ref={(c) => {
-                this.influxDesc = c;
-              }}
-              defaultValue={desc}
-              className="pt-fill pt-input"
-              type="text"
-              placeholder="Input influx description"
-            />
-            <div
-              className="save"
-            >
-              <button
-                className="pt-button pt-intent-primary pt-fill"
-                onClick={() => this.saveInfluxConfig()}
-              >
-                { id ? 'Update' : 'Save' }
-              </button>
-            </div>
-          </div>
-          { this.renderStatsView() }
-        </div>
+        <h5>Other Options</h5>
+        { this.renderOtherOptions(defaultPosition) }
+      </div>
+    );
+  }
+  render() {
+    return (
+      <div className="add-influx-wrapper">
+        { this.renderContentWrapper() }
+        { this.renderConfigWrapper() }
       </div>
     );
   }

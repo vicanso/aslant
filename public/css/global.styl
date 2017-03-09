@@ -17,6 +17,8 @@ body
 .content-wrapper
   margin-top $MAIN_HEADER_HEIGHT
   margin-left $MAIN_NAV_WIDTH
+  @media only screen and (max-width: $SCREEN_SMALL)
+    margin-left 0
   &.fill
     margin-left $MAIN_NAV_MIN_WIDHT
 .overflow-y

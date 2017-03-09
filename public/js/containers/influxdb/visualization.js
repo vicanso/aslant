@@ -154,6 +154,7 @@ class Visualization extends Component {
       } else {
         item.set({
           'xAxis.distance': 100,
+          'yAxis.width': 50,
           'xAxis.categories': chartData.categories,
           curve: d3.curveCatmullRom.alpha(0.5),
         })

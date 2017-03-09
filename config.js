@@ -59,10 +59,10 @@ exports.etcd = process.env.ETCD;
 exports.IP = process.env.IP;
 // mongodb uri
 // mongodb://user:pass@localhost:port,anotherhost:port,yetanother:port/mydatabase
-exports.mongoUri = process.env.MONGO;
+exports.mongoUri = process.env.MONGO || 'mongodb://127.0.0.1/aslant';
 // redis uri
 // [redis:]//[[user][:password@]][host][:port][/db-number][?db=db-number[&password=bar[&option=value]]]
-exports.redisUri = process.env.REDIS;
+exports.redisUri = process.env.REDIS || 'redis://127.0.0.1/';
 
 // udp://127.0.0.1:6000
 exports.udpLog = process.env.UDP_LOG;

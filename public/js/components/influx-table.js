@@ -45,7 +45,7 @@ class InfluxTable extends Component {
         onConfirm={() => this.remove(removeItem)}
         onCancel={() => this.setState({ removeItem: null })}
       >
-        <p>{ content }</p>
+        <p>{content}</p>
       </Alert>
     );
   }

@@ -116,7 +116,7 @@ class Table extends Component {
     return (
       <thead>
         <tr>
-          { arr }
+          {arr}
         </tr>
       </thead>
     );

@@ -95,15 +95,12 @@ class DropdownSelector extends Component {
     });
     const menu = (
       <Menu>
-        { arr }
+        {arr}
       </Menu>
     );
     let fixPosition = this.props.position;
     if (_.isNil(this.props.position)) {
-      fixPosition = Position.RIGHT;
-      if (filterItems.length > 20) {
-        fixPosition = Position.BOTTOM;
-      }
+      fixPosition = Position.BOTTOM;
     }
     const clearItem = _.isFunction(onClear) && (
       <a
@@ -119,7 +116,7 @@ class DropdownSelector extends Component {
       <div
         className="dropdown-selector"
       >
-        { clearItem }
+        {clearItem}
         <Popover
           content={menu}
           position={fixPosition}
