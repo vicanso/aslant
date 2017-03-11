@@ -13,24 +13,26 @@ module.exports = (category, params) => (ctx, next) => {
   const data = {
     category,
     token: ctx.get('X-User-Token') || 'unknown',
-    account: _.get(ctx.session, 'user.account'),
     ip: ctx.ip,
   };
   _.forEach(params, (param) => {
-    const v = ctx.request.body[param] || ctx.params[param] || ctx.query[param];
-    if (!_.isUndefined(v)) {
-      data[param] = v;
-    }
+    _.forEach(['request.body', 'params', 'query'], (key) => {
+      const v = _.get(ctx, `${key}.${param}`);
+      if (_.isNil(data[param]) && !_.isNil(v)) {
+        data[param] = v;
+      }
+    });
   });
   const start = Date.now();
+  const delayLog = (use, result) => {
+    data.result = result;
+    data.use = use;
+    logUserTracker(data);
+  };
   return next().then(() => {
-    data.result = 'success';
-    data.use = Date.now() - start;
-    logUserTracker(data);
+    setImmediate(delayLog, Date.now() - start, 'success');
   }, (err) => {
-    data.result = 'fail';
-    data.use = Date.now() - start;
-    logUserTracker(data);
+    setImmediate(delayLog, Date.now() - start, 'fail');
     throw err;
   });
 };
