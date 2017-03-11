@@ -58,7 +58,7 @@ module.exports = {
     new webpack.SourceMapDevToolPlugin({
       test: /\.js$/,
       exclude: /vendor.js/,
-      filename: '[name].map',
+      filename: '[name].[chunkhash].map',
     }),
   ],
 };
