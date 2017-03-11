@@ -5,7 +5,7 @@ const Joi = require('joi');
 
 const errors = localRequire('helpers/errors');
 const influx = localRequire('helpers/influx');
-const noCacheQuery = checker('cache=false');
+const noCacheQuery = checker('cache-control=no-cache');
 
 exports.noQuery = () => (ctx, next) => {
   if (_.isEmpty(ctx.query)) {
@@ -55,13 +55,33 @@ exports.cacheMaxAge = maxAge => (ctx, next) => next().then(() => {
   ctx.set('Cache-Control', `public, max-age=${maxAge}`);
 });
 
+// the function is https://github.com/koajs/koa-fresh
+exports.fresh = (ctx, next) => next().then(() => {
+  const {
+    status,
+    body,
+    method,
+  } = ctx;
+  if (!body || status === 304) {
+    return;
+  }
+  let cache = method === 'GET' || method === 'HEAD';
+  if (cache) {
+    cache = status >= 200 && status < 300;
+  }
+  if (cache && ctx.fresh) {
+    /* eslint no-param-reassign:0 */
+    ctx.status = 304;
+    ctx.remove('Content-Type');
+    ctx.remove('Content-Length');
+  }
+});
+
 
 exports.routeStats = (ctx, next) => {
-  const end = ctx.state.timing.start('route');
   const start = Date.now();
-  return next().then(() => {
-    end();
-    const use = Date.now() - start;
+  const end = ctx.state.timing.start('route');
+  const delayLog = (use) => {
     const method = ctx.method.toUpperCase();
     const layer = _.find(ctx.matched, tmp => _.indexOf(tmp.methods, method) !== -1);
     /* istanbul ignore if */
@@ -75,6 +95,10 @@ exports.routeStats = (ctx, next) => {
       path: layer.path,
       spdy: _.sortedIndex([30, 100, 300, 1000, 3000], use),
     });
+  };
+  return next().then(() => {
+    end();
+    setImmediate(delayLog, Date.now() - start);
   });
 };
 
