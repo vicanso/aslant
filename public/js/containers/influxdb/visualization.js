@@ -152,9 +152,11 @@ class Visualization extends Component {
         });
         item.render(arr);
       } else {
+        const maxValues = _.map(chartData.data, item => _.max(item.data));
+        const yAxisWidth = _.max(maxValues) > 1000 ? 50 : 30;
         item.set({
           'xAxis.distance': 100,
-          'yAxis.width': 50,
+          'yAxis.width': yAxisWidth,
           'xAxis.categories': chartData.categories,
           curve: d3.curveCatmullRom.alpha(0.5),
         })
