@@ -207,6 +207,10 @@ class Influx extends Component {
     this.setState(state);
   }
   restore(id) {
+    if (this.isRestoring) {
+      return;
+    }
+    this.isRestoring = true;
     influxdbService.getConfig(id, {
       fill: 'all',
     }).then((data) => {
@@ -219,8 +223,12 @@ class Influx extends Component {
       if (data.series) {
         _.extend(result, influxdbService.formatSeries(data.series));
       }
+      this.isRestoring = false;
       this.setState(result);
-    }).catch(this.showError);
+    }).catch((err) => {
+      this.isRestoring = false;
+      this.showError(err);
+    });
   }
   saveInfluxConfig() {
     const {
@@ -229,9 +237,6 @@ class Influx extends Component {
     } = this.props;
     const keys = 'server database rp measurement fill limit offset tagConditions fieldConditions aggregations customConditions customFunctions groups time view'.split(' ');
     const data = _.pick(this.state, keys);
-    if (_.isEmpty(data.groups)) {
-      delete data.groups;
-    }
     const name = this.influxName.value || '';
     data.name = name;
     data.desc = this.influxDesc.value || '';
@@ -870,7 +875,9 @@ class Influx extends Component {
               style={{
                 marginTop: '4px',
               }}
-            >Influx QL</span>
+            >
+              Influx QL
+            </span>
             <button
               className="pt-button pt-intent-primary pull-right"
               onClick={() => this.query()}
@@ -918,8 +925,6 @@ class Influx extends Component {
   renderConfigWrapper() {
     const {
       servers,
-      id,
-      handleLink,
     } = this.props;
     const {
       name,
@@ -931,40 +936,8 @@ class Influx extends Component {
       measurements,
       measurement,
     } = this.state;
-    if (!servers) {
-      return (
-        <p className="pt-callout pt-icon-automatic-updates margin15">Loading...</p>
-      );
-    }
-    if (!servers.length) {
-      return (
-        <div className="add-influx-wrapper">
-          <p className="pt-callout pt-intent-primary pt-icon-info-sign margin15">
-            There is no influx server, please add one first.
-            <a
-              className="mleft10"
-              href={VIEW_ADD_SERVER}
-              onClick={handleLink(VIEW_ADD_SERVER)}
-            >Add</a>
-          </p>
-        </div>
-      );
-    }
-    const sortedServers = _.sortBy(servers, item => item.name);
-    if (!server && id) {
-      this.restore(id);
-      return (
-        <div>
-          <Toaster
-            ref={(c) => {
-              this.toaster = c;
-            }}
-          />
-          <p className="pt-callout pt-icon-automatic-updates margin15">Loading...</p>
-        </div>
-      );
-    }
     let selectedServer = server;
+    const sortedServers = _.sortBy(servers, item => item.name);
     if (_.isString(selectedServer)) {
       selectedServer = _.find(sortedServers, item => item._id === server);
     }
@@ -1092,6 +1065,49 @@ class Influx extends Component {
     );
   }
   render() {
+    const {
+      servers,
+      id,
+      handleLink,
+    } = this.props;
+    const {
+      server,
+    } = this.state;
+
+    if (!servers) {
+      return (
+        <p className="pt-callout pt-icon-automatic-updates margin15">Loading...</p>
+      );
+    }
+    if (!servers.length) {
+      return (
+        <div className="add-influx-wrapper">
+          <p className="pt-callout pt-intent-primary pt-icon-info-sign margin15">
+            There is no influx server, please add one first.
+            <a
+              className="mleft10"
+              href={VIEW_ADD_SERVER}
+              onClick={handleLink(VIEW_ADD_SERVER)}
+            >
+              Add
+            </a>
+          </p>
+        </div>
+      );
+    }
+    if (!server && id) {
+      this.restore(id);
+      return (
+        <div>
+          <Toaster
+            ref={(c) => {
+              this.toaster = c;
+            }}
+          />
+          <p className="pt-callout pt-icon-automatic-updates margin15">Loading...</p>
+        </div>
+      );
+    }
     return (
       <div className="add-influx-wrapper">
         { this.renderContentWrapper() }

@@ -152,7 +152,7 @@ class Visualization extends Component {
         });
         item.render(arr);
       } else {
-        const maxValues = _.map(chartData.data, item => _.max(item.data));
+        const maxValues = _.map(chartData.data, tmp => _.max(tmp.data));
         const yAxisWidth = _.max(maxValues) > 1000 ? 50 : 30;
         item.set({
           'xAxis.distance': 100,

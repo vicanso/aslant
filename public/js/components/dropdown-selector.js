@@ -102,15 +102,13 @@ class DropdownSelector extends Component {
     if (_.isNil(this.props.position)) {
       fixPosition = Position.BOTTOM;
     }
-    const clearItem = _.isFunction(onClear) && (
-      <a
-        className="clear tac"
-        href="javascript:;"
-        onClick={() => this.clear()}
-      >
-        <span className="pt-icon-standard pt-icon-small-cross" />
-      </a>
-    );
+    const clearItem = _.isFunction(onClear) && (<a
+      className="clear tac"
+      href="javascript:;"
+      onClick={() => this.clear()}
+    >
+      <span className="pt-icon-standard pt-icon-small-cross" />
+    </a>);
 
     return (
       <div

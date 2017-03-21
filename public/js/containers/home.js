@@ -37,7 +37,9 @@ class Home extends Component {
             className="mleft10"
             href={addUrl}
             onClick={handleLink(addUrl)}
-          >Add</a>
+          >
+            Add
+          </a>
         </p>
       );
     }

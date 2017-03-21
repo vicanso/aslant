@@ -40,7 +40,9 @@ class Dashboards extends InfluxTable {
             className="mleft10"
             href={VIEW_ADD_DASHBOARD}
             onClick={handleLink(VIEW_ADD_DASHBOARD)}
-          >Add</a>
+          >
+            Add
+          </a>
         </p>
       );
     }

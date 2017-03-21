@@ -179,7 +179,9 @@ class Login extends FormView {
             dispatch(navigationAction.to(VIEW_REGISTER));
           }}
           className="create-account"
-        >Create an account.</a>
+        >
+          Create an account.
+        </a>
       </div>
     );
   }

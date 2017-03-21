@@ -167,6 +167,9 @@ exports.updatePassword = (ctx) => {
   if (!token) {
     throw errors.get(102);
   }
+  if (account === 'aslant') {
+    throw errors.get('Can not modify password for aslant');
+  }
   const { newPassword, password } = ctx.request.body;
   return userService.get(account, password, token, 'password').then((doc) => {
     if (!doc) {
@@ -196,4 +199,3 @@ exports.like = (ctx) => {
     type,
   };
 };
-

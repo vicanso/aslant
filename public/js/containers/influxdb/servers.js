@@ -41,7 +41,9 @@ class Servers extends InfluxTable {
             className="mleft10"
             href={VIEW_ADD_SERVER}
             onClick={handleLink(VIEW_ADD_SERVER)}
-          >Add</a>
+          >
+            Add
+          </a>
         </p>
       );
     }

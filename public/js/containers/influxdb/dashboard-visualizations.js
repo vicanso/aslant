@@ -23,13 +23,17 @@ function getTimeDesc(time) {
   return (
     <span className="mright10 time-range">
       <span className="pt-icon-calendar mright5" />
-      ({time.start || 'unlimited'}
+      (
+      {time.start || 'unlimited'}
       <span
         style={{
           margin: '0 3px',
         }}
-      >-</span>
-      {time.end || 'now'})
+      >
+        -
+      </span>
+      {time.end || 'now'}
+      )
     </span>
   );
 }

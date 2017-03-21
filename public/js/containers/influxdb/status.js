@@ -582,7 +582,9 @@ class Status extends Component {
             marginTop: '20px',
           }}
           className="pt-button pt-intent-primary pt-fill"
-        >Add Retention Policy</a>
+        >
+          Add Retention Policy
+        </a>
       );
     }
     return (

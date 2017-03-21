@@ -59,7 +59,9 @@ class Configs extends InfluxTable {
             className="mleft10"
             href={VIEW_ADD_INFLUX}
             onClick={handleLink(VIEW_ADD_INFLUX)}
-          >Add</a>
+          >
+            Add
+          </a>
         </p>
       );
     }

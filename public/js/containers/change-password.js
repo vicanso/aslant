@@ -96,7 +96,9 @@ class ChangePassword extends FormView {
             dispatch(navigationAction.to(VIEW_LOGIN));
           }}
           className="create-account"
-        >Login</a>
+        >
+          Login
+        </a>
       </div>
     );
   }
