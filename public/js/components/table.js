@@ -37,12 +37,17 @@ class Table extends Component {
         filterIndex = _.indexOf(keys, keywords[0]);
         filterKeyword = keywords[1];
       }
+      let filterFunction = _.filter;
+      if (filterKeyword.charAt(0) === '~') {
+        filterFunction = _.reject;
+        filterKeyword = filterKeyword.substring(1);
+      }
       const reg = new RegExp(filterKeyword, 'gi');
-      filterResult = _.filter(items, (arr) => {
+      filterResult = filterFunction(items, (arr) => {
         if (filterIndex !== -1) {
-          return reg.test(`${arr[filterIndex]}`);
+          return reg.test(arr[filterIndex]);
         }
-        return reg.test(arr.join(''));
+        return _.some(arr, item => reg.test(item));
       });
     }
     const index = _.indexOf(keys, sort);
