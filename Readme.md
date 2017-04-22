@@ -1,6 +1,8 @@
 # aslant
 
-A powerful charting and visualization for influxdb
+A powerful charting and visualization for influxdb.
+
+[http://aslant.site/aslant/](http://aslant.site/aslant/) account:aslant password:aslant
 
 ## docker
 
