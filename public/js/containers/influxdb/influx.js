@@ -1110,8 +1110,8 @@ class Influx extends Component {
     }
     return (
       <div className="add-influx-wrapper">
-        { this.renderContentWrapper() }
         { this.renderConfigWrapper() }
+        { this.renderContentWrapper() }
       </div>
     );
   }

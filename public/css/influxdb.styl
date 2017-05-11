@@ -73,9 +73,6 @@
 .add-influx-wrapper
   @media only screen and (max-width : $SCREEN_MEDIUM)
     display block
-  $configWrapperHeight = 400px
-  .influx-content-wrapper
-    padding-bottom $configWrapperHeight
   .influx-ql-wrapper
     background-color #fff
     padding 10px
@@ -90,12 +87,6 @@
     background-color $COLOR_DARK
     color $COLOR_GRAY
     border-left 1px solid $COLOR_WHITE
-    position fixed
-    bottom 0
-    right 0
-    height $configWrapperHeight
-    left $MAIN_NAV_WIDTH
-    overflow-y auto
     padding-left 10px
     @media only screen and (max-width: $SCREEN_SMALL)
       left 0
